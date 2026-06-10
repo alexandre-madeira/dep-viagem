@@ -1,0 +1,29 @@
+# Segredos e credenciais
+.env
+*.env.local
+*.env.production
+secrets/
+credenciais.txt
+senha*.txt
+apikeys.txt
+
+# Dependências
+node_modules/
+.pnp
+.pnp.js
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Build
+dist/
+build/
+.next/
