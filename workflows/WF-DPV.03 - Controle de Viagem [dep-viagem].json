@@ -5,7 +5,7 @@
       "parameters": {},
       "id": "5405cdf0-74c9-41f1-834d-4e8d672de3ce",
       "name": "WF-DPV.03 - TRIGGER | Iniciar Controle Viagem",
-      "type": "n8n-nodes-base.manualTrigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
       "position": [
         0,

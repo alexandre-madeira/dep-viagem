@@ -5,7 +5,7 @@
       "parameters": {},
       "id": "c8fb2cce-5931-4275-9c04-19796a615df5",
       "name": "WF-DPV.04 - TRIGGER | Gerar Relatorio",
-      "type": "n8n-nodes-base.manualTrigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
       "position": [
         0,

@@ -5,7 +5,7 @@
       "parameters": {},
       "id": "55e9b2b0-69ed-4eca-83c7-49de3cb0a9d1",
       "name": "WF-DPV.02 - TRIGGER | Iniciar Extração",
-      "type": "n8n-nodes-base.manualTrigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
       "position": [
         0,
