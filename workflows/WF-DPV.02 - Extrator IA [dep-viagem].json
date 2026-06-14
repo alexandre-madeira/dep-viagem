@@ -147,7 +147,13 @@
       "position": [
         832,
         416
-      ]
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "A7kQbA9mH4B54bS4",
+          "name": "ANTHROPIC_API_KEY"
+        }
+      }
     },
     {
       "parameters": {
