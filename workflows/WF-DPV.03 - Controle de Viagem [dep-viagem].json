@@ -143,7 +143,9 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.instanceName }}",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/sofia",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -166,7 +168,13 @@
       "position": [
         896,
         0
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ka0C8J4zfOklD1lw",
+          "name": "HEADER_API_EVOLUTION_ENVIO"
+        }
+      }
     },
     {
       "parameters": {
@@ -192,7 +200,9 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.instanceName }}",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/sofia",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -215,7 +225,13 @@
       "position": [
         896,
         192
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ka0C8J4zfOklD1lw",
+          "name": "HEADER_API_EVOLUTION_ENVIO"
+        }
+      }
     },
     {
       "parameters": {
@@ -259,7 +275,9 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.instanceName }}",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/sofia",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -282,7 +300,13 @@
       "position": [
         672,
         576
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ka0C8J4zfOklD1lw",
+          "name": "HEADER_API_EVOLUTION_ENVIO"
+        }
+      }
     }
   ],
   "pinData": {},

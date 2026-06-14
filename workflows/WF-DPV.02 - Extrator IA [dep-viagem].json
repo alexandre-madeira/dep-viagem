@@ -68,14 +68,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $(\"WF-DPV.02 - TRIGGER | Iniciar Extração\").item.json.instanceName }}",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/sofia",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey"
-            }
-          ]
+          "parameters": []
         },
         "sendBody": true,
         "bodyParameters": {
@@ -99,7 +97,13 @@
       "position": [
         672,
         0
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ka0C8J4zfOklD1lw",
+          "name": "HEADER_API_EVOLUTION_ENVIO"
+        }
+      }
     },
     {
       "parameters": {
@@ -203,14 +207,12 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $(\"WF-DPV.02 - TRIGGER | Iniciar Extração\").item.json.instanceName }}",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/sofia",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey"
-            }
-          ]
+          "parameters": []
         },
         "sendBody": true,
         "bodyParameters": {
@@ -234,7 +236,13 @@
       "position": [
         1696,
         192
-      ]
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Ka0C8J4zfOklD1lw",
+          "name": "HEADER_API_EVOLUTION_ENVIO"
+        }
+      }
     }
   ],
   "pinData": {},
