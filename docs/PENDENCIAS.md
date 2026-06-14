@@ -51,7 +51,7 @@ Atualizado em: 09/06/2026
 - [x] 6 workflows criados no n8n
 - [x] Tabelas `viagens`, `despesas_viagem`, `funcionarios` criadas
 - [x] Campo `nome_viagem` adicionado à tabela `viagens`
-- [x] Credencial `DB_n8n_contratos` aplicada em todos os workflows
+- [x] Credencial `DB_dep_viagem` aplicada em todos os workflows
 - [x] Subworkflows vinculados (WF-01 → 02, 03; WF-03 → 04; WF-06 → 04)
 - [x] `imageUrl` e `imageBase64` mapeados no payload Evolution
 - [x] Validação de NF duplicada por `message_id`

@@ -26,7 +26,7 @@ filtrar, aprovar e baixar relatórios.
 | Orquestração | n8n self-hosted | https://n8n.solucaomadeira.com |
 | WhatsApp | Evolution API self-hosted | http://evolution-api:8080 |
 | IA / OCR | Anthropic Claude Vision | claude-opus-4-5 |
-| Banco | PostgreSQL | credencial: DB_n8n_contratos (ID: 3z35ZPyLInGNam1Y) |
+| Banco | PostgreSQL | credencial: DB_dep_viagem (ID: ggViIQGkepjwuOdv) |
 | PDF | Gotenberg | http://gotenberg:3000 |
 | Painel | React JSX | arquivo: painel/painel-financeiro-dpv.jsx |
 | Versionamento | GitHub | alexandre-madeira/dep-viagem |
@@ -45,7 +45,7 @@ filtrar, aprovar e baixar relatórios.
 | WF-DPV.06 - Painel Financeiro | fRA3D3njIJOWmtqU | https://n8n.solucaomadeira.com/workflow/fRA3D3njIJOWmtqU |
 
 ### Credenciais conhecidas
-- **Postgres que funciona:** `DB_n8n_contratos` (ID: `3z35ZPyLInGNam1Y`)
+- **Postgres que funciona:** `DB_dep_viagem` (ID: `ggViIQGkepjwuOdv`)
 - **Postgres que NÃO funcionam:** DB_proj_solu, Postgres_bd_agente, db_prestconta_db, DB_supportfaqagent
 - **Anthropic:** ainda não criada no n8n — pendência P03
 
@@ -278,7 +278,7 @@ C:\GITHUB\DPV\
 - [x] WF-DPV.05 executado — tabelas criadas
 - [x] WF-DPV.06 criado — backend do painel
 - [x] Subworkflows vinculados (01→02, 01→03, 03→04, 06→04)
-- [x] Credencial DB_n8n_contratos em todos os workflows
+- [x] Credencial DB_dep_viagem em todos os workflows
 - [x] imageUrl mapeado no payload Evolution
 - [x] Tabela funcionarios criada
 - [x] Campo nome_viagem adicionado

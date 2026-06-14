@@ -54,7 +54,7 @@
 | Orquestração | n8n self-hosted |
 | WhatsApp | Evolution API self-hosted |
 | IA | Anthropic Claude (Vision) |
-| Banco | PostgreSQL (`DB_n8n_contratos`) |
+| Banco | PostgreSQL (`DB_dep_viagem`) |
 | PDF | Gotenberg (`http://gotenberg:3000`) |
 | Painel | React (arquivo `.jsx`) |
 

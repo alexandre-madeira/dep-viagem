@@ -6,7 +6,7 @@
 |---|---|---|
 | WhatsApp (Evolution API) | Entrada de fotos + entrega de relatório | `http://evolution-api:8080` |
 | Claude Vision (Anthropic) | Extração de dados das NFs | `api.anthropic.com` |
-| PostgreSQL | Armazenamento de viagens e despesas | credencial `DB_n8n_contratos` |
+| PostgreSQL | Armazenamento de viagens e despesas | credencial `DB_dep_viagem` |
 | Gotenberg | Conversão HTML → PDF | `http://gotenberg:3000` |
 | n8n | Orquestrador de todos os fluxos | self-hosted |
 

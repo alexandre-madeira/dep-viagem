@@ -1,7 +1,7 @@
 -- ============================================
 -- dep-viagem [DPV] — Setup do Banco de Dados
 -- v2 — 09/06/2026
--- Credencial n8n: DB_n8n_contratos
+-- Credencial n8n: DB_dep_viagem
 -- ============================================
 
 -- Tabela de funcionários

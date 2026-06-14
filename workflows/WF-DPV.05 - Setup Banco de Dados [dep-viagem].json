@@ -28,8 +28,8 @@
       ],
       "credentials": {
         "postgres": {
-          "id": "3z35ZPyLInGNam1Y",
-          "name": "DB_n8n_contratos"
+          "id": "ggViIQGkepjwuOdv",
+          "name": "DB_dep_viagem"
         }
       }
     },
@@ -49,8 +49,8 @@
       ],
       "credentials": {
         "postgres": {
-          "id": "3z35ZPyLInGNam1Y",
-          "name": "DB_n8n_contratos"
+          "id": "ggViIQGkepjwuOdv",
+          "name": "DB_dep_viagem"
         }
       }
     },
