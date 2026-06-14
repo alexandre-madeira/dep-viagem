@@ -1,0 +1,552 @@
+{
+  "name": "WF-DPV.06 - Painel Financeiro [dep-viagem]",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dpv-financeiro/:acao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "2e906bf3-f39a-4535-9430-cc09ae1f6721",
+      "name": "WF-DPV.06 - TRIGGER | Webhook Painel Financeiro",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        608
+      ],
+      "webhookId": "411a04c3-dfbd-439a-93cf-ef936023756a"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.body.senha }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "SENHA_CONFIGURADA_NO_N8N"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a15ae3f6-4dd9-46c5-98c0-1944df0a852f",
+      "name": "WF-DPV.06 - IF | Autenticacao Valida?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.params.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "auth"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.params.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "viagens"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.params.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "relatorio-pdf"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.params.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "zip-nfs"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.params.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "aprovar"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Desconhecido"
+        }
+      },
+      "id": "571ba0f7-157c-42e1-ad50-f843be12ff41",
+      "name": "WF-DPV.06 - SWITCH | Rota da Acao",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":true}",
+        "options": {}
+      },
+      "id": "260c5655-5b2e-4891-814f-d914ebc53515",
+      "name": "WF-DPV.06 - RESPOND | Auth OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, COALESCE(f.nome, v.phone) as funcionario_nome, json_agg(json_build_object('id', d.id, 'estabelecimento', d.estabelecimento, 'cnpj', d.cnpj, 'valor_total', d.valor_total, 'data_emissao', d.data_emissao, 'categoria', d.categoria, 'message_id', d.message_id) ORDER BY d.data_emissao ASC) FILTER (WHERE d.id IS NOT NULL) as despesas FROM viagens v LEFT JOIN funcionarios f ON f.phone = v.phone LEFT JOIN despesas_viagem d ON d.phone = v.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) GROUP BY v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, f.nome ORDER BY v.data_inicio DESC",
+        "options": {}
+      },
+      "id": "20ccecc9-ab6d-4047-b707-e9aae7b1ee83",
+      "name": "WF-DPV.06 - DB | Buscar Viagens com Despesas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        192
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "viagens",
+        "options": {}
+      },
+      "id": "7e780e14-4705-4e92-b971-f7ada2471602",
+      "name": "WF-DPV.06 - AGG | Montar JSON Viagens",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        896,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "1b77f48d-1832-445c-8380-6c4d67c4f90a",
+      "name": "WF-DPV.06 - RESPOND | Retornar Viagens",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "acKIy44sUfDgOR2E",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "b21f6917-274b-40ee-bce7-9874836f7399",
+      "name": "WF-DPV.06 - EXEC | Gerar PDF Financeiro",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":true,\"mensagem\":\"Relatório enviado via WhatsApp\"}",
+        "options": {}
+      },
+      "id": "18dd8a85-0039-422b-a07a-f2051aa5d794",
+      "name": "WF-DPV.06 - RESPOND | PDF Gerado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT d.id, d.estabelecimento, d.data_emissao, d.categoria, d.valor_total, d.message_id FROM despesas_viagem d JOIN viagens v ON v.phone = d.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) WHERE v.id = {{ $json.body.viagem_id }} ORDER BY d.data_emissao ASC, d.id ASC",
+        "options": {}
+      },
+      "id": "479ffe63-4de4-441d-b8c4-0253f15f9ef1",
+      "name": "WF-DPV.06 - DB | Buscar NFs para ZIP",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        576
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const nfs = $input.all().map((item, i) => ({\n  ordem: i + 1,\n  arquivo: (i + 1).toString().padStart(2, '0') + '_' + (item.json.data_emissao || 'sem_data') + '_' + (item.json.estabelecimento || 'NF').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) + '.jpg',\n  estabelecimento: item.json.estabelecimento,\n  categoria: item.json.categoria,\n  valor: item.json.valor_total,\n  data: item.json.data_emissao,\n  message_id: item.json.message_id\n}));\nreturn [{ json: { nfs, total: nfs.length } }];"
+      },
+      "id": "c22ccfd7-cac9-4561-bfc6-912d127a4a75",
+      "name": "WF-DPV.06 - CODE | Instruções ZIP",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "0771639a-f943-456c-b164-93f4921c2825",
+      "name": "WF-DPV.06 - RESPOND | Retornar ZIP Info",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE viagens SET status = 'aprovada', updated_at = NOW() WHERE id = {{ $json.body.viagem_id }} RETURNING id, status",
+        "options": {}
+      },
+      "id": "da68e444-b8c8-4937-9e0e-d96742ca7f58",
+      "name": "WF-DPV.06 - DB | Aprovar Viagem",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        768
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":true,\"status\":\"aprovada\"}",
+        "options": {}
+      },
+      "id": "1269990d-d709-418f-a725-f57cb7ee1466",
+      "name": "WF-DPV.06 - RESPOND | Viagem Aprovada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":false,\"erro\":\"Rota desconhecida\"}",
+        "options": {}
+      },
+      "id": "f2346fbd-3026-4f31-b829-9754da3e9b2e",
+      "name": "WF-DPV.06 - RESPOND | Rota Desconhecida",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":false,\"erro\":\"Senha incorreta\"}",
+        "options": {}
+      },
+      "id": "0b9d18e3-f793-4f08-ab7e-4c78e40c4fb7",
+      "name": "WF-DPV.06 - RESPOND | Nao Autorizado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        736
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WF-DPV.06 - TRIGGER | Webhook Painel Financeiro": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - IF | Autenticacao Valida?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - IF | Autenticacao Valida?": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - SWITCH | Rota da Acao",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.06 - RESPOND | Nao Autorizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - SWITCH | Rota da Acao": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - RESPOND | Auth OK",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.06 - DB | Buscar Viagens com Despesas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.06 - EXEC | Gerar PDF Financeiro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.06 - DB | Buscar NFs para ZIP",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.06 - DB | Aprovar Viagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.06 - RESPOND | Rota Desconhecida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - DB | Buscar Viagens com Despesas": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - AGG | Montar JSON Viagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - AGG | Montar JSON Viagens": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - RESPOND | Retornar Viagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - EXEC | Gerar PDF Financeiro": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - RESPOND | PDF Gerado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - DB | Buscar NFs para ZIP": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - CODE | Instruções ZIP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - CODE | Instruções ZIP": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - RESPOND | Retornar ZIP Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - DB | Aprovar Viagem": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - RESPOND | Viagem Aprovada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "ece5f4f9-cc9d-4e81-9834-ddc6e769e39f",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "98a7f76cbff973591af08e09b5be2fed14b55b37d878782c0638229a94477203"
+  },
+  "nodeGroups": [],
+  "id": "fRA3D3njIJOWmtqU",
+  "tags": []
+}

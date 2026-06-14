@@ -1,0 +1,295 @@
+{
+  "name": "WF-DPV.01 - Receptor de NF [dep-viagem]",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dpv-whatsapp-receiver",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "20921edd-f12f-4a99-b15d-d6cf1b5eba90",
+      "name": "WF-DPV.01 - TRIGGER | Webhook Evolution API",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        192
+      ],
+      "webhookId": "06a2c6b5-b29e-44d5-9a55-24274e36a323"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "phone",
+              "name": "phone",
+              "value": "={{ $json.body.data.key.remoteJid.replace('@s.whatsapp.net', '').replace('@g.us', '') }}",
+              "type": "string"
+            },
+            {
+              "id": "messageType",
+              "name": "messageType",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "caption",
+              "name": "caption",
+              "value": "={{ $json.body.data.message?.imageMessage?.caption ?? $json.body.data.message?.extendedTextMessage?.text ?? $json.body.data.message?.conversation ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "instanceName",
+              "name": "instanceName",
+              "value": "={{ $json.body.instance ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "messageId",
+              "name": "messageId",
+              "value": "={{ $json.body.data.key.id ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "imageUrl",
+              "name": "imageUrl",
+              "value": "={{ $json.body.data.message?.imageMessage?.url ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "imageBase64",
+              "name": "imageBase64",
+              "value": "={{ $json.body.data.message?.imageMessage?.jpegThumbnail ?? '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d6c3b120-42f6-4795-b645-1ec59e1a05fb",
+      "name": "WF-DPV.01 - SET | Normalizar Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messageType }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "imageMessage"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.messageType }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "conversation"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Ignorar"
+        }
+      },
+      "id": "baa3b5c7-4d16-4aaa-902a-eee2afce839b",
+      "name": "WF-DPV.01 - SWITCH | Tipo de Mensagem",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "31hBkBVq6rduQKXM",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/31hBkBVq6rduQKXM",
+          "cachedResultName": "WF-DPV.02 - Extrator IA [dep-viagem]"
+        },
+        "options": {}
+      },
+      "id": "51644c8d-f8bd-4084-b7af-81aeb41442fb",
+      "name": "WF-DPV.01 - EXEC | Chamar Extrator IA",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"status\":\"received\"}",
+        "options": {}
+      },
+      "id": "adef14a9-be86-4d94-8119-fde3be11fe94",
+      "name": "WF-DPV.01 - RESPOND | OK ao Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "ruf039UAwh9KqIZo",
+          "cachedResultName": "WF-DPV.03 - Controle de Viagem [dep-viagem]"
+        },
+        "options": {}
+      },
+      "id": "272dcdc3-7ca4-431d-896f-5707d7534d61",
+      "name": "WF-DPV.01 - EXEC | Chamar Handler Comandos",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        192
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "40470e17-7f18-4fe8-882e-3879ec91f1d4",
+      "name": "WF-DPV.01 - NOOP | Ignorar Mensagem",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        672,
+        384
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WF-DPV.01 - TRIGGER | Webhook Evolution API": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.01 - SET | Normalizar Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.01 - SET | Normalizar Payload": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.01 - SWITCH | Tipo de Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.01 - SWITCH | Tipo de Mensagem": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.01 - EXEC | Chamar Extrator IA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.01 - EXEC | Chamar Handler Comandos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.01 - NOOP | Ignorar Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.01 - EXEC | Chamar Extrator IA": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.01 - RESPOND | OK ao Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.01 - EXEC | Chamar Handler Comandos": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.01 - RESPOND | OK ao Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "27325138-92fe-48b2-a55e-5b8133d83746",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "98a7f76cbff973591af08e09b5be2fed14b55b37d878782c0638229a94477203"
+  },
+  "nodeGroups": [],
+  "id": "z0F4H4NUyLErFjZ7",
+  "tags": []
+}

@@ -1,0 +1,364 @@
+{
+  "name": "WF-DPV.02 - Extrator IA [dep-viagem]",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "55e9b2b0-69ed-4eca-83c7-49de3cb0a9d1",
+      "name": "WF-DPV.02 - TRIGGER | Iniciar Extração",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT COUNT(*) as total FROM despesas_viagem WHERE message_id = '{{ $json.messageId }}'",
+        "options": {}
+      },
+      "id": "40fd5c85-9c6c-4646-8c74-d09dab725109",
+      "name": "WF-DPV.02 - DB | Verificar NF Duplicada",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        96
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.total }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              },
+              "rightValue": 0
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "249cc695-a610-486b-a566-43efed33f199",
+      "name": "WF-DPV.02 - IF | NF Ja Registrada?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $(\"WF-DPV.02 - TRIGGER | Iniciar Extração\").item.json.instanceName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $(\"WF-DPV.02 - TRIGGER | Iniciar Extração\").item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "⚠️ Essa nota fiscal já foi registrada anteriormente. Nenhuma ação necessária."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "24c6f9e1-23ce-4ffd-9477-91056385ecaf",
+      "name": "WF-DPV.02 - HTTP | Avisar NF Duplicada",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $(\"WF-DPV.02 - TRIGGER | Iniciar Extração\").item.json.imageUrl }}",
+        "options": {}
+      },
+      "id": "dff72a42-64c2-448f-8661-79c2c2320ba5",
+      "name": "WF-DPV.02 - HTTP | Baixar Imagem da NF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        672,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \"Analise a nota fiscal e extraia todos os dados. Categorize como: alimentacao, combustivel, hospedagem, transporte, pedagio ou outros.\" }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "fd98a2be-928a-4095-80fe-0b28e5c30659",
+      "name": "WF-DPV.02 - AGENT | Extrair Dados da NF",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        896,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "model": "={{ \"claude-opus-4-5\" }}",
+        "options": {}
+      },
+      "id": "0aa72817-8587-48c5-8118-159d7a501e19",
+      "name": "WF-DPV.02 - LLM | Claude Vision",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        832,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{ \"estabelecimento\": \"Nome do estabelecimento\", \"cnpj\": \"00.000.000/0001-00\", \"valor_total\": 102.11, \"data_emissao\": \"2026-06-09\", \"categoria\": \"alimentacao\", \"itens\": [{\"descricao\": \"Item\", \"quantidade\": 1, \"valor_unitario\": 10.00, \"valor_total\": 10.00}] }"
+      },
+      "id": "aeadade8-e406-4283-ad6b-182c1928e4a0",
+      "name": "WF-DPV.02 - PARSER | Estruturar Dados NF",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO despesas_viagem (phone, estabelecimento, cnpj, valor_total, data_emissao, categoria, itens_json, message_id, created_at) VALUES ('{{ $(\"WF-DPV.02 - TRIGGER | Iniciar Extração\").item.json.phone }}', '{{ JSON.parse($json.output).estabelecimento }}', '{{ JSON.parse($json.output).cnpj }}', {{ JSON.parse($json.output).valor_total }}, '{{ JSON.parse($json.output).data_emissao }}', '{{ JSON.parse($json.output).categoria }}', '{{ $json.output }}', '{{ $(\"WF-DPV.02 - TRIGGER | Iniciar Extração\").item.json.messageId }}', NOW()) RETURNING id",
+        "options": {}
+      },
+      "id": "a8391ca9-465c-43fe-9c0b-6cc00f166dbc",
+      "name": "WF-DPV.02 - DB | Salvar Despesa no Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1248,
+        192
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT nome FROM funcionarios WHERE phone = '{{ $(\"WF-DPV.02 - TRIGGER | Iniciar Extração\").item.json.phone }}' LIMIT 1",
+        "options": {}
+      },
+      "id": "924d78bd-8ea1-4d41-9745-16af81d4d8b4",
+      "name": "WF-DPV.02 - DB | Buscar Nome Funcionario",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1472,
+        192
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $(\"WF-DPV.02 - TRIGGER | Iniciar Extração\").item.json.instanceName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $(\"WF-DPV.02 - TRIGGER | Iniciar Extração\").item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"✅ Despesa registrada\" + ($(\"WF-DPV.02 - DB | Buscar Nome Funcionario\").item.json.nome ? \", \" + $(\"WF-DPV.02 - DB | Buscar Nome Funcionario\").item.json.nome + \"!\" : \"!\") + \"\\n\\n📍 \" + JSON.parse($(\"WF-DPV.02 - AGENT | Extrair Dados da NF\").item.json.output).estabelecimento + \"\\n💰 R$ \" + JSON.parse($(\"WF-DPV.02 - AGENT | Extrair Dados da NF\").item.json.output).valor_total.toFixed(2) + \"\\n🏷️ \" + JSON.parse($(\"WF-DPV.02 - AGENT | Extrair Dados da NF\").item.json.output).categoria + \"\\n📅 \" + JSON.parse($(\"WF-DPV.02 - AGENT | Extrair Dados da NF\").item.json.output).data_emissao }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bf4e5bf9-5c6f-463a-ae88-45bdc4c9a829",
+      "name": "WF-DPV.02 - HTTP | Enviar Confirmacao WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1696,
+        192
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WF-DPV.02 - TRIGGER | Iniciar Extração": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.02 - DB | Verificar NF Duplicada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.02 - DB | Verificar NF Duplicada": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.02 - IF | NF Ja Registrada?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.02 - IF | NF Ja Registrada?": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.02 - HTTP | Avisar NF Duplicada",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.02 - HTTP | Baixar Imagem da NF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.02 - HTTP | Baixar Imagem da NF": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.02 - AGENT | Extrair Dados da NF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.02 - AGENT | Extrair Dados da NF": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.02 - DB | Salvar Despesa no Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.02 - LLM | Claude Vision": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "WF-DPV.02 - AGENT | Extrair Dados da NF",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.02 - PARSER | Estruturar Dados NF": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "WF-DPV.02 - AGENT | Extrair Dados da NF",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.02 - DB | Salvar Despesa no Postgres": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.02 - DB | Buscar Nome Funcionario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.02 - DB | Buscar Nome Funcionario": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.02 - HTTP | Enviar Confirmacao WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "dfaf4b5e-ef88-4681-be22-69995dc99b58",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "98a7f76cbff973591af08e09b5be2fed14b55b37d878782c0638229a94477203"
+  },
+  "nodeGroups": [],
+  "id": "31hBkBVq6rduQKXM",
+  "tags": []
+}

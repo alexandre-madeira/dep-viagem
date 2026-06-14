@@ -1,0 +1,247 @@
+{
+  "name": "WF-DPV.04 - Relatorio PDF [dep-viagem]",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c8fb2cce-5931-4275-9c04-19796a615df5",
+      "name": "WF-DPV.04 - TRIGGER | Gerar Relatorio",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT d.*, v.data_inicio, v.data_fim FROM despesas_viagem d JOIN viagens v ON v.phone = d.phone WHERE d.phone = '{{ $json.phone }}' AND v.id = {{ $json.viagem_id ?? \"(SELECT id FROM viagens WHERE phone = '\" + $json.phone + \"' ORDER BY created_at DESC LIMIT 1)\" }} ORDER BY d.data_emissao ASC",
+        "options": {}
+      },
+      "id": "b169e64d-eb30-4102-8bd8-71031ed9e983",
+      "name": "WF-DPV.04 - DB | Buscar Despesas da Viagem",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "despesas",
+        "options": {}
+      },
+      "id": "8d99584c-90a2-4a32-98d7-3f59a0cfa060",
+      "name": "WF-DPV.04 - AGG | Consolidar Despesas",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst despesas = $input.first().json.despesas;\nconst phone = $('WF-DPV.04 - TRIGGER | Gerar Relatorio').first().json.phone;\n\nconst totalGeral = despesas.reduce((acc, d) => acc + parseFloat(d.valor_total), 0);\nconst dataInicio = despesas[0]?.data_inicio ? new Date(despesas[0].data_inicio).toLocaleDateString('pt-BR') : 'N/A';\nconst dataFim = despesas[0]?.data_fim ? new Date(despesas[0].data_fim).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');\n\nconst categorias = despesas.reduce((acc, d) => {\n  const cat = d.categoria || 'outros';\n  acc[cat] = (acc[cat] || 0) + parseFloat(d.valor_total);\n  return acc;\n}, {});\n\nconst catLabels = { alimentacao: '🍽️ Alimentação', combustivel: '⛽ Combustível', hospedagem: '🏨 Hospedagem', transporte: '🚗 Transporte', pedagio: '🛣️ Pedágio', outros: '📦 Outros' };\n\nconst linhasDespesas = despesas.map(d => `\n  <tr>\n    <td>${new Date(d.data_emissao).toLocaleDateString('pt-BR')}</td>\n    <td>${d.estabelecimento}</td>\n    <td>${catLabels[d.categoria] || d.categoria}</td>\n    <td style=\"text-align:right\">R$ ${parseFloat(d.valor_total).toFixed(2)}</td>\n  </tr>\n`).join('');\n\nconst linhasCategorias = Object.entries(categorias).map(([cat, val]) => `\n  <tr>\n    <td><strong>${catLabels[cat] || cat}</strong></td>\n    <td style=\"text-align:right\"><strong>R$ ${val.toFixed(2)}</strong></td>\n  </tr>\n`).join('');\n\nconst html = `<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<style>\n  body { font-family: Arial, sans-serif; margin: 40px; color: #333; }\n  h1 { color: #1a5276; border-bottom: 2px solid #1a5276; padding-bottom: 10px; }\n  h2 { color: #2874a6; margin-top: 30px; }\n  table { width: 100%; border-collapse: collapse; margin-top: 10px; }\n  th { background: #1a5276; color: white; padding: 8px; text-align: left; }\n  td { padding: 8px; border-bottom: 1px solid #ddd; }\n  tr:nth-child(even) { background: #f2f2f2; }\n  .total-row { background: #d5e8d4 !important; font-weight: bold; font-size: 16px; }\n  .header-info { display: flex; gap: 40px; margin: 20px 0; background: #eaf4ff; padding: 15px; border-radius: 8px; }\n  .header-info div { flex: 1; }\n  .label { font-size: 12px; color: #666; }\n  .value { font-size: 16px; font-weight: bold; }\n</style>\n</head>\n<body>\n<h1>📋 Relatório de Despesas de Viagem</h1>\n<div class=\"header-info\">\n  <div><div class=\"label\">Funcionário (Celular)</div><div class=\"value\">${phone}</div></div>\n  <div><div class=\"label\">Data Início</div><div class=\"value\">${dataInicio}</div></div>\n  <div><div class=\"label\">Data Fim</div><div class=\"value\">${dataFim}</div></div>\n  <div><div class=\"label\">Total Notas</div><div class=\"value\">${despesas.length}</div></div>\n</div>\n\n<h2>Resumo por Categoria</h2>\n<table>\n  <tr><th>Categoria</th><th style=\"text-align:right\">Total</th></tr>\n  ${linhasCategorias}\n  <tr class=\"total-row\"><td>TOTAL GERAL</td><td style=\"text-align:right\">R$ ${totalGeral.toFixed(2)}</td></tr>\n</table>\n\n<h2>Detalhamento das Despesas</h2>\n<table>\n  <tr><th>Data</th><th>Estabelecimento</th><th>Categoria</th><th style=\"text-align:right\">Valor</th></tr>\n  ${linhasDespesas}\n  <tr class=\"total-row\"><td colspan=\"3\">TOTAL</td><td style=\"text-align:right\">R$ ${totalGeral.toFixed(2)}</td></tr>\n</table>\n\n<p style=\"margin-top:40px; font-size:12px; color:#888;\">Relatório gerado em ${new Date().toLocaleString('pt-BR')} | Sistema dep-viagem</p>\n</body>\n</html>`;\n\nreturn [{ json: { html, phone, totalGeral, dataInicio, dataFim, qtdNotas: despesas.length } }];\n"
+      },
+      "id": "25d5a82d-2c6c-435b-a682-8246839e81da",
+      "name": "WF-DPV.04 - CODE | Gerar HTML do Relatorio",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://gotenberg:3000/forms/chromium/convert/html",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "files"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b7964174-530e-447b-b6de-22e26888a4ab",
+      "name": "WF-DPV.04 - HTTP | Converter HTML para PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        896,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ \"http://evolution-api:8080/message/sendMedia/\" + $(\"WF-DPV.04 - TRIGGER | Gerar Relatorio\").item.json.instanceName }}",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $(\"WF-DPV.04 - TRIGGER | Gerar Relatorio\").item.json.phone }}"
+            },
+            {
+              "name": "mediatype",
+              "value": "document"
+            },
+            {
+              "name": "caption",
+              "value": "={{ \"📊 Relatório de Despesas\\n\\nPeríodo: \" + $(\"WF-DPV.04 - CODE | Gerar HTML do Relatorio\").item.json.dataInicio + \" a \" + $(\"WF-DPV.04 - CODE | Gerar HTML do Relatorio\").item.json.dataFim + \"\\nTotal: R$ \" + $(\"WF-DPV.04 - CODE | Gerar HTML do Relatorio\").item.json.totalGeral.toFixed(2) + \"\\nNotas: \" + $(\"WF-DPV.04 - CODE | Gerar HTML do Relatorio\").item.json.qtdNotas }}"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "media"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "43b6e040-19ec-4961-8854-3c4e42fc7adb",
+      "name": "WF-DPV.04 - HTTP | Enviar PDF pelo WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1120,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $('WF-DPV.04 - TRIGGER | Gerar Relatorio').item.json.instanceName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.04 - TRIGGER | Gerar Relatorio').item.json.gestorPhone ?? '' }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"📋 Relatório de despesas gerado\\n\\n👤 Funcionário: \" + $('WF-DPV.04 - TRIGGER | Gerar Relatorio').item.json.phone + \"\\n💰 Total: R$ \" + $('WF-DPV.04 - CODE | Gerar HTML do Relatorio').item.json.totalGeral.toFixed(2) + \"\\n🗒️ Notas: \" + $('WF-DPV.04 - CODE | Gerar HTML do Relatorio').item.json.qtdNotas + \"\\n📅 \" + $('WF-DPV.04 - CODE | Gerar HTML do Relatorio').item.json.dataInicio + \" → \" + $('WF-DPV.04 - CODE | Gerar HTML do Relatorio').item.json.dataFim }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0800160f-3251-44ad-8b07-eb7d5ccd6126",
+      "name": "WF-DPV.04 - HTTP | Notificar Gestor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WF-DPV.04 - TRIGGER | Gerar Relatorio": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.04 - DB | Buscar Despesas da Viagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.04 - DB | Buscar Despesas da Viagem": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.04 - AGG | Consolidar Despesas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.04 - AGG | Consolidar Despesas": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.04 - CODE | Gerar HTML do Relatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.04 - CODE | Gerar HTML do Relatorio": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.04 - HTTP | Converter HTML para PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.04 - HTTP | Converter HTML para PDF": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.04 - HTTP | Enviar PDF pelo WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.04 - HTTP | Enviar PDF pelo WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.04 - HTTP | Notificar Gestor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "22ce7333-dbb2-4b89-8dfc-63efffa5366f",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "98a7f76cbff973591af08e09b5be2fed14b55b37d878782c0638229a94477203"
+  },
+  "nodeGroups": [],
+  "id": "acKIy44sUfDgOR2E",
+  "tags": []
+}

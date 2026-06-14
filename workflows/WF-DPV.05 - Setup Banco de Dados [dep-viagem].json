@@ -1,0 +1,150 @@
+{
+  "name": "WF-DPV.05 - Setup Banco de Dados [dep-viagem]",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "db4bd398-ee5f-4aa9-8e15-004e2c8b0937",
+      "name": "WF-DPV.05 - TRIGGER | Setup Banco de Dados",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Tabela viagens (já existe, adicionar campo nome_viagem)\nALTER TABLE viagens ADD COLUMN IF NOT EXISTS nome_viagem VARCHAR(100);\nCREATE INDEX IF NOT EXISTS idx_viagens_phone_nome ON viagens(phone, nome_viagem);",
+        "options": {}
+      },
+      "id": "9f23784d-a288-43cc-9fc9-495cb9fc47be",
+      "name": "WF-DPV.05 - DB | Criar Tabela Viagens",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Tabela despesas_viagem (já existe)\nCREATE INDEX IF NOT EXISTS idx_despesas_phone ON despesas_viagem(phone);\n\n-- Nova tabela funcionarios\nCREATE TABLE IF NOT EXISTS funcionarios (\n  id SERIAL PRIMARY KEY,\n  phone VARCHAR(20) NOT NULL UNIQUE,\n  nome VARCHAR(100) NOT NULL,\n  empresa VARCHAR(100),\n  ativo BOOLEAN NOT NULL DEFAULT true,\n  created_at TIMESTAMP NOT NULL DEFAULT NOW()\n);\nCREATE INDEX IF NOT EXISTS idx_funcionarios_phone ON funcionarios(phone);",
+        "options": {}
+      },
+      "id": "1c473d44-c4f7-4e8f-9808-53e1fed1e8ba",
+      "name": "WF-DPV.05 - DB | Criar Tabela Despesas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        448,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "status",
+              "name": "status",
+              "value": "Banco de dados configurado com sucesso!",
+              "type": "string"
+            },
+            {
+              "id": "tabelas",
+              "name": "tabelas",
+              "value": "viagens, despesas_viagem",
+              "type": "string"
+            },
+            {
+              "id": "projeto",
+              "name": "projeto",
+              "value": "dep-viagem [DPV]",
+              "type": "string"
+            },
+            {
+              "id": "created_at",
+              "name": "created_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cb82ae4f-db92-4285-82dc-61bdd01307fd",
+      "name": "WF-DPV.05 - SET | Confirmar Setup Concluido",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WF-DPV.05 - TRIGGER | Setup Banco de Dados": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - DB | Criar Tabela Viagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.05 - DB | Criar Tabela Viagens": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - DB | Criar Tabela Despesas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.05 - DB | Criar Tabela Despesas": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - SET | Confirmar Setup Concluido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "c608e6ae-51ea-498d-a43a-06b2279ae933",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "98a7f76cbff973591af08e09b5be2fed14b55b37d878782c0638229a94477203"
+  },
+  "nodeGroups": [],
+  "id": "eIm1nVXe1qnCKhYz",
+  "tags": []
+}

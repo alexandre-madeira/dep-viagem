@@ -1,0 +1,393 @@
+{
+  "name": "WF-DPV.03 - Controle de Viagem [dep-viagem]",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "5405cdf0-74c9-41f1-834d-4e8d672de3ce",
+      "name": "WF-DPV.03 - TRIGGER | Iniciar Controle Viagem",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cmd",
+              "name": "comando",
+              "value": "={{ $json.caption.toUpperCase().trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "9ac9bad6-4a2a-448e-8940-c037ea37be56",
+      "name": "WF-DPV.03 - SET | Normalizar Comando",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.comando }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "INICIAR"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.comando }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "ENCERRAR"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.comando }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "RELATORIO"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Ajuda"
+        }
+      },
+      "id": "eeae9645-4a4b-49b9-9cc5-ea96359df803",
+      "name": "WF-DPV.03 - SWITCH | Tipo de Comando",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ \"INSERT INTO viagens (phone, nome_viagem, data_inicio, status, created_at, updated_at) VALUES ('\" + $json.phone + \"', '\" + ($json.comando.replace('INICIAR', '').trim() || 'Viagem ' + $now.toFormat('MMM/yy')) + \"', NOW(), 'ativa', NOW(), NOW()) RETURNING id, nome_viagem, data_inicio\" }}",
+        "options": {}
+      },
+      "id": "73a3d6a6-e4a0-4f49-a4f2-e5be9d5265a8",
+      "name": "WF-DPV.03 - DB | Iniciar Viagem no Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.instanceName }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"🚀 Viagem iniciada em \" + $now.toFormat(\"dd/MM/yyyy HH:mm\") + \"!\\n\\nEnvie fotos das suas notas fiscais para registrar as despesas.\\n\\nComandos disponíveis:\\n📊 RELATORIO - gerar relatório\\n🏁 ENCERRAR VIAGEM - finalizar viagem\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bc268694-1587-4e42-aeda-411c1ef5b834",
+      "name": "WF-DPV.03 - HTTP | Confirmar Inicio Viagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        896,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE viagens SET data_fim = NOW(), status = 'encerrada' WHERE phone = '{{ $json.phone }}' AND status = 'ativa' RETURNING id, data_inicio, data_fim",
+        "options": {}
+      },
+      "id": "c8340d2b-eda7-436f-8127-d430a0041112",
+      "name": "WF-DPV.03 - DB | Encerrar Viagem no Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        192
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.instanceName }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"🏁 Viagem encerrada!\\nInício: \" + $json.data_inicio + \"\\nFim: \" + $json.data_fim + \"\\n\\nEnvie RELATORIO para receber o PDF de prestação de contas.\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0cfc22b3-1554-42bc-805c-7bb71e103d82",
+      "name": "WF-DPV.03 - HTTP | Confirmar Encerramento Viagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        896,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT v.id as viagem_id, v.data_inicio, v.data_fim, SUM(d.valor_total) as total, COUNT(d.id) as qtd_notas FROM viagens v LEFT JOIN despesas_viagem d ON d.phone = v.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) WHERE v.phone = '{{ $json.phone }}' AND v.status = 'ativa' GROUP BY v.id, v.data_inicio, v.data_fim",
+        "options": {}
+      },
+      "id": "d2dce8cc-69e0-4154-b678-cc9abb0f4ccd",
+      "name": "WF-DPV.03 - DB | Buscar Total Despesas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        384
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "3z35ZPyLInGNam1Y",
+          "name": "DB_n8n_contratos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "acKIy44sUfDgOR2E"
+        },
+        "options": {}
+      },
+      "id": "bc3abe8c-d657-4b33-9318-468dc376989e",
+      "name": "WF-DPV.03 - EXEC | Gerar Relatorio PDF",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ \"http://evolution-api:8080/message/sendText/\" + $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.instanceName }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "📋 Comandos disponíveis:\\n\\n🚀 INICIAR VIAGEM\\n🏁 ENCERRAR VIAGEM\\n📊 RELATORIO\\n\\nOu envie uma foto de nota fiscal para registrar despesa."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bee06228-a663-48cb-848e-8d31472c74c1",
+      "name": "WF-DPV.03 - HTTP | Enviar Mensagem de Ajuda",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        672,
+        576
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WF-DPV.03 - TRIGGER | Iniciar Controle Viagem": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - SET | Normalizar Comando",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - SET | Normalizar Comando": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - SWITCH | Tipo de Comando",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - SWITCH | Tipo de Comando": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - DB | Iniciar Viagem no Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Encerrar Viagem no Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Buscar Total Despesas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Enviar Mensagem de Ajuda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Iniciar Viagem no Postgres": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Confirmar Inicio Viagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Encerrar Viagem no Postgres": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Confirmar Encerramento Viagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Buscar Total Despesas": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - EXEC | Gerar Relatorio PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "7eeba35c-06bb-4baf-8257-515c45db7c81",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "98a7f76cbff973591af08e09b5be2fed14b55b37d878782c0638229a94477203"
+  },
+  "nodeGroups": [],
+  "id": "ruf039UAwh9KqIZo",
+  "tags": []
+}
