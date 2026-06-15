@@ -144,13 +144,45 @@ CREATE TABLE IF NOT EXISTS cadastros_pendentes (
 
 ---
 
-### P09 — Teste end-to-end completo
-**O que fazer:** Enviar NF real pelo WhatsApp e verificar todo o fluxo  
-**Checklist:**
-- [ ] Foto NF → Claude Vision extrai dados → INSERT em despesas_viagem
-- [ ] Comando INICIAR/ENCERRAR → INSERT/UPDATE em viagens
-- [ ] Comando RELATORIO → PDF gerado via Gotenberg → enviado pelo WhatsApp
-- [ ] Painel financeiro → dados visíveis → PDF baixável
+### P09 — Diagnóstico e2e concluído (14/06/2026)
+**Resultado:**
+- Gotenberg: ✅ UP (`chromium: up`, testado via `node` dentro do container n8n)
+- Evolution API: ✅ Servidor acessível (`https://evolution.solucaomadeira.com` responde 401 = chave errada, server OK)
+- WF-DPV.01: ✅ Ativo e recebendo mensagens reais (5 execuções hoje)
+- WF-DPV.06: ✅ API diz ativo / ❌ webhook retorna 404 (nunca executou)
+- Falhas encontradas → mapeadas em P11, P12, P13
+
+---
+
+### P11 — VARCHAR(100) overflow no WF-DPV.01
+**Onde:** nó `WF-DPV.01 - EXEC | Chamar Handler Comandos` → erro PostgreSQL  
+**Erro exato:** `value too long for type character varying(100)`  
+**Causa provável:** texto da mensagem WhatsApp passada como `nome_viagem` excede 100 chars  
+**Execuções afetadas:** IDs 39263, 39265, 39267, 39269, 39271 (todas hoje)  
+**Fix:** truncar o valor antes do INSERT, ou aumentar `nome_viagem VARCHAR(100) → VARCHAR(255)` via migration  
+**Migration:** `ALTER TABLE viagens ALTER COLUMN nome_viagem TYPE VARCHAR(255);`
+
+---
+
+### P12 — WF-DPV.06 webhook 404 apesar de `active: true`
+**Onde:** `POST https://n8n.solucaomadeira.com/webhook/dpv-financeiro/auth`  
+**Erro:** `webhook "POST dpv-financeiro/auth" is not registered`  
+**Evidência:** 0 execuções no histórico  
+**Fix provável:** desativar e reativar o workflow via REST API para forçar re-registro do webhook  
+```powershell
+$s = Get-Content "$env:USERPROFILE\.claude\settings.json" | ConvertFrom-Json
+$key = $s.mcpServers.n8n.headers.Authorization -replace "Bearer ", ""
+$hdr = @{"X-N8N-API-KEY"=$key; "Content-Type"="application/json"}
+Invoke-WebRequest "https://n8n.solucaomadeira.com/api/v1/workflows/fRA3D3njIJOWmtqU/deactivate" -Method POST -Headers $hdr -UseBasicParsing
+Start-Sleep 2
+Invoke-WebRequest "https://n8n.solucaomadeira.com/api/v1/workflows/fRA3D3njIJOWmtqU/activate" -Method POST -Headers $hdr -UseBasicParsing
+```
+
+---
+
+### P13 — Painel financeiro bloqueado por P12
+**Bloqueante:** P12 (webhook 404)  
+**Após resolver P12:** testar com `POST /webhook/dpv-financeiro/auth` + nova senha
 
 ---
 
@@ -313,6 +345,6 @@ C:\GITHUB\DPV\
 - [x] P06 — Senha do painel financeiro atualizada via REST API (WF-DPV.06)
 - [ ] P07 — JSONs dos workflows exportados e comitados
 - [ ] P08 — Cadastro de usuários com validação por e-mail
-- [ ] P09 — Teste end-to-end realizado
+- [x] P09 — Diagnóstico e2e concluído (14/06/2026) — falhas mapeadas, ver P11–P13 abaixo
 - [x] P10 — MCP global descartado. Acesso n8n via REST API direta (JWT em settings.json)
-- [ ] WF-DPV.01 ativado (toggle ON)
+- [x] WF-DPV.01 ativado (toggle ON) — recebendo mensagens (5 execuções registradas)
