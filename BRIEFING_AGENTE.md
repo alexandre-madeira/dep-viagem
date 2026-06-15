@@ -52,8 +52,13 @@ filtrar, aprovar e baixar relatórios.
 - **Evolution API:** `HEADER_API_EVOLUTION_ENVIO` (ID: `Ka0C8J4zfOklD1lw`) — instância `sofia`
 - **MailerSend:** `MAILERSEND - Header Auth account` (ID: `hx3Z9csTHPS00ghb`) — domínio trial testado e funcionando
 - **SMTP:** NÃO usar — VPS bloqueia portas 465/587 de saída em containers Docker
-- **n8n REST API:** ✅ JWT configurado no `settings.json` do Claude Code — 250 workflows acessíveis via `X-N8N-API-KEY`
-- **n8n MCP `/mcp-server/http`:** ⚠️ Endpoint ativo, mas JWT do REST API é rejeitado — requer investigação via SSH (ver Pendências P10)
+- **n8n REST API:** ✅ Confirmado — JWT em `C:\Users\Alexandre\.claude\settings.json` (campo `mcpServers.n8n.headers.Authorization`). Usar como `X-N8N-API-KEY` nas chamadas REST. Exemplo:
+  ```powershell
+  $s = Get-Content "$env:USERPROFILE\.claude\settings.json" | ConvertFrom-Json
+  $key = $s.mcpServers.n8n.headers.Authorization -replace "Bearer ", ""
+  Invoke-WebRequest "https://n8n.solucaomadeira.com/api/v1/workflows?limit=250" -Headers @{"X-N8N-API-KEY"=$key}
+  ```
+- **n8n MCP global:** ✖ Não usar. n8n 2.25.7 usa MCP por workflow (nó "MCP Server Trigger"), não endpoint global. O `/mcp-server/http` rejeita o JWT do REST API. Solução: REST API direta é suficiente.
 
 ---
 
@@ -306,5 +311,5 @@ C:\GITHUB\DPV\
 - [ ] P07 — JSONs dos workflows exportados e comitados
 - [ ] P08 — Cadastro de usuários com validação por e-mail
 - [ ] P09 — Teste end-to-end realizado
-- [ ] P10 — MCP `/mcp-server/http` autenticando (JWT rejeitado — ver P10 acima)
+- [x] P10 — MCP global descartado. Acesso n8n via REST API direta (JWT em settings.json)
 - [ ] WF-DPV.01 ativado (toggle ON)
