@@ -89,11 +89,14 @@ despesas_viagem (id, phone, estabelecimento, cnpj, valor_total, data_emissao,
 
 ---
 
-### P06 — Trocar senha do painel financeiro
-**Senha padrão atual:** `SENHA_CONFIGURADA_NO_N8N`  
-**Onde trocar:** WF-DPV.06 → nó `IF | Autenticacao Valida?` → campo `rightValue`
+### ~~P06 — Trocar senha do painel financeiro~~ ✅ RESOLVIDO
+**Resolvido em:** 14/06/2026 via REST API PUT /api/v1/workflows/fRA3D3njIJOWmtqU  
+**Senha `SENHA_CONFIGURADA_NO_N8N` substituída.** Nova senha no gerenciador de senhas do usuário.  
+**Script reutilizável:** `scripts/atualizar_senha_painel.ps1` (sem valor hardcoded)  
+**Nota técnica:** PUT requer `settings: {executionOrder}` apenas — campos extras (`binaryMode`, `availableInMCP`) são rejeitados pela API.
 
 ```bash
+# referência histórica — já executado
 n8n:update_workflow workflowId=fRA3D3njIJOWmtqU
   type: setNodeParameter
   nodeName: "WF-DPV.06 - IF | Autenticacao Valida?"
@@ -307,7 +310,7 @@ C:\GITHUB\DPV\
 - [x] P02 — API Key Evolution configurada (credencial Ka0C8J4zfOklD1lw)
 - [x] P03 — Credencial Anthropic criada no n8n (ID: A7kQbA9mH4B54bS4)
 - [x] P04 — Gotenberg rodando (container gotenberg, rede easypanel)
-- [ ] P06 — Senha do painel trocada (ainda `SENHA_CONFIGURADA_NO_N8N`)
+- [x] P06 — Senha do painel financeiro atualizada via REST API (WF-DPV.06)
 - [ ] P07 — JSONs dos workflows exportados e comitados
 - [ ] P08 — Cadastro de usuários com validação por e-mail
 - [ ] P09 — Teste end-to-end realizado
