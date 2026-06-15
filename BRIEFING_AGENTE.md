@@ -1,6 +1,6 @@
 # BRIEFING_AGENTE.md — dep-viagem [DPV]
 Instruções para o agente Claude Code continuar a execução.
-Gerado em: 09/06/2026
+Gerado em: 09/06/2026 | Atualizado em: 14/06/2026
 
 ---
 
@@ -52,6 +52,8 @@ filtrar, aprovar e baixar relatórios.
 - **Evolution API:** `HEADER_API_EVOLUTION_ENVIO` (ID: `Ka0C8J4zfOklD1lw`) — instância `sofia`
 - **MailerSend:** `MAILERSEND - Header Auth account` (ID: `hx3Z9csTHPS00ghb`) — domínio trial testado e funcionando
 - **SMTP:** NÃO usar — VPS bloqueia portas 465/587 de saída em containers Docker
+- **n8n REST API:** ✅ JWT configurado no `settings.json` do Claude Code — 250 workflows acessíveis via `X-N8N-API-KEY`
+- **n8n MCP `/mcp-server/http`:** ⚠️ Endpoint ativo, mas JWT do REST API é rejeitado — requer investigação via SSH (ver Pendências P10)
 
 ---
 
@@ -141,6 +143,32 @@ CREATE TABLE IF NOT EXISTS cadastros_pendentes (
 - [ ] Comando INICIAR/ENCERRAR → INSERT/UPDATE em viagens
 - [ ] Comando RELATORIO → PDF gerado via Gotenberg → enviado pelo WhatsApp
 - [ ] Painel financeiro → dados visíveis → PDF baixável
+
+---
+
+### P10 — MCP do n8n: JWT rejeitado no endpoint `/mcp-server/http`
+**O que é:** A API REST do n8n funciona com o JWT como `X-N8N-API-KEY`. Mas o endpoint MCP `/mcp-server/http` exige `Authorization: Bearer` e rejeita o mesmo JWT com `{"message":"Unauthorized"}`.  
+**Diagnóstico via SSH:**
+```bash
+# 1. Identificar container n8n
+docker ps | grep n8n
+
+# 2. Checar env vars MCP no container web
+docker exec {n8n_web} env | grep -iE 'MCP|VERSION|API'
+```
+**Resultado esperado:** procurar variáveis como `N8N_MCP_*` ou confirmar versão do n8n.  
+**Alternativa se o built-in MCP não funcionar:** usar n8n-mcp como processo local (stdio):
+```json
+{
+  "mcpServers": {
+    "n8n": {
+      "command": "npx",
+      "args": ["-y", "n8n-mcp"],
+      "env": { "N8N_HOST": "https://n8n.solucaomadeira.com", "N8N_API_KEY": "JWT_AQUI" }
+    }
+  }
+}
+```
 
 ---
 
@@ -278,4 +306,5 @@ C:\GITHUB\DPV\
 - [ ] P07 — JSONs dos workflows exportados e comitados
 - [ ] P08 — Cadastro de usuários com validação por e-mail
 - [ ] P09 — Teste end-to-end realizado
+- [ ] P10 — MCP `/mcp-server/http` autenticando (JWT rejeitado — ver P10 acima)
 - [ ] WF-DPV.01 ativado (toggle ON)
