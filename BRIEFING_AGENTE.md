@@ -25,9 +25,10 @@ filtrar, aprovar e baixar relatórios.
 |---|---|---|
 | Orquestração | n8n self-hosted | https://n8n.solucaomadeira.com |
 | WhatsApp | Evolution API self-hosted | http://evolution-api:8080 |
-| IA / OCR | Anthropic Claude Vision | claude-opus-4-5 |
-| Banco | PostgreSQL | credencial: DB_dep_viagem (ID: ggViIQGkepjwuOdv) |
-| PDF | Gotenberg | http://gotenberg:3000 |
+| IA / OCR | Anthropic Claude Vision | claude-opus-4-5, credencial: ANTHROPIC_API_KEY (ID: A7kQbA9mH4B54bS4) |
+| Banco | PostgreSQL | credencial: DB_dep_viagem (ID: ggViIQGkepjwuOdv), banco: dep_viagem |
+| PDF | Gotenberg | http://gotenberg:3000, container gotenberg na rede easypanel |
+| E-mail | MailerSend (HTTP API) | credencial: MAILERSEND - Header Auth account (ID: hx3Z9csTHPS00ghb) |
 | Painel | React JSX | arquivo: painel/painel-financeiro-dpv.jsx |
 | Versionamento | GitHub | alexandre-madeira/dep-viagem |
 
@@ -45,9 +46,12 @@ filtrar, aprovar e baixar relatórios.
 | WF-DPV.06 - Painel Financeiro | fRA3D3njIJOWmtqU | https://n8n.solucaomadeira.com/workflow/fRA3D3njIJOWmtqU |
 
 ### Credenciais conhecidas
-- **Postgres que funciona:** `DB_dep_viagem` (ID: `ggViIQGkepjwuOdv`)
+- **Postgres que funciona:** `DB_dep_viagem` (ID: `ggViIQGkepjwuOdv`) — banco dedicado `dep_viagem`
 - **Postgres que NÃO funcionam:** DB_proj_solu, Postgres_bd_agente, db_prestconta_db, DB_supportfaqagent
-- **Anthropic:** ainda não criada no n8n — pendência P03
+- **Anthropic:** `ANTHROPIC_API_KEY` (ID: `A7kQbA9mH4B54bS4`) — já configurada no WF-DPV.02
+- **Evolution API:** `HEADER_API_EVOLUTION_ENVIO` (ID: `Ka0C8J4zfOklD1lw`) — instância `sofia`
+- **MailerSend:** `MAILERSEND - Header Auth account` (ID: `hx3Z9csTHPS00ghb`) — domínio trial testado e funcionando
+- **SMTP:** NÃO usar — VPS bloqueia portas 465/587 de saída em containers Docker
 
 ---
 
@@ -66,69 +70,15 @@ despesas_viagem (id, phone, estabelecimento, cnpj, valor_total, data_emissao,
 
 ---
 
-## 5. PENDÊNCIAS CRÍTICAS (P02, P03, P04)
+## 5. PENDÊNCIAS ABERTAS
 
-### P02 — API Key da Evolution API
-**O que é:** Chave de autenticação da instância Evolution API.  
-**Onde configurar:** Em todos os nós HTTP de envio de mensagem nos workflows:
-- WF-DPV.02 → nó `HTTP | Enviar Confirmacao WhatsApp` → header `apikey`
-- WF-DPV.02 → nó `HTTP | Avisar NF Duplicada` → header `apikey`
-- WF-DPV.03 → nós `HTTP | Confirmar Inicio/Encerramento/Ajuda` → header `apikey`
-- WF-DPV.04 → nó `HTTP | Enviar PDF pelo WhatsApp` → header `apikey`
-- WF-DPV.06 → nós HTTP de notificação → header `apikey`
+### RESOLVIDAS (histórico)
 
-**Como obter:** Acessar o painel da Evolution API e copiar a apikey da instância ativa.
-
-**Como configurar via n8n API:**
-```bash
-# Para cada nó HTTP, usar n8n:update_workflow com:
-# type: "setNodeParameter"
-# path: "/headerParameters/parameters/0/value"
-# value: "SUA_API_KEY_AQUI"
-```
-
----
-
-### P03 — Credencial Anthropic no n8n
-**O que é:** API Key do Anthropic para o Claude Vision funcionar no WF-DPV.02.  
-**Onde configurar:** n8n → Credentials → New → Anthropic API  
-**Nó afetado:** WF-DPV.02 → `LLM | Claude Vision`
-
-**Como criar via n8n (se tiver acesso à API de credentials):**
-```json
-{
-  "name": "Anthropic DPV",
-  "type": "anthropicApi",
-  "data": { "apiKey": "sk-ant-XXXX" }
-}
-```
-
-**Após criar, aplicar no workflow:**
-```bash
-n8n:update_workflow workflowId=31hBkBVq6rduQKXM
-  type: setNodeCredential
-  nodeName: "WF-DPV.02 - LLM | Claude Vision"
-  credentialKey: anthropicApi
-  credentialId: <ID_GERADO>
-```
-
----
-
-### P04 — Gotenberg no Docker
-**O que é:** Serviço de conversão HTML → PDF usado no WF-DPV.04.  
-**URL esperada:** `http://gotenberg:3000`  
-**Verificar:** `curl http://gotenberg:3000/health`
-
-**Se não estiver rodando, adicionar ao docker-compose.yml:**
-```yaml
-gotenberg:
-  image: gotenberg/gotenberg:8
-  restart: unless-stopped
-  networks:
-    - the same network as n8n
-```
-
-**Após subir:** `docker-compose up -d gotenberg`
+| Pendência | O que era | Resolução |
+|---|---|---|
+| P02 | API Key Evolution nos workflows | Credencial `HEADER_API_EVOLUTION_ENVIO` (ID: Ka0C8J4zfOklD1lw) aplicada |
+| P03 | Credencial Anthropic no n8n | `ANTHROPIC_API_KEY` (ID: A7kQbA9mH4B54bS4) aplicada no WF-DPV.02 |
+| P04 | Gotenberg não estava rodando | `docker run gotenberg/gotenberg:8 --network easypanel` — container `gotenberg` ativo |
 
 ---
 
@@ -155,6 +105,42 @@ git add workflows/
 git commit -m "wf: exportar workflows DPV v1.0"
 git push
 ```
+
+---
+
+### P08 — Cadastro de usuários com validação por e-mail
+**O que é:** Novos números do WhatsApp devem se cadastrar antes de usar o sistema.  
+**Fluxo:** novo número → pede nome → pede e-mail → envia código de 6 dígitos via MailerSend → confirma código → cadastrado  
+**Tabelas a criar:**
+```sql
+-- Em: C:\GITHUB\DPV\database\migrations\ (novo arquivo v3_cadastro_usuarios.sql)
+ALTER TABLE funcionarios ADD COLUMN IF NOT EXISTS email VARCHAR(150);
+
+CREATE TABLE IF NOT EXISTS cadastros_pendentes (
+  phone       VARCHAR(20) PRIMARY KEY,
+  step        VARCHAR(30) NOT NULL DEFAULT 'aguardando_nome',
+  nome_temp   VARCHAR(100),
+  email_temp  VARCHAR(150),
+  codigo      VARCHAR(6),
+  codigo_expira TIMESTAMP,
+  tentativas  INT DEFAULT 0,
+  criado_em   TIMESTAMP DEFAULT NOW()
+);
+-- steps: aguardando_nome | aguardando_email | aguardando_confirmacao
+```
+**Onde implementar:** WF-DPV.01 → nó de switch inicial, antes de rotear para WF-DPV.02 ou WF-DPV.03  
+**Email:** MailerSend via HTTP API — credencial `MAILERSEND - Header Auth account` (ID: `hx3Z9csTHPS00ghb`)  
+**Domínio remetente:** `noreply@test-eqvygm0x5d8l0p7w.mlsender.net`
+
+---
+
+### P09 — Teste end-to-end completo
+**O que fazer:** Enviar NF real pelo WhatsApp e verificar todo o fluxo  
+**Checklist:**
+- [ ] Foto NF → Claude Vision extrai dados → INSERT em despesas_viagem
+- [ ] Comando INICIAR/ENCERRAR → INSERT/UPDATE em viagens
+- [ ] Comando RELATORIO → PDF gerado via Gotenberg → enviado pelo WhatsApp
+- [ ] Painel financeiro → dados visíveis → PDF baixável
 
 ---
 
@@ -285,10 +271,11 @@ C:\GITHUB\DPV\
 - [x] Painel React dark theme completo
 - [x] Repositório GitHub criado e com push
 - [x] Tag v1.0 publicada
-- [ ] P02 — API Key Evolution configurada
-- [ ] P03 — Credencial Anthropic criada no n8n
-- [ ] P04 — Gotenberg verificado/instalado
-- [ ] P06 — Senha do painel trocada
+- [x] P02 — API Key Evolution configurada (credencial Ka0C8J4zfOklD1lw)
+- [x] P03 — Credencial Anthropic criada no n8n (ID: A7kQbA9mH4B54bS4)
+- [x] P04 — Gotenberg rodando (container gotenberg, rede easypanel)
+- [ ] P06 — Senha do painel trocada (ainda `SENHA_CONFIGURADA_NO_N8N`)
 - [ ] P07 — JSONs dos workflows exportados e comitados
+- [ ] P08 — Cadastro de usuários com validação por e-mail
+- [ ] P09 — Teste end-to-end realizado
 - [ ] WF-DPV.01 ativado (toggle ON)
-- [ ] Teste end-to-end realizado

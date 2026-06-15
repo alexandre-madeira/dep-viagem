@@ -1,0 +1,65 @@
+{
+  "name": "TESTE EMAIL",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "id": "b8499e97-8c7c-40c9-beac-4530d1da174c",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mailersend.com/v1/email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "{ \"from\": { \"email\": \"noreply@test-eqvygm0x5d8l0p7w.mlsender.net\", \"name\": \"dep-viagem\" }, \"to\": [{ \"email\": \"alexandremade@gmail.com\" }], \"subject\": \"Teste n8n dep-viagem\", \"html\": \"<p>Teste de envio funcionando via MailerSend!</p>\" }",
+        "options": {}
+      },
+      "id": "89f052e5-a4bf-4a36-8546-b8d180935898",
+      "name": "Send Email via MailerSend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [208, 0],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "hx3Z9csTHPS00ghb",
+          "name": "MAILERSEND - Header Auth account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Send Email via MailerSend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4ba2b64c-7b5c-4838-83f6-624189fb1686",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "98a7f76cbff973591af08e09b5be2fed14b55b37d878782c0638229a94477203"
+  },
+  "nodeGroups": [],
+  "id": "TC7WgPlfXTIOLk5E",
+  "tags": []
+}

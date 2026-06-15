@@ -27,3 +27,7 @@ Thumbs.db
 dist/
 build/
 .next/
+
+# Arquivos de teste e dados operacionais locais
+nf_viagem/
+*.pdf
