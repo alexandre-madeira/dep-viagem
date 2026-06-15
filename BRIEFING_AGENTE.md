@@ -1,6 +1,6 @@
 # BRIEFING_AGENTE.md — dep-viagem [DPV]
 Instruções para o agente Claude Code continuar a execução.
-Gerado em: 09/06/2026 | Atualizado em: 14/06/2026
+Gerado em: 09/06/2026 | Atualizado em: 15/06/2026
 
 ---
 
@@ -154,28 +154,52 @@ CREATE TABLE IF NOT EXISTS cadastros_pendentes (
 
 ---
 
-### P11 — VARCHAR(100) overflow no WF-DPV.01
-**Onde:** nó `WF-DPV.01 - EXEC | Chamar Handler Comandos` → erro PostgreSQL  
-**Erro exato:** `value too long for type character varying(100)`  
-**Causa provável:** texto da mensagem WhatsApp passada como `nome_viagem` excede 100 chars  
-**Execuções afetadas:** IDs 39263, 39265, 39267, 39269, 39271 (todas hoje)  
-**Fix:** truncar o valor antes do INSERT, ou aumentar `nome_viagem VARCHAR(100) → VARCHAR(255)` via migration  
-**Migration:** `ALTER TABLE viagens ALTER COLUMN nome_viagem TYPE VARCHAR(255);`
+### ~~P11 — VARCHAR(100) overflow no WF-DPV.01~~ ✅ RESOLVIDO
+**Resolvido em:** 15/06/2026 via Adminer (ALTER TABLE)  
+**Causa:** texto da mensagem WhatsApp passada como `nome_viagem` excedia 100 chars  
+**Fix aplicado:** `ALTER TABLE viagens ALTER COLUMN nome_viagem TYPE VARCHAR(255);`  
+**Confirmado em Adminer:** coluna agora tipo `character varying(255)`  
+**Migration registrada:** `database/migrations/v3_nome_viagem_varchar255.sql`
 
 ---
 
 ### P12 — WF-DPV.06 webhook 404 apesar de `active: true`
 **Onde:** `POST https://n8n.solucaomadeira.com/webhook/dpv-financeiro/auth`  
 **Erro:** `webhook "POST dpv-financeiro/auth" is not registered`  
-**Evidência:** 0 execuções no histórico  
-**Fix provável:** desativar e reativar o workflow via REST API para forçar re-registro do webhook  
-```powershell
-$s = Get-Content "$env:USERPROFILE\.claude\settings.json" | ConvertFrom-Json
-$key = $s.mcpServers.n8n.headers.Authorization -replace "Bearer ", ""
-$hdr = @{"X-N8N-API-KEY"=$key; "Content-Type"="application/json"}
-Invoke-WebRequest "https://n8n.solucaomadeira.com/api/v1/workflows/fRA3D3njIJOWmtqU/deactivate" -Method POST -Headers $hdr -UseBasicParsing
-Start-Sleep 2
-Invoke-WebRequest "https://n8n.solucaomadeira.com/api/v1/workflows/fRA3D3njIJOWmtqU/activate" -Method POST -Headers $hdr -UseBasicParsing
+**Evidência:** 0 execuções no histórico; webhook está em `webhook_entity` no banco
+
+**Diagnóstico 15/06/2026 — Traefik routing:**
+```
+n8n.solucaomadeira.com      → n8n_n8n_start-0   (priority 49)  ← UI/API
+webhook.solucaomadeira.com  → n8n_n8n_webhook-0 (priority 53)  ← WEBHOOKS
+```
+**Hipótese confirmada:** n8n está em queue mode com container dedicado `n8n webhook`.
+O container `n8n start` (recebe tráfego de `n8n.solucaomadeira.com`) **não processa webhooks em queue mode** — isso é responsabilidade do container `n8n webhook`.  
+**Bloqueio atual:** DNS de `webhook.solucaomadeira.com` não resolve publicamente → subdomínio só existe no Traefik, sem registro A.
+
+**Observação:** restart do container n8n start retornou `Client Closed Request` (timeout, não 404), sugerindo que durante reinicialização o processo registra webhooks temporariamente.
+
+**Passos para resolver (próxima sessão):**
+
+1. Verificar modo do container via SSH:
+```bash
+docker inspect 1f3b49665522 --format '{{json .Config.Cmd}}'
+docker exec aaeb6adb74a8 env | grep -E 'EXECUTIONS|WEBHOOK|N8N_MODE'
+```
+
+2. Se confirmar queue mode, escolher uma das opções:
+   - **Opção A (recomendada):** adicionar DNS A record para `webhook.solucaomadeira.com` apontando para o IP do servidor → Traefik já está configurado para isso
+   - **Opção B:** adicionar regra Traefik roteando `n8n.solucaomadeira.com/webhook/*` → `n8n_n8n_webhook-0` com priority > 49
+   - **Opção C:** desabilitar queue mode (`EXECUTIONS_MODE=regular`) → usa só `n8n start`
+
+3. Após fix de DNS/roteamento: verificar se `webhook.solucaomadeira.com/webhook/dpv-financeiro/auth` responde, e atualizar `API_BASE` no painel React se necessário.
+
+**IDs atuais dos containers (mudam a cada restart easypanel):**
+```
+1f3b49665522 → n8n "web" (possivelmente n8n webhook)
+aaeb6adb74a8 → n8n start
+290f3f63b227 → n8n worker
+c2662cfbc077 → Traefik
 ```
 
 ---
@@ -308,7 +332,8 @@ C:\GITHUB\DPV\
 │   ├── seeds.sql               ← dados de teste
 │   └── migrations\
 │       ├── v1_criacao_inicial.sql
-│       └── v2_nome_viagem.sql
+│       ├── v2_nome_viagem.sql
+│       └── v3_nome_viagem_varchar255.sql  ← P11 fix
 ├── docs\
 │   ├── ARQUITETURA.md
 │   ├── GIT_PROCESSO.md
@@ -348,3 +373,6 @@ C:\GITHUB\DPV\
 - [x] P09 — Diagnóstico e2e concluído (14/06/2026) — falhas mapeadas, ver P11–P13 abaixo
 - [x] P10 — MCP global descartado. Acesso n8n via REST API direta (JWT em settings.json)
 - [x] WF-DPV.01 ativado (toggle ON) — recebendo mensagens (5 execuções registradas)
+- [x] P11 — nome_viagem VARCHAR(255) (migration v3 aplicada via Adminer, 15/06/2026)
+- [ ] P12 — webhook 404: Traefik tem `webhook.solucaomadeira.com` sem DNS público. Ver seção P12 para opções de fix.
+- [ ] P13 — painel financeiro: bloqueado por P12
