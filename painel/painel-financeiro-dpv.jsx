@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 // CONFIGURAÇÃO — ajuste para seu ambiente
 // ─────────────────────────────────────────────────────────────
 const CONFIG = {
-  API_BASE: "https://n8n.solucaomadeira.com/webhook/dpv-financeiro",
+  API_BASE: "https://webhook.solucaomadeira.com/webhook/dpv-financeiro",
   // Troque pela URL do seu n8n se for diferente
 };
 
@@ -38,10 +38,10 @@ function Login({ onAuth }) {
     if (!pw.trim()) return;
     setLoad(true); setErr(false);
     try {
-      const r = await fetch(`${CONFIG.API_BASE}/auth`, {
+      const r = await fetch(CONFIG.API_BASE, {
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ senha: pw }),
+        body: JSON.stringify({ acao: "auth", senha: pw }),
       });
       const d = await r.json();
       if (d.ok) { onAuth(pw); return; }
@@ -147,10 +147,10 @@ function ViagemCard({ v, senha, onAtualizar }) {
   const executar = async (tipo) => {
     setAcao(tipo);
     try {
-      const r = await fetch(`${CONFIG.API_BASE}/${tipo}`, {
+      const r = await fetch(CONFIG.API_BASE, {
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ viagem_id: v.id, phone: v.phone, senha }),
+        body: JSON.stringify({ acao: tipo, viagem_id: v.id, phone: v.phone, senha }),
       });
       if (tipo==="zip-nfs") {
         const blob = await r.blob();
@@ -324,10 +324,10 @@ function Painel({ senha, onLogout }) {
   const carregar = useCallback(async () => {
     setLoading(true); setErro(null);
     try {
-      const r = await fetch(`${CONFIG.API_BASE}/viagens`, {
+      const r = await fetch(CONFIG.API_BASE, {
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ senha }),
+        body: JSON.stringify({ acao: "viagens", senha }),
       });
       const d = await r.json();
       setViagens(d.viagens || []);
