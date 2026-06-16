@@ -1,6 +1,6 @@
 # BRIEFING_AGENTE.md — dep-viagem [DPV]
 Instruções para o agente Claude Code continuar a execução.
-Gerado em: 09/06/2026 | Atualizado em: 15/06/2026
+Gerado em: 09/06/2026 | Atualizado em: 16/06/2026
 
 ---
 
@@ -163,50 +163,48 @@ CREATE TABLE IF NOT EXISTS cadastros_pendentes (
 
 ---
 
-### P12 — WF-DPV.06 webhook 404 apesar de `active: true`
-**Onde:** `POST https://n8n.solucaomadeira.com/webhook/dpv-financeiro/auth`  
-**Erro:** `webhook "POST dpv-financeiro/auth" is not registered`  
-**Evidência:** 0 execuções no histórico; webhook está em `webhook_entity` no banco
+### ~~P12 — WF-DPV.06 webhook 404~~ ✅ RESOLVIDO (15/06/2026)
+**Causa raiz:** n8n em queue mode não faz pattern matching em paths dinâmicos (`:acao`).
+O processo `n8n webhook` faz lookup literal — `dpv-financeiro/auth` não encontra `dpv-financeiro/:acao`.
 
-**Diagnóstico 15/06/2026 — Traefik routing:**
-```
-n8n.solucaomadeira.com      → n8n_n8n_start-0   (priority 49)  ← UI/API
-webhook.solucaomadeira.com  → n8n_n8n_webhook-0 (priority 53)  ← WEBHOOKS
-```
-**Hipótese confirmada:** n8n está em queue mode com container dedicado `n8n webhook`.
-O container `n8n start` (recebe tráfego de `n8n.solucaomadeira.com`) **não processa webhooks em queue mode** — isso é responsabilidade do container `n8n webhook`.  
-**Bloqueio atual:** DNS de `webhook.solucaomadeira.com` não resolve publicamente → subdomínio só existe no Traefik, sem registro A.
+**Fixes aplicados:**
+1. DNS A record `webhook.solucaomadeira.com → 72.60.254.147` adicionado na Hostinger
+2. WF-DPV.06 webhook path: `dpv-financeiro/:acao` → `dpv-financeiro` (path estático)
+3. WF-DPV.06 SWITCH node: `$json.params.acao` → `$json.body.acao` (todas as 5 regras, via REST API)
+4. Painel React: `API_BASE` atualizado para `webhook.solucaomadeira.com`, `acao` movida para o body JSON
 
-**Observação:** restart do container n8n start retornou `Client Closed Request` (timeout, não 404), sugerindo que durante reinicialização o processo registra webhooks temporariamente.
-
-**Passos para resolver (próxima sessão):**
-
-1. Verificar modo do container via SSH:
+**Confirmado funcionando:**
 ```bash
-docker inspect 1f3b49665522 --format '{{json .Config.Cmd}}'
-docker exec aaeb6adb74a8 env | grep -E 'EXECUTIONS|WEBHOOK|N8N_MODE'
-```
-
-2. Se confirmar queue mode, escolher uma das opções:
-   - **Opção A (recomendada):** adicionar DNS A record para `webhook.solucaomadeira.com` apontando para o IP do servidor → Traefik já está configurado para isso
-   - **Opção B:** adicionar regra Traefik roteando `n8n.solucaomadeira.com/webhook/*` → `n8n_n8n_webhook-0` com priority > 49
-   - **Opção C:** desabilitar queue mode (`EXECUTIONS_MODE=regular`) → usa só `n8n start`
-
-3. Após fix de DNS/roteamento: verificar se `webhook.solucaomadeira.com/webhook/dpv-financeiro/auth` responde, e atualizar `API_BASE` no painel React se necessário.
-
-**IDs atuais dos containers (mudam a cada restart easypanel):**
-```
-1f3b49665522 → n8n "web" (possivelmente n8n webhook)
-aaeb6adb74a8 → n8n start
-290f3f63b227 → n8n worker
-c2662cfbc077 → Traefik
+curl -k -s -X POST https://webhook.solucaomadeira.com/webhook/dpv-financeiro \
+  -H "Content-Type: application/json" \
+  -d '{"acao":"auth","senha":"teste"}'
+# → {"ok":false,"erro":"Senha incorreta"}  ✅ workflow executou
 ```
 
 ---
 
-### P13 — Painel financeiro bloqueado por P12
-**Bloqueante:** P12 (webhook 404)  
-**Após resolver P12:** testar com `POST /webhook/dpv-financeiro/auth` + nova senha
+### P13 — SSL webhook.solucaomadeira.com (self-signed, bloqueia browser)
+**Problema:** Traefik router `https-n8n_n8n_webhook-0@file` tem `certificateResolver` errado.  
+**Erro no log Traefik:**
+```
+ERR Router uses a nonexistent certificate resolver
+certificateResolver=AAAAC3NzaC1lZDI1NTE5AAAAIKAqF/R5N+/BCviQpAW1kkrAiOje4fHPHTF0sJa4Sfuk
+routerName=https-n8n_n8n_webhook-0@file
+```
+O valor parece uma chave SSH em vez de `letsencrypt`. Let's Encrypt nunca emite o cert.
+
+**Para resolver:**
+1. Encontrar o arquivo de config Traefik que define o router `n8n_n8n_webhook-0`:
+```bash
+docker inspect $(docker ps --filter name=traefik -q) --format '{{json .HostConfig.Binds}}'
+# → localizar onde os arquivos de config estão montados no host
+```
+2. No arquivo encontrado, mudar `certificateResolver: AAAA...` para `certificateResolver: letsencrypt`
+3. Restart Traefik: `docker restart $(docker ps --filter name=traefik -q)`
+4. Verificar: `curl -s https://webhook.solucaomadeira.com/webhook/dpv-financeiro -d '{"acao":"auth","senha":"teste"}' -H "Content-Type: application/json"`
+
+**Bloqueante:** painel financeiro não abre no browser enquanto SSL for self-signed.  
+**Workaround temporário:** acessar `https://webhook.solucaomadeira.com` diretamente no browser, aceitar o risco de segurança, depois o painel funciona.
 
 ---
 
@@ -374,5 +372,5 @@ C:\GITHUB\DPV\
 - [x] P10 — MCP global descartado. Acesso n8n via REST API direta (JWT em settings.json)
 - [x] WF-DPV.01 ativado (toggle ON) — recebendo mensagens (5 execuções registradas)
 - [x] P11 — nome_viagem VARCHAR(255) (migration v3 aplicada via Adminer, 15/06/2026)
-- [ ] P12 — webhook 404: Traefik tem `webhook.solucaomadeira.com` sem DNS público. Ver seção P12 para opções de fix.
-- [ ] P13 — painel financeiro: bloqueado por P12
+- [x] P12 — webhook funciona: path estático, acao no body, domínio webhook.solucaomadeira.com
+- [ ] P13 — SSL self-signed em webhook.solucaomadeira.com bloqueia browser. Ver seção P13.
