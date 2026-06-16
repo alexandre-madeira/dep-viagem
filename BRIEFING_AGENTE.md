@@ -193,18 +193,22 @@ routerName=https-n8n_n8n_webhook-0@file
 ```
 O valor parece uma chave SSH em vez de `letsencrypt`. Let's Encrypt nunca emite o cert.
 
-**Para resolver:**
-1. Encontrar o arquivo de config Traefik que define o router `n8n_n8n_webhook-0`:
+**Status 16/06/2026:**
+- Arquivo de config: `/etc/easypanel/traefik/config/main.yaml` (montado em `/data` no container)
+- Fix aplicado via SSH:
 ```bash
-docker inspect $(docker ps --filter name=traefik -q) --format '{{json .HostConfig.Binds}}'
-# → localizar onde os arquivos de config estão montados no host
+sed -i 's/"certResolver": "AAAAC3[^"]*"/"certResolver": "letsencrypt"/g' /etc/easypanel/traefik/config/main.yaml
 ```
-2. No arquivo encontrado, mudar `certificateResolver: AAAA...` para `certificateResolver: letsencrypt`
-3. Restart Traefik: `docker restart $(docker ps --filter name=traefik -q)`
-4. Verificar: `curl -s https://webhook.solucaomadeira.com/webhook/dpv-financeiro -d '{"acao":"auth","senha":"teste"}' -H "Content-Type: application/json"`
+- Confirmado: `certResolver` do router `https-n8n_n8n_webhook-0` agora é `letsencrypt`
 
-**Bloqueante:** painel financeiro não abre no browser enquanto SSL for self-signed.  
-**Workaround temporário:** acessar `https://webhook.solucaomadeira.com` diretamente no browser, aceitar o risco de segurança, depois o painel funciona.
+**Próximo passo — retomar aqui:**
+```bash
+docker restart $(docker ps --filter name=traefik -q) && sleep 30 && \
+curl -s -X POST https://webhook.solucaomadeira.com/webhook/dpv-financeiro \
+  -H "Content-Type: application/json" \
+  -d '{"acao":"auth","senha":"teste"}'
+```
+Se retornar `{"ok":false,"erro":"Senha incorreta"}` sem erro SSL → P13 resolvido → testar painel no browser.
 
 ---
 
