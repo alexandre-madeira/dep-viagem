@@ -183,7 +183,7 @@ curl -k -s -X POST https://webhook.solucaomadeira.com/webhook/dpv-financeiro \
 
 ---
 
-### P13 — SSL webhook.solucaomadeira.com (self-signed, bloqueia browser)
+### ~~P13 — SSL webhook.solucaomadeira.com~~ ✅ RESOLVIDO (16/06/2026)
 **Problema:** Traefik router `https-n8n_n8n_webhook-0@file` tem `certificateResolver` errado.  
 **Erro no log Traefik:**
 ```
@@ -377,4 +377,4 @@ C:\GITHUB\DPV\
 - [x] WF-DPV.01 ativado (toggle ON) — recebendo mensagens (5 execuções registradas)
 - [x] P11 — nome_viagem VARCHAR(255) (migration v3 aplicada via Adminer, 15/06/2026)
 - [x] P12 — webhook funciona: path estático, acao no body, domínio webhook.solucaomadeira.com
-- [ ] P13 — SSL self-signed em webhook.solucaomadeira.com bloqueia browser. Ver seção P13.
+- [x] P13 — SSL webhook.solucaomadeira.com válido (Let's Encrypt emitido, 16/06/2026)
