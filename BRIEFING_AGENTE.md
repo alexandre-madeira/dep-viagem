@@ -1,6 +1,6 @@
 # BRIEFING_AGENTE.md — dep-viagem [DPV]
 Instruções para o agente Claude Code continuar a execução.
-Gerado em: 09/06/2026 | Atualizado em: 16/06/2026
+Gerado em: 09/06/2026 | Atualizado em: 18/06/2026
 
 ---
 
@@ -102,6 +102,50 @@ n8n:update_workflow workflowId=fRA3D3njIJOWmtqU
   nodeName: "WF-DPV.06 - IF | Autenticacao Valida?"
   path: "/conditions/conditions/0/rightValue"
   value: "NOVA_SENHA"
+```
+
+---
+
+### P14 — Ciclo de autocorreção n8n_contratos ✅ CONFIGURADO (18/06/2026)
+
+**O que é:** Quando um nó DPV falha, Claude recebe contexto mínimo e reconstrói o código automaticamente.
+
+**Infraestrutura ativada:**
+- `projetos.wf_fix_habilitado = true` para `dep-viagem`
+- `errorWorkflow = 6LU8TtukzsbgGCHe` (WF-ERR-CTX) configurado nos 6 WF-DPV
+- `node_test_contract`: 141 nós sincronizados com node_id = nome completo do nó
+- `arquitetura` nível A: 4 requisitos (stack, banco, credenciais, anti-duplicata)
+- `arquitetura` nível B: 6 requisitos (um por workflow DPV)
+- `arquitetura` nível C: 10 requisitos (5 por Code node: WF-DPV.04 e WF-DPV.06)
+- `@contract` annotations: adicionadas em WF-DPV.04 e WF-DPV.06 Code nodes
+
+**Fluxo quando um nó falha:**
+```
+Erro em WF-DPV → errorWorkflow → WF-ERR-CTX (6LU8TtukzsbgGCHe)
+  → busca código + payload da execução
+  → WF-FIX (lê arquitetura A+B+C do banco)
+  → Claude API (claude-sonnet-4-5, max 2000 tokens)
+  → aplica código corrigido via PUT /api/v1/workflows
+  → WF-NOTIFY → WhatsApp instância sofia
+```
+
+**Custo por fix:** ~$0,006 (contexto mínimo, sem leitura de arquivos)
+
+**Fixes feitos nos workflows de infra (via REST API):**
+- WF-ADMIN: `node_id` agora usa nome completo do nó (não prefixo curto)
+- WF-ERR-CTX.01: `node_id` e `node_name` extraem nome completo
+- WF-ERR-CTX.04: `downstream` e `nos_anteriores` usam nome completo
+- WF-DPV.06 Code node: nome corrigido de `Instru??es ZIP` → `Instruções ZIP`
+
+**ATENÇÃO — Pendente P15:**
+`throw new Error('TESTE_CICLO')` está injetado no WF-DPV.04 CODE node (após `@end-contract`).
+Deve ser removido após validar o ciclo end-to-end.
+Para remover via API:
+```powershell
+# Ler raw JSON, remover a linha do throw, PUT com UTF-8 bytes
+$raw = (Invoke-WebRequest "https://n8n.solucaomadeira.com/api/v1/workflows/acKIy44sUfDgOR2E" -Headers $hdr -UseBasicParsing).Content
+$fixed = $raw.Replace("throw new Error('TESTE_CICLO — remover apos validacao');\n\n", "")
+# PUT com UTF-8 bytes conforme padrão desta sessão
 ```
 
 ---
@@ -378,3 +422,5 @@ C:\GITHUB\DPV\
 - [x] P11 — nome_viagem VARCHAR(255) (migration v3 aplicada via Adminer, 15/06/2026)
 - [x] P12 — webhook funciona: path estático, acao no body, domínio webhook.solucaomadeira.com
 - [x] P13 — SSL webhook.solucaomadeira.com válido (Let's Encrypt emitido, 16/06/2026)
+- [x] P14 — Ciclo de autocorreção n8n_contratos integrado ao DPV (18/06/2026)
+- [ ] P15 — Testar ciclo erro→fix→notify end-to-end (throw injetado em WF-DPV.04)
