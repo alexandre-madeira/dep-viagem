@@ -1,6 +1,6 @@
 # BRIEFING_AGENTE.md — dep-viagem [DPV]
 Instruções para o agente Claude Code continuar a execução.
-Gerado em: 09/06/2026 | Atualizado em: 19/06/2026
+Gerado em: 09/06/2026 | Atualizado em: 20/06/2026
 
 ---
 
@@ -128,7 +128,15 @@ curl -X PUT https://evolution.solucaomadeira.com/webhook/set/sofia \
 | P02 | ⏳ Aguarda WhatsApp | Configurar apikey Evolution nos nós HTTP |
 | P07 | ⏳ Pendente | Exportar JSONs dos 7 workflows para Git |
 | P08 | ✅ Implementado 19/06 | Cadastro com e-mail — WF-DPV.07 criado |
-| P15 | ⚠️ Verificar | `throw new Error('TESTE_CICLO')` no WF-DPV.04 — remover se existir |
+| P15 | ✅ Resolvido 20/06 | Throw removido do WF-DPV.04; loop corrigido (WF-NOTIFY + DPV.02/03) |
+| P16 | ✅ Resolvido 20/06 | Routing WF-DPV.01: CODE Merge Dados preserva messageType após DB |
+
+### P16 — Bug Routing WF-DPV.01 (Resolvido 20/06/2026)
+**Root cause:** `DB | Verificar Funcionario` usa `executeQuery` que sobrescreve `$json` com só o resultado DB `{id}`.
+O `SWITCH | Tipo de Mensagem` downstream checava `$json.messageType` que era undefined → caia no NOOP.
+**Fix:** Inserido `CODE | Merge Dados` (n8n-nodes-base.code, entre DB e IF) que une dados normalizados
+(`$('WF-DPV.01 - SET | Normalizar Payload').item.json`) com resultado DB (`id`).
+**Validado:** WF-DPV.03 executado 5x no WF-DPV.SIM — INICIAR/ENCERRAR/RELATORIO roteiam corretamente.
 
 ### P02 — Configurar API Key Evolution
 Após WhatsApp ser liberado, configurar nos nós HTTP de todos os workflows.
@@ -216,6 +224,8 @@ curl -X PUT https://evolution.solucaomadeira.com/webhook/set/sofia \
 - [x] Painel financeiro server-side (sem CORS) — /webhook/dpv-financeiro-ui
 - [x] Simulador de testes sem WhatsApp (WF-DPV.SIM)
 - [x] Banco zerado (dados de teste removidos pelo WF-DPV.MAINT)
+- [x] P15 — Loop corrigido (WF-NOTIFY→FALLBACK, DPV.02/DPV.03 sem errorWorkflow)
+- [x] P16 — Routing WF-DPV.01 corrigido: CODE node Merge Dados preserva messageType após DB
 - [ ] P02 — apikey Evolution atualizada nos nós HTTP (aguarda WhatsApp)
 - [ ] P07 — JSONs dos 7 workflows exportados e comitados no Git
 - [ ] Webhook Evolution configurado com MESSAGES_UPSERT only
