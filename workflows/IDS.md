@@ -2,7 +2,7 @@
 
 | Workflow | ID | Status | Notas |
 |---|---|---|---|
-| WF-DPV.01 - Receptor de NF | z0F4H4NUyLErFjZ7 | 🔴 P16 | IF bloco não funciona |
+| WF-DPV.01 - Receptor de NF | z0F4H4NUyLErFjZ7 | ⚠️ DESATIVADO | P16 corrigido (20/06) — aguarda P01 (WhatsApp) |
 | WF-DPV.02 - Extrator IA | 31hBkBVq6rduQKXM | ✅ Ativo | Anthropic DPV configurada |
 | WF-DPV.03 - Controle de Viagem | ruf039UAwh9KqIZo | ✅ Ativo | Aguarda P16 |
 | WF-DPV.04 - Relatório PDF | acKIy44sUfDgOR2E | ✅ Ativo | Gotenberg no EasyPanel |
