@@ -1,6 +1,6 @@
 # P17 — Validação de Pagamento
 
-**Status:** 🟡 Planejamento | **Prioridade:** Alta | **Data:** 20/06/2026
+**Status:** ✅ Implementado | **Prioridade:** Alta | **Data:** 20/06/2026 | **Implementado:** 22/06/2026
 
 ---
 
@@ -348,15 +348,16 @@ Test Gotenberg
 
 ## 10. CHECKLIST DE ENTREGA
 
-- [ ] Migration v6 executada
-- [ ] WF-DPV.02 Claude Vision (+ tipo, forma)
-- [ ] WF-DPV.02 CODE | Validar Combinação
-- [ ] WF-DPV.03 case DESPESA + validação
-- [ ] WF-DPV.04 tabela relatório (+ tipo, forma)
-- [ ] WF-DPV.06 filtros + validação manual
-- [ ] WF-DPV.07 3 etapas de cadastro
-- [ ] Testes: 10 cenários validados
-- [ ] Commit no Git
+- [x] Migration v6 executada (22/06/2026 — banco dep_viagem confirmado)
+- [x] WF-DPV.02 Claude Vision (+ tipo, forma, cpf_cnpj_pagador, confianca)
+- [x] WF-DPV.02 CODE | Validar Combinacao (4 combinações válidas, CPF/CNPJ, data)
+- [x] WF-DPV.03 case DESPESA + CODE Parse + CODE Validar + DB despesas_sem_nf_log
+- [x] WF-DPV.04 tabela relatório (+ tipo, forma) + Resumo por Combinação
+- [x] WF-DPV.06 DB query + HTML (tipo/forma coluna + botões Validar/Rejeitar)
+- [x] WF-DPV.06 SWITCH cases validar-despesa + rejeitar-despesa
+- [x] WF-DPV.07 3 etapas de cadastro (aguardando_cpf, aguardando_tipo, aguardando_forma)
+- [ ] Testes: 10 cenários validados (aguarda WhatsApp P01)
+- [x] Commit no Git
 
 ---
 
