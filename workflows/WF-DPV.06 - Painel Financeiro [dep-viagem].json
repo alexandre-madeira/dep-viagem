@@ -1,396 +1,19 @@
 {
+  "id": "fRA3D3njIJOWmtqU",
   "name": "WF-DPV.06 - Painel Financeiro [dep-viagem]",
-  "nodes": [
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "dpv-financeiro/:acao",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "id": "2e906bf3-f39a-4535-9430-cc09ae1f6721",
-      "name": "WF-DPV.06 - TRIGGER | Webhook Painel Financeiro",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        0,
-        608
-      ],
-      "webhookId": "411a04c3-dfbd-439a-93cf-ef936023756a"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 1
-          },
-          "conditions": [
-            {
-              "leftValue": "={{ $json.body.senha }}",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              },
-              "rightValue": "SENHA_CONFIGURADA_NO_N8N"
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "a15ae3f6-4dd9-46c5-98c0-1944df0a852f",
-      "name": "WF-DPV.06 - IF | Autenticacao Valida?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        224,
-        608
-      ]
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "loose",
-                  "version": 1
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.params.acao }}",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "rightValue": "auth"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "loose",
-                  "version": 1
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.params.acao }}",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "rightValue": "viagens"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "loose",
-                  "version": 1
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.params.acao }}",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "rightValue": "relatorio-pdf"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "loose",
-                  "version": 1
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.params.acao }}",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "rightValue": "zip-nfs"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "loose",
-                  "version": 1
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.params.acao }}",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "rightValue": "aprovar"
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {
-          "fallbackOutput": "extra",
-          "renameFallbackOutput": "Desconhecido"
-        }
-      },
-      "id": "571ba0f7-157c-42e1-ad50-f843be12ff41",
-      "name": "WF-DPV.06 - SWITCH | Rota da Acao",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.2,
-      "position": [
-        448,
-        416
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "{\"ok\":true}",
-        "options": {}
-      },
-      "id": "260c5655-5b2e-4891-814f-d914ebc53515",
-      "name": "WF-DPV.06 - RESPOND | Auth OK",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        672,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, COALESCE(f.nome, v.phone) as funcionario_nome, json_agg(json_build_object('id', d.id, 'estabelecimento', d.estabelecimento, 'cnpj', d.cnpj, 'valor_total', d.valor_total, 'data_emissao', d.data_emissao, 'categoria', d.categoria, 'message_id', d.message_id) ORDER BY d.data_emissao ASC) FILTER (WHERE d.id IS NOT NULL) as despesas FROM viagens v LEFT JOIN funcionarios f ON f.phone = v.phone LEFT JOIN despesas_viagem d ON d.phone = v.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) GROUP BY v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, f.nome ORDER BY v.data_inicio DESC",
-        "options": {}
-      },
-      "id": "20ccecc9-ab6d-4047-b707-e9aae7b1ee83",
-      "name": "WF-DPV.06 - DB | Buscar Viagens com Despesas",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.5,
-      "position": [
-        672,
-        192
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "ggViIQGkepjwuOdv",
-          "name": "DB_dep_viagem"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "aggregate": "aggregateAllItemData",
-        "destinationFieldName": "viagens",
-        "options": {}
-      },
-      "id": "7e780e14-4705-4e92-b971-f7ada2471602",
-      "name": "WF-DPV.06 - AGG | Montar JSON Viagens",
-      "type": "n8n-nodes-base.aggregate",
-      "typeVersion": 1,
-      "position": [
-        896,
-        192
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {}
-      },
-      "id": "1b77f48d-1832-445c-8380-6c4d67c4f90a",
-      "name": "WF-DPV.06 - RESPOND | Retornar Viagens",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        1120,
-        192
-      ]
-    },
-    {
-      "parameters": {
-        "workflowId": {
-          "__rl": true,
-          "value": "acKIy44sUfDgOR2E",
-          "mode": "id"
-        },
-        "options": {}
-      },
-      "id": "b21f6917-274b-40ee-bce7-9874836f7399",
-      "name": "WF-DPV.06 - EXEC | Gerar PDF Financeiro",
-      "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1.1,
-      "position": [
-        672,
-        384
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "{\"ok\":true,\"mensagem\":\"Relatório enviado via WhatsApp\"}",
-        "options": {}
-      },
-      "id": "18dd8a85-0039-422b-a07a-f2051aa5d794",
-      "name": "WF-DPV.06 - RESPOND | PDF Gerado",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        896,
-        384
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT d.id, d.estabelecimento, d.data_emissao, d.categoria, d.valor_total, d.message_id FROM despesas_viagem d JOIN viagens v ON v.phone = d.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) WHERE v.id = {{ $json.body.viagem_id }} ORDER BY d.data_emissao ASC, d.id ASC",
-        "options": {}
-      },
-      "id": "479ffe63-4de4-441d-b8c4-0253f15f9ef1",
-      "name": "WF-DPV.06 - DB | Buscar NFs para ZIP",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.5,
-      "position": [
-        672,
-        576
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "ggViIQGkepjwuOdv",
-          "name": "DB_dep_viagem"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const nfs = $input.all().map((item, i) => ({\n  ordem: i + 1,\n  arquivo: (i + 1).toString().padStart(2, '0') + '_' + (item.json.data_emissao || 'sem_data') + '_' + (item.json.estabelecimento || 'NF').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) + '.jpg',\n  estabelecimento: item.json.estabelecimento,\n  categoria: item.json.categoria,\n  valor: item.json.valor_total,\n  data: item.json.data_emissao,\n  message_id: item.json.message_id\n}));\nreturn [{ json: { nfs, total: nfs.length } }];"
-      },
-      "id": "c22ccfd7-cac9-4561-bfc6-912d127a4a75",
-      "name": "WF-DPV.06 - CODE | Instruções ZIP",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        896,
-        576
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {}
-      },
-      "id": "0771639a-f943-456c-b164-93f4921c2825",
-      "name": "WF-DPV.06 - RESPOND | Retornar ZIP Info",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        1120,
-        576
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE viagens SET status = 'aprovada', updated_at = NOW() WHERE id = {{ $json.body.viagem_id }} RETURNING id, status",
-        "options": {}
-      },
-      "id": "da68e444-b8c8-4937-9e0e-d96742ca7f58",
-      "name": "WF-DPV.06 - DB | Aprovar Viagem",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.5,
-      "position": [
-        672,
-        768
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "ggViIQGkepjwuOdv",
-          "name": "DB_dep_viagem"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "{\"ok\":true,\"status\":\"aprovada\"}",
-        "options": {}
-      },
-      "id": "1269990d-d709-418f-a725-f57cb7ee1466",
-      "name": "WF-DPV.06 - RESPOND | Viagem Aprovada",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        896,
-        768
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "{\"ok\":false,\"erro\":\"Rota desconhecida\"}",
-        "options": {}
-      },
-      "id": "f2346fbd-3026-4f31-b829-9754da3e9b2e",
-      "name": "WF-DPV.06 - RESPOND | Rota Desconhecida",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        672,
-        960
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "{\"ok\":false,\"erro\":\"Senha incorreta\"}",
-        "options": {}
-      },
-      "id": "0b9d18e3-f793-4f08-ab7e-4c78e40c4fb7",
-      "name": "WF-DPV.06 - RESPOND | Nao Autorizado",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        448,
-        736
-      ]
-    }
-  ],
-  "pinData": {},
+  "active": true,
+  "isArchived": false,
+  "versionId": "f3bf8a89-cd88-4e8c-8e32-d2c16434074c",
+  "activeVersionId": "bc6c8944-c0b2-4450-b206-523f658cbb9f",
+  "triggerCount": 2,
+  "createdAt": "2026-06-09T23:22:15.943Z",
+  "updatedAt": "2026-06-28T21:53:53.184Z",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "errorWorkflow": "6LU8TtukzsbgGCHe"
+  },
   "connections": {
     "WF-DPV.06 - TRIGGER | Webhook Painel Financeiro": {
       "main": [
@@ -460,6 +83,20 @@
         ],
         [
           {
+            "node": "WF-DPV.06 - DB | Validar Despesa",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.06 - DB | Rejeitar Despesa",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "WF-DPV.06 - RESPOND | Rota Desconhecida",
             "type": "main",
             "index": 0
@@ -504,14 +141,14 @@
       "main": [
         [
           {
-            "node": "WF-DPV.06 - CODE | Instruções ZIP",
+            "node": "WF-DPV.06 - CODE | Instru��es ZIP",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "WF-DPV.06 - CODE | Instruções ZIP": {
+    "WF-DPV.06 - CODE | Instru��es ZIP": {
       "main": [
         [
           {
@@ -532,21 +169,1440 @@
           }
         ]
       ]
+    },
+    "WF-DPV.06 - TRIGGER | Webhook UI Painel": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - DB | Buscar Dados UI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - DB | Buscar Dados UI": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - AGG | Dados UI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - AGG | Dados UI": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - CODE | Renderizar HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - CODE | Renderizar HTML": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - RESPOND | HTML Painel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - DB | Validar Despesa": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - RESPOND | Despesa Validada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.06 - DB | Rejeitar Despesa": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.06 - RESPOND | Despesa Rejeitada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": true
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dpv-financeiro",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "2e906bf3-f39a-4535-9430-cc09ae1f6721",
+      "name": "WF-DPV.06 - TRIGGER | Webhook Painel Financeiro",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        480
+      ],
+      "webhookId": "411a04c3-dfbd-439a-93cf-ef936023756a"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.body.senha }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "SENHA_CONFIGURADA_NO_N8N"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a15ae3f6-4dd9-46c5-98c0-1944df0a852f",
+      "name": "WF-DPV.06 - IF | Autenticacao Valida?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "auth"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "viagens"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "relatorio-pdf"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "zip-nfs"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "aprovar"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "validar-despesa"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "rejeitar-despesa"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Desconhecido"
+        }
+      },
+      "id": "571ba0f7-157c-42e1-ad50-f843be12ff41",
+      "name": "WF-DPV.06 - SWITCH | Rota da Acao",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        416
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":true}",
+        "options": {}
+      },
+      "id": "260c5655-5b2e-4891-814f-d914ebc53515",
+      "name": "WF-DPV.06 - RESPOND | Auth OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, COALESCE(f.nome, v.phone) as funcionario_nome, json_agg(json_build_object('id', d.id, 'estabelecimento', d.estabelecimento, 'cnpj', d.cnpj, 'valor_total', d.valor_total, 'data_emissao', d.data_emissao, 'categoria', d.categoria, 'message_id', d.message_id) ORDER BY d.data_emissao ASC) FILTER (WHERE d.id IS NOT NULL) as despesas FROM viagens v LEFT JOIN funcionarios f ON f.phone = v.phone LEFT JOIN despesas_viagem d ON d.phone = v.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) GROUP BY v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, f.nome ORDER BY v.data_inicio DESC",
+        "options": {}
+      },
+      "id": "20ccecc9-ab6d-4047-b707-e9aae7b1ee83",
+      "name": "WF-DPV.06 - DB | Buscar Viagens com Despesas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "viagens",
+        "options": {}
+      },
+      "id": "7e780e14-4705-4e92-b971-f7ada2471602",
+      "name": "WF-DPV.06 - AGG | Montar JSON Viagens",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        896,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "1b77f48d-1832-445c-8380-6c4d67c4f90a",
+      "name": "WF-DPV.06 - RESPOND | Retornar Viagens",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "acKIy44sUfDgOR2E",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "b21f6917-274b-40ee-bce7-9874836f7399",
+      "name": "WF-DPV.06 - EXEC | Gerar PDF Financeiro",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":true,\"mensagem\":\"Relat?rio enviado via WhatsApp\"}",
+        "options": {}
+      },
+      "id": "18dd8a85-0039-422b-a07a-f2051aa5d794",
+      "name": "WF-DPV.06 - RESPOND | PDF Gerado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT d.id, d.estabelecimento, d.data_emissao, d.categoria, d.valor_total, d.message_id FROM despesas_viagem d JOIN viagens v ON v.phone = d.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) WHERE v.id = {{ $json.body.viagem_id }} ORDER BY d.data_emissao ASC, d.id ASC",
+        "options": {}
+      },
+      "id": "479ffe63-4de4-441d-b8c4-0253f15f9ef1",
+      "name": "WF-DPV.06 - DB | Buscar NFs para ZIP",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// @contract\n// intencao: Formatar lista de NFs para instrucoes de ZIP com nomes de arquivo padronizados\n// entrada: array de itens com {data_emissao, estabelecimento, categoria, valor_total, message_id}\n// criterio_sucesso: retorna array nfs com nomes unicos no formato NN_DATA_ESTABELECIMENTO.jpg\n// saida_nfs: array com {ordem, arquivo, estabelecimento, categoria, valor, data, message_id}\n// saida_total: quantidade inteira de NFs processadas\n// @end-contract\n\nconst nfs = $input.all().map((item, i) => ({\n  ordem: i + 1,\n  arquivo: (i + 1).toString().padStart(2, '0') + '_' + (item.json.data_emissao || 'sem_data') + '_' + (item.json.estabelecimento || 'NF').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) + '.jpg',\n  estabelecimento: item.json.estabelecimento,\n  categoria: item.json.categoria,\n  valor: item.json.valor_total,\n  data: item.json.data_emissao,\n  message_id: item.json.message_id\n}));\nreturn [{ json: { nfs, total: nfs.length } }];"
+      },
+      "id": "c22ccfd7-cac9-4561-bfc6-912d127a4a75",
+      "name": "WF-DPV.06 - CODE | Instru��es ZIP",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "0771639a-f943-456c-b164-93f4921c2825",
+      "name": "WF-DPV.06 - RESPOND | Retornar ZIP Info",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE viagens SET status = 'aprovada', updated_at = NOW() WHERE id = {{ $json.body.viagem_id }} RETURNING id, status",
+        "options": {}
+      },
+      "id": "da68e444-b8c8-4937-9e0e-d96742ca7f58",
+      "name": "WF-DPV.06 - DB | Aprovar Viagem",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":true,\"status\":\"aprovada\"}",
+        "options": {}
+      },
+      "id": "1269990d-d709-418f-a725-f57cb7ee1466",
+      "name": "WF-DPV.06 - RESPOND | Viagem Aprovada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":false,\"erro\":\"Rota desconhecida\"}",
+        "options": {}
+      },
+      "id": "f2346fbd-3026-4f31-b829-9754da3e9b2e",
+      "name": "WF-DPV.06 - RESPOND | Rota Desconhecida",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":false,\"erro\":\"Senha incorreta\"}",
+        "options": {}
+      },
+      "id": "0b9d18e3-f793-4f08-ab7e-4c78e40c4fb7",
+      "name": "WF-DPV.06 - RESPOND | Nao Autorizado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "path": "dpv-financeiro-ui",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "94d44fe3-126f-4f4a-9a1c-087e34b8816d",
+      "name": "WF-DPV.06 - TRIGGER | Webhook UI Painel",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        -304
+      ],
+      "webhookId": "c55d95d6-dc84-4be4-a37c-49db82c5ef8a"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.html }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "76287814-fbe8-4e3a-a7bb-075ca024e11c",
+      "name": "WF-DPV.06 - RESPOND | HTML Painel",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        656,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, COALESCE(f.nome, v.phone) as funcionario_nome, COALESCE(json_agg(json_build_object('id', d.id, 'estabelecimento', d.estabelecimento, 'valor_total', d.valor_total, 'data_emissao', d.data_emissao, 'categoria', d.categoria, 'tipo_pagador', d.tipo_pagador, 'forma_pagamento', d.forma_pagamento, 'cpf_cnpj_pagador', d.cpf_cnpj_pagador, 'validado_manualmente', d.validado_manualmente, 'sem_nf', d.sem_nf) ORDER BY d.data_emissao ASC) FILTER (WHERE d.id IS NOT NULL), '[]') as despesas FROM viagens v LEFT JOIN funcionarios f ON f.phone = v.phone LEFT JOIN despesas_viagem d ON d.phone = v.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) GROUP BY v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, f.nome ORDER BY v.data_inicio DESC",
+        "options": {}
+      },
+      "id": "4cdd3f4c-24e4-4946-99a8-3f9fda82cf2b",
+      "name": "WF-DPV.06 - DB | Buscar Dados UI",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "viagens",
+        "options": {}
+      },
+      "id": "e45bf8fa-8279-4dd2-8878-62ea0422b5e5",
+      "name": "WF-DPV.06 - AGG | Dados UI",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const viagens = $input.first().json.viagens || [];\n\nconst fmt = (v) => Number(v).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});\nconst fmtD = (d) => d ? new Date(d).toLocaleDateString('pt-BR') : '-';\nconst toTitle = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';\nconst CAT = {alimentacao:'Alimentacao',combustivel:'Combustivel',hospedagem:'Hospedagem',transporte:'Transporte',pedagio:'Pedagio',outros:'Outros'};\nconst ST_L = {ativa:'Ativa',encerrada:'Encerrada',aprovada:'Aprovada'};\nconst ST_C = {ativa:'#4ade80',encerrada:'#60a5fa',aprovada:'#c084fc'};\nconst ST_B = {ativa:'#1a3a2a',encerrada:'#1a2a3a',aprovada:'#2a1a3a'};\n\nconst totalGeral = viagens.reduce((acc, v) => {\n  const desps = Array.isArray(v.despesas) ? v.despesas : JSON.parse(v.despesas || '[]');\n  return acc + desps.reduce((s,d) => s + Number(d.valor_total||0), 0);\n}, 0);\n\nconst renderViagem = (v, idx) => {\n  const desps = Array.isArray(v.despesas) ? v.despesas : JSON.parse(v.despesas || '[]');\n  const total = desps.reduce((s,d) => s + Number(d.valor_total||0), 0);\n  const cats = desps.reduce((a,d) => { a[d.categoria]=(a[d.categoria]||0)+Number(d.valor_total||0); return a; }, {});\n  const cor = ST_C[v.status] || '#60a5fa';\n  const bg = ST_B[v.status] || '#1a2a3a';\n  const nomeViagem = toTitle(v.nome_viagem || 'Sem nome');\n  const BS = 'border-radius:4px;padding:3px 8px;font-size:12px;cursor:pointer;border:1px solid';\n\n  const linhasDesp = desps.length === 0\n    ? '<tr><td colspan=\"5\" style=\"padding:16px;text-align:center;color:#4a5568;font-size:13px\">Nenhuma despesa registrada.</td></tr>'\n    : desps.map((d,i) => {\n        const tf = [d.tipo_pagador, d.forma_pagamento].filter(Boolean).join('+') || '-';\n        const isV = d.validado_manualmente === true;\n        const isR = d.validado_manualmente === false;\n        const acao = (!isV && !isR)\n          ? `<button onclick=\"act('validar-despesa',{despesa_id:${d.id}})\" style=\"${BS} #4ade80;background:#1a3a1a;color:#4ade80\">&#10003;</button> <button onclick=\"act('rejeitar-despesa',{despesa_id:${d.id}})\" style=\"${BS} #f87171;background:#3a1a1a;color:#f87171\">&#10007;</button>`\n          : `<span style=\"font-size:10px;color:${isV?'#4ade80':'#f87171'}\">${isV?'ok':'rej'}</span>`;\n        return `<tr style=\"background:${i%2?'#0a0a0a':'transparent'};border-top:1px solid #1a1a1a\">\n          <td style=\"padding:10px 12px;font-size:12px;color:#64748b;white-space:nowrap\">${fmtD(d.data_emissao)}</td>\n          <td style=\"padding:10px 12px;font-size:13px;color:#e2e8f0\">${d.estabelecimento}<br><span style=\"font-size:10px;color:#4a5568\">${CAT[d.categoria]||d.categoria}</span></td>\n          <td style=\"padding:10px 12px;font-size:11px;color:#64748b;white-space:nowrap\">${tf}</td>\n          <td style=\"padding:10px 12px;font-size:14px;font-weight:700;color:#4ade80;text-align:right;white-space:nowrap\">${fmt(d.valor_total)}</td>\n          <td style=\"padding:6px 8px;text-align:center;white-space:nowrap\">${acao}</td>\n        </tr>`;\n      }).join('')\n    + `<tr style=\"background:#0d1a0d;border-top:1px solid #2d2d2d\">\n        <td colspan=\"3\" style=\"padding:10px 12px;font-size:11px;font-weight:700;color:#4a5568;text-transform:uppercase\">Total</td>\n        <td style=\"padding:10px 12px;font-size:15px;font-weight:700;color:#4ade80;text-align:right\">${fmt(total)}</td>\n        <td></td>\n      </tr>`;\n\n  const linhasCats = Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,val]) => {\n    const pct = total > 0 ? ((val/total)*100).toFixed(1) : 0;\n    return `<div style=\"margin-bottom:10px\">\n      <div style=\"display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px\">\n        <span style=\"color:#94a3b8\">${CAT[cat]||cat}</span>\n        <span style=\"color:#f1f5f9;font-weight:600\">${fmt(val)}</span>\n      </div>\n      <div style=\"height:4px;background:#1e1e1e;border-radius:99px\">\n        <div style=\"height:4px;border-radius:99px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);width:${pct}%\"></div>\n      </div>\n    </div>`;\n  }).join('');\n\n  return `<details style=\"background:#111;border:1px solid #1e1e1e;border-radius:12px;margin-bottom:14px;overflow:hidden\" ${idx===0?'open':''}>\n    <summary style=\"padding:14px 16px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:flex-start;gap:10px\">\n      <div style=\"flex:1;min-width:0\">\n        <div style=\"font-size:10px;color:#4a5568;margin-bottom:2px\">Viagem #${v.id}</div>\n        <div style=\"font-size:16px;font-weight:700;color:#f1f5f9;word-break:break-word\">${nomeViagem}</div>\n        <div style=\"font-size:12px;color:#64748b;margin-top:3px\">${v.funcionario_nome} &middot; ${fmtD(v.data_inicio)} &rarr; ${fmtD(v.data_fim)}</div>\n      </div>\n      <div style=\"display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0\">\n        <span style=\"font-size:10px;padding:3px 9px;border-radius:99px;background:${bg};color:${cor}\">${ST_L[v.status]||v.status}</span>\n        <span style=\"font-size:15px;font-weight:700;color:#4ade80\">${fmt(total)}</span>\n      </div>\n    </summary>\n    <div style=\"padding:0 14px 14px\">\n      <div style=\"display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px\">\n        <div style=\"background:#0d0d0d;border:1px solid #1e1e1e;border-radius:8px;padding:10px 12px\">\n          <div style=\"font-size:10px;color:#4a5568;margin-bottom:4px\">Total</div>\n          <div style=\"font-size:17px;font-weight:700;color:#4ade80\">${fmt(total)}</div>\n        </div>\n        <div style=\"background:#0d0d0d;border:1px solid #1e1e1e;border-radius:8px;padding:10px 12px\">\n          <div style=\"font-size:10px;color:#4a5568;margin-bottom:4px\">Notas fiscais</div>\n          <div style=\"font-size:17px;font-weight:700;color:#60a5fa\">${desps.length}</div>\n        </div>\n      </div>\n      ${linhasCats ? `<div style=\"background:#0d0d0d;border:1px solid #1e1e1e;border-radius:8px;padding:12px;margin-bottom:12px\">\n        <div style=\"font-size:10px;color:#4a5568;margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em\">Por categoria</div>\n        ${linhasCats}\n      </div>` : ''}\n      <div style=\"background:#0d0d0d;border:1px solid #1e1e1e;border-radius:8px;overflow:hidden;margin-bottom:${v.status==='encerrada'?'12':'0'}px\">\n        <div style=\"padding:10px 12px;font-size:10px;color:#4a5568;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #1e1e1e\">Despesas</div>\n        <table style=\"width:100%;border-collapse:collapse\">\n          <thead><tr style=\"background:#111\">\n            <th style=\"padding:8px 12px;font-size:10px;color:#4a5568;text-align:left;font-weight:600\">Data</th>\n            <th style=\"padding:8px 12px;font-size:10px;color:#4a5568;text-align:left;font-weight:600\">Estabelecimento</th>\n            <th style=\"padding:8px 12px;font-size:10px;color:#4a5568;text-align:left;font-weight:600\">Tipo</th>\n            <th style=\"padding:8px 12px;font-size:10px;color:#4a5568;text-align:right;font-weight:600\">Valor</th>\n            <th style=\"padding:8px 12px;font-size:10px;color:#4a5568;text-align:center;font-weight:600\">Acoes</th>\n          </tr></thead>\n          <tbody>${linhasDesp}</tbody>\n        </table>\n      </div>\n      ${v.status==='encerrada'?`<button onclick=\"act('aprovar',{viagem_id:${v.id}})\" style=\"width:100%;padding:11px;background:#1a1a3a;border:1px solid #3730a3;border-radius:8px;color:#818cf8;font-size:13px;cursor:pointer;font-weight:600\">Aprovar esta viagem</button>`:''}\n    </div>\n  </details>`;\n};\n\nconst viagensHTML = viagens.length === 0\n  ? '<div style=\"text-align:center;color:#4a5568;padding:48px 16px\">Nenhuma viagem encontrada.</div>'\n  : viagens.map((v, i) => renderViagem(v, i)).join('');\n\nconst html = `<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>DPV - Painel Financeiro</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{background:#0d0d0d;color:#e2e8f0;font-family:system-ui,sans-serif;padding:16px;min-height:100vh}\ndetails>summary::-webkit-details-marker{display:none}\ndetails>summary::marker{display:none}\n</style>\n<script>\nvar SENHA = prompt('Senha do painel:') || '';\nfunction act(acao, extra) {\n  var body = Object.assign({senha: SENHA, acao: acao}, extra);\n  fetch('/webhook/dpv-financeiro', {\n    method: 'POST',\n    headers: {'Content-Type': 'application/json'},\n    body: JSON.stringify(body)\n  }).then(function() { location.reload(); });\n}\n<\\/script>\n</head>\n<body>\n<div style=\"max-width:560px;margin:0 auto\">\n  <div style=\"margin-bottom:20px\">\n    <div style=\"font-size:10px;color:#4a5568;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px\">dep-viagem</div>\n    <div style=\"font-size:22px;font-weight:700;color:#f1f5f9\">Painel Financeiro</div>\n    <div style=\"margin-top:10px;padding:14px 16px;background:#0d1a0d;border-radius:10px;border:1px solid #1a3a1a;display:flex;justify-content:space-between;align-items:center\">\n      <div>\n        <div style=\"font-size:10px;color:#4a5568;margin-bottom:3px\">Total geral</div>\n        <div style=\"font-size:26px;font-weight:700;color:#4ade80\">${fmt(totalGeral)}</div>\n      </div>\n      <div style=\"text-align:right\">\n        <div style=\"font-size:12px;color:#64748b;margin-bottom:6px\">${viagens.length} viagem${viagens.length!==1?'s':''}</div>\n        <a href=\"/webhook/dpv-financeiro-ui\" style=\"font-size:12px;color:#4a5568;text-decoration:none;padding:5px 10px;border:1px solid #2d2d2d;border-radius:6px\">Atualizar</a>\n      </div>\n    </div>\n  </div>\n  ${viagensHTML}\n</div>\n</body></html>`;\n\nreturn [{ json: { html } }];"
+      },
+      "id": "f072e1e4-c8b8-4e3a-9ef8-982bf2d0a3d6",
+      "name": "WF-DPV.06 - CODE | Renderizar HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "id": "54f9de08-5515-4815-aa0c-0c7de37e682d",
+      "name": "WF-DPV.06 - DB | Validar Despesa",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        1152
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE despesas_viagem SET validado_manualmente = true WHERE id = {{ $json.body.despesa_id }} RETURNING id, validado_manualmente",
+        "options": {}
+      }
+    },
+    {
+      "id": "cc40d714-868e-4a7f-b6ca-daeab75f79b6",
+      "name": "WF-DPV.06 - DB | Rejeitar Despesa",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        1344
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE despesas_viagem SET validado_manualmente = false WHERE id = {{ $json.body.despesa_id }} RETURNING id, validado_manualmente",
+        "options": {}
+      }
+    },
+    {
+      "id": "a02637cf-82eb-4cd5-9d96-93519db2d38a",
+      "name": "WF-DPV.06 - RESPOND | Despesa Validada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        1152
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":true,\"status\":\"validado\"}",
+        "options": {}
+      }
+    },
+    {
+      "id": "6485ca41-9781-48ee-b69b-c2270f3979e7",
+      "name": "WF-DPV.06 - RESPOND | Despesa Rejeitada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        1344
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"ok\":true,\"status\":\"rejeitado\"}",
+        "options": {}
+      }
+    }
+  ],
+  "activeVersion": {
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "dpv-financeiro",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "2e906bf3-f39a-4535-9430-cc09ae1f6721",
+        "name": "WF-DPV.06 - TRIGGER | Webhook Painel Financeiro",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -64,
+          480
+        ],
+        "webhookId": "411a04c3-dfbd-439a-93cf-ef936023756a"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ $json.body.senha }}",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "rightValue": "SENHA_CONFIGURADA_NO_N8N"
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "a15ae3f6-4dd9-46c5-98c0-1944df0a852f",
+        "name": "WF-DPV.06 - IF | Autenticacao Valida?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          160,
+          480
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.acao }}",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "rightValue": "auth"
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.acao }}",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "rightValue": "viagens"
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.acao }}",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "rightValue": "relatorio-pdf"
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.acao }}",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "rightValue": "zip-nfs"
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.acao }}",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "rightValue": "aprovar"
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.acao }}",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "rightValue": "validar-despesa"
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "loose",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.acao }}",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "rightValue": "rejeitar-despesa"
+                    }
+                  ],
+                  "combinator": "and"
+                }
+              }
+            ]
+          },
+          "options": {
+            "fallbackOutput": "extra",
+            "renameFallbackOutput": "Desconhecido"
+          }
+        },
+        "id": "571ba0f7-157c-42e1-ad50-f843be12ff41",
+        "name": "WF-DPV.06 - SWITCH | Rota da Acao",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          448,
+          416
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\"ok\":true}",
+          "options": {}
+        },
+        "id": "260c5655-5b2e-4891-814f-d914ebc53515",
+        "name": "WF-DPV.06 - RESPOND | Auth OK",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          672,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, COALESCE(f.nome, v.phone) as funcionario_nome, json_agg(json_build_object('id', d.id, 'estabelecimento', d.estabelecimento, 'cnpj', d.cnpj, 'valor_total', d.valor_total, 'data_emissao', d.data_emissao, 'categoria', d.categoria, 'message_id', d.message_id) ORDER BY d.data_emissao ASC) FILTER (WHERE d.id IS NOT NULL) as despesas FROM viagens v LEFT JOIN funcionarios f ON f.phone = v.phone LEFT JOIN despesas_viagem d ON d.phone = v.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) GROUP BY v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, f.nome ORDER BY v.data_inicio DESC",
+          "options": {}
+        },
+        "id": "20ccecc9-ab6d-4047-b707-e9aae7b1ee83",
+        "name": "WF-DPV.06 - DB | Buscar Viagens com Despesas",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          672,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "viagens",
+          "options": {}
+        },
+        "id": "7e780e14-4705-4e92-b971-f7ada2471602",
+        "name": "WF-DPV.06 - AGG | Montar JSON Viagens",
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          896,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify($json) }}",
+          "options": {}
+        },
+        "id": "1b77f48d-1832-445c-8380-6c4d67c4f90a",
+        "name": "WF-DPV.06 - RESPOND | Retornar Viagens",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1120,
+          192
+        ]
+      },
+      {
+        "parameters": {
+          "workflowId": {
+            "__rl": true,
+            "value": "acKIy44sUfDgOR2E",
+            "mode": "id"
+          },
+          "options": {}
+        },
+        "id": "b21f6917-274b-40ee-bce7-9874836f7399",
+        "name": "WF-DPV.06 - EXEC | Gerar PDF Financeiro",
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.1,
+        "position": [
+          672,
+          384
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\"ok\":true,\"mensagem\":\"Relat?rio enviado via WhatsApp\"}",
+          "options": {}
+        },
+        "id": "18dd8a85-0039-422b-a07a-f2051aa5d794",
+        "name": "WF-DPV.06 - RESPOND | PDF Gerado",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          896,
+          384
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT d.id, d.estabelecimento, d.data_emissao, d.categoria, d.valor_total, d.message_id FROM despesas_viagem d JOIN viagens v ON v.phone = d.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) WHERE v.id = {{ $json.body.viagem_id }} ORDER BY d.data_emissao ASC, d.id ASC",
+          "options": {}
+        },
+        "id": "479ffe63-4de4-441d-b8c4-0253f15f9ef1",
+        "name": "WF-DPV.06 - DB | Buscar NFs para ZIP",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          672,
+          576
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// @contract\n// intencao: Formatar lista de NFs para instrucoes de ZIP com nomes de arquivo padronizados\n// entrada: array de itens com {data_emissao, estabelecimento, categoria, valor_total, message_id}\n// criterio_sucesso: retorna array nfs com nomes unicos no formato NN_DATA_ESTABELECIMENTO.jpg\n// saida_nfs: array com {ordem, arquivo, estabelecimento, categoria, valor, data, message_id}\n// saida_total: quantidade inteira de NFs processadas\n// @end-contract\n\nconst nfs = $input.all().map((item, i) => ({\n  ordem: i + 1,\n  arquivo: (i + 1).toString().padStart(2, '0') + '_' + (item.json.data_emissao || 'sem_data') + '_' + (item.json.estabelecimento || 'NF').replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) + '.jpg',\n  estabelecimento: item.json.estabelecimento,\n  categoria: item.json.categoria,\n  valor: item.json.valor_total,\n  data: item.json.data_emissao,\n  message_id: item.json.message_id\n}));\nreturn [{ json: { nfs, total: nfs.length } }];"
+        },
+        "id": "c22ccfd7-cac9-4561-bfc6-912d127a4a75",
+        "name": "WF-DPV.06 - CODE | Instru��es ZIP",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          896,
+          576
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify($json) }}",
+          "options": {}
+        },
+        "id": "0771639a-f943-456c-b164-93f4921c2825",
+        "name": "WF-DPV.06 - RESPOND | Retornar ZIP Info",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1120,
+          576
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "UPDATE viagens SET status = 'aprovada', updated_at = NOW() WHERE id = {{ $json.body.viagem_id }} RETURNING id, status",
+          "options": {}
+        },
+        "id": "da68e444-b8c8-4937-9e0e-d96742ca7f58",
+        "name": "WF-DPV.06 - DB | Aprovar Viagem",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          672,
+          768
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\"ok\":true,\"status\":\"aprovada\"}",
+          "options": {}
+        },
+        "id": "1269990d-d709-418f-a725-f57cb7ee1466",
+        "name": "WF-DPV.06 - RESPOND | Viagem Aprovada",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          896,
+          768
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\"ok\":false,\"erro\":\"Rota desconhecida\"}",
+          "options": {}
+        },
+        "id": "f2346fbd-3026-4f31-b829-9754da3e9b2e",
+        "name": "WF-DPV.06 - RESPOND | Rota Desconhecida",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          672,
+          960
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\"ok\":false,\"erro\":\"Senha incorreta\"}",
+          "options": {}
+        },
+        "id": "0b9d18e3-f793-4f08-ab7e-4c78e40c4fb7",
+        "name": "WF-DPV.06 - RESPOND | Nao Autorizado",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          176,
+          800
+        ]
+      },
+      {
+        "parameters": {
+          "path": "dpv-financeiro-ui",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "94d44fe3-126f-4f4a-9a1c-087e34b8816d",
+        "name": "WF-DPV.06 - TRIGGER | Webhook UI Painel",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -64,
+          -304
+        ],
+        "webhookId": "c55d95d6-dc84-4be4-a37c-49db82c5ef8a"
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "={{ $json.html }}",
+          "options": {
+            "responseCode": 200,
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "text/html; charset=utf-8"
+                }
+              ]
+            }
+          }
+        },
+        "id": "76287814-fbe8-4e3a-a7bb-075ca024e11c",
+        "name": "WF-DPV.06 - RESPOND | HTML Painel",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          656,
+          -224
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SELECT v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, COALESCE(f.nome, v.phone) as funcionario_nome, COALESCE(json_agg(json_build_object('id', d.id, 'estabelecimento', d.estabelecimento, 'valor_total', d.valor_total, 'data_emissao', d.data_emissao, 'categoria', d.categoria, 'tipo_pagador', d.tipo_pagador, 'forma_pagamento', d.forma_pagamento, 'cpf_cnpj_pagador', d.cpf_cnpj_pagador, 'validado_manualmente', d.validado_manualmente, 'sem_nf', d.sem_nf) ORDER BY d.data_emissao ASC) FILTER (WHERE d.id IS NOT NULL), '[]') as despesas FROM viagens v LEFT JOIN funcionarios f ON f.phone = v.phone LEFT JOIN despesas_viagem d ON d.phone = v.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) GROUP BY v.id, v.phone, v.nome_viagem, v.data_inicio, v.data_fim, v.status, f.nome ORDER BY v.data_inicio DESC",
+          "options": {}
+        },
+        "id": "4cdd3f4c-24e4-4946-99a8-3f9fda82cf2b",
+        "name": "WF-DPV.06 - DB | Buscar Dados UI",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          224,
+          -304
+        ]
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "viagens",
+          "options": {}
+        },
+        "id": "e45bf8fa-8279-4dd2-8878-62ea0422b5e5",
+        "name": "WF-DPV.06 - AGG | Dados UI",
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          -48,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const viagens = $input.first().json.viagens || [];\nconst SENHA = 'SENHA_CONFIGURADA_NO_N8N';\n\nconst fmt = (v) => Number(v).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});\nconst fmtD = (d) => d ? new Date(d).toLocaleDateString('pt-BR') : '-';\nconst toTitle = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';\nconst CAT = {alimentacao:'?? Alimenta��o',combustivel:'? Combust�vel',hospedagem:'?? Hospedagem',transporte:'?? Transporte',pedagio:'?? Ped�gio',outros:'?? Outros'};\nconst ST_L = {ativa:'Ativa',encerrada:'Encerrada',aprovada:'Aprovada'};\nconst ST_C = {ativa:'#4ade80',encerrada:'#60a5fa',aprovada:'#c084fc'};\nconst ST_B = {ativa:'#1a3a2a',encerrada:'#1a2a3a',aprovada:'#2a1a3a'};\n\nconst totalGeral = viagens.reduce((acc, v) => {\n  const desps = Array.isArray(v.despesas) ? v.despesas : JSON.parse(v.despesas || '[]');\n  return acc + desps.reduce((s,d) => s + Number(d.valor_total||0), 0);\n}, 0);\n\nconst renderViagem = (v, idx) => {\n  const desps = Array.isArray(v.despesas) ? v.despesas : JSON.parse(v.despesas || '[]');\n  const total = desps.reduce((s,d) => s + Number(d.valor_total||0), 0);\n  const cats = desps.reduce((a,d) => { a[d.categoria]=(a[d.categoria]||0)+Number(d.valor_total||0); return a; }, {});\n  const cor = ST_C[v.status] || '#60a5fa';\n  const bg = ST_B[v.status] || '#1a2a3a';\n  const nomeViagem = toTitle(v.nome_viagem || 'Sem nome');\n  const BS = 'border-radius:4px;padding:2px 7px;font-size:11px;cursor:pointer;border:1px solid';\n\n  const linhasDesp = desps.length === 0\n    ? '<tr><td colspan=\"5\" style=\"padding:16px;text-align:center;color:#4a5568;font-size:13px\">Nenhuma despesa registrada.</td></tr>'\n    : desps.map((d,i) => {\n        const tf = [d.tipo_pagador, d.forma_pagamento].filter(Boolean).join('+') || '-';\n        const isV = d.validado_manualmente === true;\n        const isR = d.validado_manualmente === false;\n        const acao = (!isV && !isR)\n          ? `<form style=\"display:inline;margin:0 2px\" method=\"POST\" action=\"/webhook/dpv-financeiro\"><input type=\"hidden\" name=\"senha\" value=\"${SENHA}\"><input type=\"hidden\" name=\"acao\" value=\"validar-despesa\"><input type=\"hidden\" name=\"despesa_id\" value=\"${d.id}\"><button style=\"${BS} #4ade80;background:#1a3a1a;color:#4ade80\">?</button></form><form style=\"display:inline;margin:0 2px\" method=\"POST\" action=\"/webhook/dpv-financeiro\"><input type=\"hidden\" name=\"senha\" value=\"${SENHA}\"><input type=\"hidden\" name=\"acao\" value=\"rejeitar-despesa\"><input type=\"hidden\" name=\"despesa_id\" value=\"${d.id}\"><button style=\"${BS} #f87171;background:#3a1a1a;color:#f87171\">?</button></form>`\n          : `<span style=\"font-size:10px;color:${isV?'#4ade80':'#f87171'}\">${isV?'? ok':'? rej'}</span>`;\n        return `<tr style=\"background:${i%2?'#0a0a0a':'transparent'};border-top:1px solid #1a1a1a\">\n          <td style=\"padding:10px 12px;font-size:12px;color:#64748b;white-space:nowrap\">${fmtD(d.data_emissao)}</td>\n          <td style=\"padding:10px 12px;font-size:13px;color:#e2e8f0\">${d.estabelecimento}<br><span style=\"font-size:10px;color:#4a5568\">${CAT[d.categoria]||d.categoria}</span></td>\n          <td style=\"padding:10px 12px;font-size:11px;color:#64748b;white-space:nowrap\">${tf}</td>\n          <td style=\"padding:10px 12px;font-size:14px;font-weight:700;color:#4ade80;text-align:right;white-space:nowrap\">${fmt(d.valor_total)}</td>\n          <td style=\"padding:6px 8px;text-align:center;white-space:nowrap\">${acao}</td>\n        </tr>`;\n      }).join('')\n    + `<tr style=\"background:#0d1a0d;border-top:1px solid #2d2d2d\">\n        <td colspan=\"3\" style=\"padding:10px 12px;font-size:11px;font-weight:700;color:#4a5568;text-transform:uppercase\">Total</td>\n        <td style=\"padding:10px 12px;font-size:15px;font-weight:700;color:#4ade80;text-align:right\">${fmt(total)}</td>\n        <td></td>\n      </tr>`;\n\n  const linhasCats = Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,val]) => {\n    const pct = total > 0 ? ((val/total)*100).toFixed(1) : 0;\n    return `<div style=\"margin-bottom:10px\">\n      <div style=\"display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px\">\n        <span style=\"color:#94a3b8\">${CAT[cat]||cat}</span>\n        <span style=\"color:#f1f5f9;font-weight:600\">${fmt(val)}</span>\n      </div>\n      <div style=\"height:4px;background:#1e1e1e;border-radius:99px\">\n        <div style=\"height:4px;border-radius:99px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);width:${pct}%\"></div>\n      </div>\n    </div>`;\n  }).join('');\n\n  return `<details style=\"background:#111;border:1px solid #1e1e1e;border-radius:12px;margin-bottom:14px;overflow:hidden\" ${idx===0?'open':''}>\n    <summary style=\"padding:14px 16px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:flex-start;gap:10px\">\n      <div style=\"flex:1;min-width:0\">\n        <div style=\"font-size:10px;color:#4a5568;margin-bottom:2px\">Viagem #${v.id}</div>\n        <div style=\"font-size:16px;font-weight:700;color:#f1f5f9;word-break:break-word\">${nomeViagem}</div>\n        <div style=\"font-size:12px;color:#64748b;margin-top:3px\">${v.funcionario_nome} &middot; ${fmtD(v.data_inicio)} &rarr; ${fmtD(v.data_fim)}</div>\n      </div>\n      <div style=\"display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0\">\n        <span style=\"font-size:10px;padding:3px 9px;border-radius:99px;background:${bg};color:${cor}\">${ST_L[v.status]||v.status}</span>\n        <span style=\"font-size:15px;font-weight:700;color:#4ade80\">${fmt(total)}</span>\n      </div>\n    </summary>\n    <div style=\"padding:0 14px 14px\">\n      <div style=\"display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px\">\n        <div style=\"background:#0d0d0d;border:1px solid #1e1e1e;border-radius:8px;padding:10px 12px\">\n          <div style=\"font-size:10px;color:#4a5568;margin-bottom:4px\">Total</div>\n          <div style=\"font-size:17px;font-weight:700;color:#4ade80\">${fmt(total)}</div>\n        </div>\n        <div style=\"background:#0d0d0d;border:1px solid #1e1e1e;border-radius:8px;padding:10px 12px\">\n          <div style=\"font-size:10px;color:#4a5568;margin-bottom:4px\">Notas fiscais</div>\n          <div style=\"font-size:17px;font-weight:700;color:#60a5fa\">${desps.length}</div>\n        </div>\n      </div>\n      ${linhasCats ? `<div style=\"background:#0d0d0d;border:1px solid #1e1e1e;border-radius:8px;padding:12px;margin-bottom:12px\">\n        <div style=\"font-size:10px;color:#4a5568;margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em\">Por categoria</div>\n        ${linhasCats}\n      </div>` : ''}\n      <div style=\"background:#0d0d0d;border:1px solid #1e1e1e;border-radius:8px;overflow:hidden;margin-bottom:${v.status==='encerrada'?'12':'0'}px\">\n        <div style=\"padding:10px 12px;font-size:10px;color:#4a5568;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #1e1e1e\">Despesas</div>\n        <table style=\"width:100%;border-collapse:collapse\">\n          <thead><tr style=\"background:#111\">\n            <th style=\"padding:8px 12px;font-size:10px;color:#4a5568;text-align:left;font-weight:600\">Data</th>\n            <th style=\"padding:8px 12px;font-size:10px;color:#4a5568;text-align:left;font-weight:600\">Estabelecimento</th>\n            <th style=\"padding:8px 12px;font-size:10px;color:#4a5568;text-align:left;font-weight:600\">Tipo</th>\n            <th style=\"padding:8px 12px;font-size:10px;color:#4a5568;text-align:right;font-weight:600\">Valor</th>\n            <th style=\"padding:8px 12px;font-size:10px;color:#4a5568;text-align:center;font-weight:600\">A��es</th>\n          </tr></thead>\n          <tbody>${linhasDesp}</tbody>\n        </table>\n      </div>\n      ${v.status==='encerrada'?`<form method=\"POST\" action=\"/webhook/dpv-financeiro\">\n        <input type=\"hidden\" name=\"senha\" value=\"${SENHA}\">\n        <input type=\"hidden\" name=\"acao\" value=\"aprovar\">\n        <input type=\"hidden\" name=\"viagem_id\" value=\"${v.id}\">\n        <button type=\"submit\" style=\"width:100%;padding:11px;background:#1a1a3a;border:1px solid #3730a3;border-radius:8px;color:#818cf8;font-size:13px;cursor:pointer;font-weight:600\">? Aprovar esta viagem</button>\n      </form>`:''}\n    </div>\n  </details>`;\n};\n\nconst viagensHTML = viagens.length === 0\n  ? '<div style=\"text-align:center;color:#4a5568;padding:48px 16px\">Nenhuma viagem encontrada.</div>'\n  : viagens.map((v, i) => renderViagem(v, i)).join('');\n\nconst html = `<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>DPV - Painel Financeiro</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{background:#0d0d0d;color:#e2e8f0;font-family:system-ui,sans-serif;padding:16px;min-height:100vh}\ndetails>summary::-webkit-details-marker{display:none}\ndetails>summary::marker{display:none}\n</style>\n</head>\n<body>\n<div style=\"max-width:560px;margin:0 auto\">\n  <div style=\"margin-bottom:20px\">\n    <div style=\"font-size:10px;color:#4a5568;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px\">dep-viagem</div>\n    <div style=\"font-size:22px;font-weight:700;color:#f1f5f9\">Painel Financeiro</div>\n    <div style=\"margin-top:10px;padding:14px 16px;background:#0d1a0d;border-radius:10px;border:1px solid #1a3a1a;display:flex;justify-content:space-between;align-items:center\">\n      <div>\n        <div style=\"font-size:10px;color:#4a5568;margin-bottom:3px\">Total geral</div>\n        <div style=\"font-size:26px;font-weight:700;color:#4ade80\">${fmt(totalGeral)}</div>\n      </div>\n      <div style=\"text-align:right\">\n        <div style=\"font-size:12px;color:#64748b;margin-bottom:6px\">${viagens.length} viagem${viagens.length!==1?'s':''}</div>\n        <a href=\"/webhook/dpv-financeiro-ui\" style=\"font-size:12px;color:#4a5568;text-decoration:none;padding:5px 10px;border:1px solid #2d2d2d;border-radius:6px\">? Atualizar</a>\n      </div>\n    </div>\n  </div>\n  ${viagensHTML}\n</div>\n</body></html>`;\n\nreturn [{ json: { html } }];"
+        },
+        "id": "f072e1e4-c8b8-4e3a-9ef8-982bf2d0a3d6",
+        "name": "WF-DPV.06 - CODE | Renderizar HTML",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          0
+        ]
+      },
+      {
+        "id": "54f9de08-5515-4815-aa0c-0c7de37e682d",
+        "name": "WF-DPV.06 - DB | Validar Despesa",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          672,
+          1152
+        ],
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "UPDATE despesas_viagem SET validado_manualmente = true WHERE id = {{ $json.body.despesa_id }} RETURNING id, validado_manualmente",
+          "options": {}
+        }
+      },
+      {
+        "id": "cc40d714-868e-4a7f-b6ca-daeab75f79b6",
+        "name": "WF-DPV.06 - DB | Rejeitar Despesa",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5,
+        "position": [
+          672,
+          1344
+        ],
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "UPDATE despesas_viagem SET validado_manualmente = false WHERE id = {{ $json.body.despesa_id }} RETURNING id, validado_manualmente",
+          "options": {}
+        }
+      },
+      {
+        "id": "a02637cf-82eb-4cd5-9d96-93519db2d38a",
+        "name": "WF-DPV.06 - RESPOND | Despesa Validada",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          896,
+          1152
+        ],
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\"ok\":true,\"status\":\"validado\"}",
+          "options": {}
+        }
+      },
+      {
+        "id": "6485ca41-9781-48ee-b69b-c2270f3979e7",
+        "name": "WF-DPV.06 - RESPOND | Despesa Rejeitada",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          896,
+          1344
+        ],
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\"ok\":true,\"status\":\"rejeitado\"}",
+          "options": {}
+        }
+      }
+    ],
+    "connections": {
+      "WF-DPV.06 - TRIGGER | Webhook Painel Financeiro": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - IF | Autenticacao Valida?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - IF | Autenticacao Valida?": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - SWITCH | Rota da Acao",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "WF-DPV.06 - RESPOND | Nao Autorizado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - SWITCH | Rota da Acao": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - RESPOND | Auth OK",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "WF-DPV.06 - DB | Buscar Viagens com Despesas",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "WF-DPV.06 - EXEC | Gerar PDF Financeiro",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "WF-DPV.06 - DB | Buscar NFs para ZIP",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "WF-DPV.06 - DB | Aprovar Viagem",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "WF-DPV.06 - DB | Validar Despesa",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "WF-DPV.06 - DB | Rejeitar Despesa",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "WF-DPV.06 - RESPOND | Rota Desconhecida",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - DB | Buscar Viagens com Despesas": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - AGG | Montar JSON Viagens",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - AGG | Montar JSON Viagens": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - RESPOND | Retornar Viagens",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - EXEC | Gerar PDF Financeiro": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - RESPOND | PDF Gerado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - DB | Buscar NFs para ZIP": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - CODE | Instru��es ZIP",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - CODE | Instru��es ZIP": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - RESPOND | Retornar ZIP Info",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - DB | Aprovar Viagem": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - RESPOND | Viagem Aprovada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - TRIGGER | Webhook UI Painel": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - DB | Buscar Dados UI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - DB | Buscar Dados UI": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - AGG | Dados UI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - AGG | Dados UI": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - CODE | Renderizar HTML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - CODE | Renderizar HTML": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - RESPOND | HTML Painel",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - DB | Validar Despesa": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - RESPOND | Despesa Validada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "WF-DPV.06 - DB | Rejeitar Despesa": {
+        "main": [
+          [
+            {
+              "node": "WF-DPV.06 - RESPOND | Despesa Rejeitada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
   },
-  "versionId": "ece5f4f9-cc9d-4e81-9834-ddc6e769e39f",
+  "tags": [],
   "meta": {
     "aiBuilderAssisted": true,
-    "builderVariant": "mcp",
-    "instanceId": "98a7f76cbff973591af08e09b5be2fed14b55b37d878782c0638229a94477203"
+    "builderVariant": "mcp"
   },
-  "nodeGroups": [],
-  "id": "fRA3D3njIJOWmtqU",
-  "tags": []
+  "parentFolderId": null,
+  "description": "Backend do painel financeiro: autenticação por senha, listagem de viagens com despesas, aprovação, geração de PDF e metadados para ZIP de NFs.",
+  "scopes": [
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "canExecute": true
 }
