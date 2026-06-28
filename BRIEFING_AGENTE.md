@@ -131,6 +131,7 @@ curl -X PUT https://evolution.solucaomadeira.com/webhook/set/sofia \
 | P08 | ✅ Implementado 19/06 | Cadastro com e-mail — WF-DPV.07 criado |
 | P15 | ✅ Resolvido 20/06 | Throw removido do WF-DPV.04; loop corrigido (WF-NOTIFY + DPV.02/03) |
 | P16 | ✅ Resolvido 20/06 | Routing WF-DPV.01: CODE Merge Dados preserva messageType após DB |
+| P06 | ✅ Resolvido 28/06 | Autenticação do painel financeiro confirmada (senha configurada no IF do WF-DPV.06) |
 | P12 | ✅ Resolvido 28/06 | Path webhook WF-DPV.06 corrigido: `/webhook/dpv-financeiro` (não `/dpv-financeiro/auth`) |
 | P13 | ✅ Resolvido 28/06 | Dependia do P12 — resolvido em conjunto |
 
@@ -229,6 +230,7 @@ curl -X PUT https://evolution.solucaomadeira.com/webhook/set/sofia \
 - [x] Banco zerado (dados de teste removidos pelo WF-DPV.MAINT)
 - [x] P15 — Loop corrigido (WF-NOTIFY→FALLBACK, DPV.02/DPV.03 sem errorWorkflow)
 - [x] P16 — Routing WF-DPV.01 corrigido: CODE node Merge Dados preserva messageType após DB
+- [x] P06 — Autenticação painel financeiro confirmada (28/06/2026)
 - [x] P12 — Path webhook WF-DPV.06 corrigido: POST /webhook/dpv-financeiro (confirmado 28/06/2026)
 - [x] P13 — Resolvido junto com P12 (28/06/2026)
 - [ ] P02 — apikey Evolution atualizada nos nós HTTP (aguarda WhatsApp)
