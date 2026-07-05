@@ -1,5 +1,5 @@
 ﻿{
-    "updatedAt":  "2026-07-05T23:04:46.142Z",
+    "updatedAt":  "2026-07-05T23:27:24.056Z",
     "createdAt":  "2026-06-09T22:30:26.966Z",
     "id":  "z0F4H4NUyLErFjZ7",
     "name":  "WF-DPV.01 - Receptor de NF [dep-viagem]",
@@ -297,7 +297,8 @@
                                                            "id":  "ggViIQGkepjwuOdv",
                                                            "name":  "DB_dep_viagem"
                                                        }
-                                      }
+                                      },
+                      "alwaysOutputData":  true
                   },
                   {
                       "parameters":  {
@@ -365,6 +366,20 @@
                                        512,
                                        -64
                                    ]
+                  },
+                  {
+                      "id":  "7b2beebb-11e1-4656-b28d-4ef412552d7a",
+                      "name":  "WF-DPV.01 - CODE | Tratar Funcionario Nao Encontrado",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       512,
+                                       56
+                                   ],
+                      "parameters":  {
+                                         "jsCode":  "const items = $input.all();\nif (items.length === 0 || !items[0].json.id) {\n  return [{ json: { id: null } }];\n}\nreturn items;"
+                                     },
+                      "alwaysOutputData":  true
                   }
               ],
     "connections":  {
@@ -466,17 +481,6 @@
                                                                                       ]
                                                                                   ]
                                                                      },
-                        "WF-DPV.01 - DB | Verificar Funcionario":  {
-                                                                       "main":  [
-                                                                                    [
-                                                                                        {
-                                                                                            "node":  "WF-DPV.01 - CODE | Merge Dados",
-                                                                                            "type":  "main",
-                                                                                            "index":  0
-                                                                                        }
-                                                                                    ]
-                                                                                ]
-                                                                   },
                         "WF-DPV.01 - CODE | Merge Dados":  {
                                                                "main":  [
                                                                             [
@@ -487,7 +491,29 @@
                                                                                 }
                                                                             ]
                                                                         ]
-                                                           }
+                                                           },
+                        "WF-DPV.01 - DB | Verificar Funcionario":  {
+                                                                       "main":  [
+                                                                                    [
+                                                                                        {
+                                                                                            "node":  "WF-DPV.01 - CODE | Tratar Funcionario Nao Encontrado",
+                                                                                            "type":  "main",
+                                                                                            "index":  0
+                                                                                        }
+                                                                                    ]
+                                                                                ]
+                                                                   },
+                        "WF-DPV.01 - CODE | Tratar Funcionario Nao Encontrado":  {
+                                                                                     "main":  [
+                                                                                                  [
+                                                                                                      {
+                                                                                                          "node":  "WF-DPV.01 - CODE | Merge Dados",
+                                                                                                          "type":  "main",
+                                                                                                          "index":  0
+                                                                                                      }
+                                                                                                  ]
+                                                                                              ]
+                                                                                 }
                     },
     "settings":  {
                      "executionOrder":  "v1",
@@ -509,55 +535,11 @@
 
                    ],
     "pinData":  {
-                    "WF-DPV.01 - TRIGGER | Webhook Evolution API":  [
-                                                                        {
-                                                                            "json":  {
-                                                                                         "headers":  {
-                                                                                                         "host":  "n8n.solucaomadeira.com",
-                                                                                                         "user-agent":  "axios/1.13.2",
-                                                                                                         "content-length":  "515",
-                                                                                                         "accept":  "application/json, text/plain, */*",
-                                                                                                         "accept-encoding":  "gzip, compress, deflate, br",
-                                                                                                         "content-type":  "application/json",
-                                                                                                         "x-forwarded-for":  "172.18.0.1",
-                                                                                                         "x-forwarded-host":  "n8n.solucaomadeira.com",
-                                                                                                         "x-forwarded-port":  "443",
-                                                                                                         "x-forwarded-proto":  "https",
-                                                                                                         "x-forwarded-server":  "8d47b62b0e05",
-                                                                                                         "x-real-ip":  "172.18.0.1"
-                                                                                                     },
-                                                                                         "params":  {
 
-                                                                                                    },
-                                                                                         "query":  {
-
-                                                                                                   },
-                                                                                         "body":  {
-                                                                                                      "event":  "messages.update",
-                                                                                                      "instance":  "VIDROCOM_AG",
-                                                                                                      "data":  {
-                                                                                                                   "keyId":  "AC66D203B72C585D4F5A8A823735BF71",
-                                                                                                                   "remoteJid":  "243168331202629@lid",
-                                                                                                                   "fromMe":  false,
-                                                                                                                   "status":  "READ",
-                                                                                                                   "instanceId":  "59ad793b-01dd-4a2f-917c-632c203a9a2a",
-                                                                                                                   "messageId":  "cmr8arr48000vo14j9wtd39mi"
-                                                                                                               },
-                                                                                                      "destination":  "https://n8n.solucaomadeira.com/webhook/dpv-whatsapp-receiver",
-                                                                                                      "date_time":  "2026-07-05T18:40:52.448Z",
-                                                                                                      "sender":  "558681344881@s.whatsapp.net",
-                                                                                                      "server_url":  "https://evolution.solucaomadeira.com",
-                                                                                                      "apikey":  "A5C9B722A0A9-477E-B39D-1AD78010CBC0"
-                                                                                                  },
-                                                                                         "webhookUrl":  "https://n8n.solucaomadeira.com/webhook/dpv-whatsapp-receiver",
-                                                                                         "executionMode":  "production"
-                                                                                     }
-                                                                        }
-                                                                    ]
                 },
-    "versionId":  "abb0c060-51df-41d2-9222-2e082eaca468",
-    "activeVersionId":  "abb0c060-51df-41d2-9222-2e082eaca468",
-    "versionCounter":  74,
+    "versionId":  "059d7413-577c-4341-92d4-0d8f7c02a985",
+    "activeVersionId":  "059d7413-577c-4341-92d4-0d8f7c02a985",
+    "versionCounter":  78,
     "triggerCount":  1,
     "sourceWorkflowId":  null,
     "shared":  [
@@ -586,9 +568,9 @@
 
              ],
     "activeVersion":  {
-                          "updatedAt":  "2026-07-05T23:04:46.144Z",
-                          "createdAt":  "2026-07-05T23:04:46.144Z",
-                          "versionId":  "abb0c060-51df-41d2-9222-2e082eaca468",
+                          "updatedAt":  "2026-07-05T23:27:24.059Z",
+                          "createdAt":  "2026-07-05T23:27:24.059Z",
+                          "versionId":  "059d7413-577c-4341-92d4-0d8f7c02a985",
                           "workflowId":  "z0F4H4NUyLErFjZ7",
                           "nodes":  [
                                         {
@@ -881,7 +863,8 @@
                                                                                  "id":  "ggViIQGkepjwuOdv",
                                                                                  "name":  "DB_dep_viagem"
                                                                              }
-                                                            }
+                                                            },
+                                            "alwaysOutputData":  true
                                         },
                                         {
                                             "parameters":  {
@@ -949,6 +932,20 @@
                                                              512,
                                                              -64
                                                          ]
+                                        },
+                                        {
+                                            "id":  "7b2beebb-11e1-4656-b28d-4ef412552d7a",
+                                            "name":  "WF-DPV.01 - CODE | Tratar Funcionario Nao Encontrado",
+                                            "type":  "n8n-nodes-base.code",
+                                            "typeVersion":  2,
+                                            "position":  [
+                                                             512,
+                                                             56
+                                                         ],
+                                            "parameters":  {
+                                                               "jsCode":  "const items = $input.all();\nif (items.length === 0 || !items[0].json.id) {\n  return [{ json: { id: null } }];\n}\nreturn items;"
+                                                           },
+                                            "alwaysOutputData":  true
                                         }
                                     ],
                           "connections":  {
@@ -1050,17 +1047,6 @@
                                                                                                             ]
                                                                                                         ]
                                                                                            },
-                                              "WF-DPV.01 - DB | Verificar Funcionario":  {
-                                                                                             "main":  [
-                                                                                                          [
-                                                                                                              {
-                                                                                                                  "node":  "WF-DPV.01 - CODE | Merge Dados",
-                                                                                                                  "type":  "main",
-                                                                                                                  "index":  0
-                                                                                                              }
-                                                                                                          ]
-                                                                                                      ]
-                                                                                         },
                                               "WF-DPV.01 - CODE | Merge Dados":  {
                                                                                      "main":  [
                                                                                                   [
@@ -1071,7 +1057,29 @@
                                                                                                       }
                                                                                                   ]
                                                                                               ]
-                                                                                 }
+                                                                                 },
+                                              "WF-DPV.01 - DB | Verificar Funcionario":  {
+                                                                                             "main":  [
+                                                                                                          [
+                                                                                                              {
+                                                                                                                  "node":  "WF-DPV.01 - CODE | Tratar Funcionario Nao Encontrado",
+                                                                                                                  "type":  "main",
+                                                                                                                  "index":  0
+                                                                                                              }
+                                                                                                          ]
+                                                                                                      ]
+                                                                                         },
+                                              "WF-DPV.01 - CODE | Tratar Funcionario Nao Encontrado":  {
+                                                                                                           "main":  [
+                                                                                                                        [
+                                                                                                                            {
+                                                                                                                                "node":  "WF-DPV.01 - CODE | Merge Dados",
+                                                                                                                                "type":  "main",
+                                                                                                                                "index":  0
+                                                                                                                            }
+                                                                                                                        ]
+                                                                                                                    ]
+                                                                                                       }
                                           },
                           "nodeGroups":  [
 
@@ -1082,10 +1090,10 @@
                           "autosaved":  false,
                           "workflowPublishHistory":  [
                                                          {
-                                                             "createdAt":  "2026-07-05T23:04:50.739Z",
-                                                             "id":  1498,
+                                                             "createdAt":  "2026-07-05T23:27:27.212Z",
+                                                             "id":  1502,
                                                              "workflowId":  "z0F4H4NUyLErFjZ7",
-                                                             "versionId":  "abb0c060-51df-41d2-9222-2e082eaca468",
+                                                             "versionId":  "059d7413-577c-4341-92d4-0d8f7c02a985",
                                                              "event":  "activated",
                                                              "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
                                                          }
