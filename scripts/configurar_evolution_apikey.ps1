@@ -1,6 +1,6 @@
 $EVOLUTION_APIKEY = "SUBSTITUIR_AQUI"
 
-if ($EVOLUTION_APIKEY -eq "minhasenha") {
+if ($EVOLUTION_APIKEY -eq "SUBSTITUIR_AQUI") {
     Write-Host "ERRO - substitua o placeholder pela apikey real antes de rodar." -ForegroundColor Red
     exit 1
 }
