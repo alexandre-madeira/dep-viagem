@@ -126,7 +126,7 @@ curl -X PUT https://evolution.solucaomadeira.com/webhook/set/sofia \
 
 | # | Status | O que é |
 |---|---|---|
-| P02 | ⏳ Aguarda WhatsApp | Configurar apikey Evolution nos nós HTTP |
+| P02 | ✅ Resolvido 05/07/2026 | Apikey Evolution configurada nos nós HTTP — credencial HEADER_API_EVOLUTION_ENVIO (ID: Ka0C8J4zfOklD1lw) |
 | P07 | ⏳ Pendente | Exportar JSONs dos 7 workflows para Git |
 | P08 | ✅ Implementado 19/06 | Cadastro com e-mail — WF-DPV.07 criado |
 | P15 | ✅ Resolvido 20/06 | Throw removido do WF-DPV.04; loop corrigido (WF-NOTIFY + DPV.02/03) |
@@ -142,10 +142,9 @@ O `SWITCH | Tipo de Mensagem` downstream checava `$json.messageType` que era und
 (`$('WF-DPV.01 - SET | Normalizar Payload').item.json`) com resultado DB (`id`).
 **Validado:** WF-DPV.03 executado 5x no WF-DPV.SIM — INICIAR/ENCERRAR/RELATORIO roteiam corretamente.
 
-### P02 — Configurar API Key Evolution
-Após WhatsApp ser liberado, configurar nos nós HTTP de todos os workflows.
-A credencial `HEADER_API_EVOLUTION_ENVIO` (ID: `Ka0C8J4zfOklD1lw`) já existe —
-verificar se a apikey está correta ou atualizar se expirou.
+### P02 — Configurar API Key Evolution (Resolvido 05/07/2026)
+Apikey aplicada via script `scripts/configurar_evolution_apikey.ps1` na credencial
+`HEADER_API_EVOLUTION_ENVIO` (ID: `Ka0C8J4zfOklD1lw`) e nos nós HTTP do WF-DPV.02 e WF-DPV.03.
 
 ---
 
@@ -233,7 +232,7 @@ curl -X PUT https://evolution.solucaomadeira.com/webhook/set/sofia \
 - [x] P06 — Autenticação painel financeiro confirmada (28/06/2026)
 - [x] P12 — Path webhook WF-DPV.06 corrigido: POST /webhook/dpv-financeiro (confirmado 28/06/2026)
 - [x] P13 — Resolvido junto com P12 (28/06/2026)
-- [ ] P02 — apikey Evolution atualizada nos nós HTTP (aguarda WhatsApp)
+- [x] P02 — apikey Evolution atualizada nos nós HTTP (05/07/2026)
 - [ ] P07 — JSONs dos 7 workflows exportados e comitados no Git
 - [ ] Webhook Evolution configurado com MESSAGES_UPSERT only
 - [ ] Teste e2e com WhatsApp real realizado
