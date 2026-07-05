@@ -1,5 +1,5 @@
 ﻿{
-    "updatedAt":  "2026-06-22T03:01:03.557Z",
+    "updatedAt":  "2026-07-05T23:46:33.165Z",
     "createdAt":  "2026-06-19T14:43:37.585Z",
     "id":  "6SwQvQ5IVL8oVtUk",
     "name":  "WF-DPV.07 - Cadastro de Usuários [dep-viagem]",
@@ -264,7 +264,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -327,7 +327,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -462,7 +462,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -502,7 +502,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -638,7 +638,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -701,7 +701,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -741,7 +741,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -822,7 +822,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -879,7 +879,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -949,7 +949,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -1019,7 +1019,7 @@
                                    ],
                       "parameters":  {
                                          "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
@@ -1363,9 +1363,9 @@
 
                    ],
     "pinData":  null,
-    "versionId":  "22dacb4a-4a3e-4c86-8942-72d78d86c050",
-    "activeVersionId":  "22dacb4a-4a3e-4c86-8942-72d78d86c050",
-    "versionCounter":  2,
+    "versionId":  "af5594e7-4707-453d-968a-e6d83cf31f3b",
+    "activeVersionId":  "af5594e7-4707-453d-968a-e6d83cf31f3b",
+    "versionCounter":  3,
     "triggerCount":  0,
     "sourceWorkflowId":  null,
     "shared":  [
@@ -1394,9 +1394,9 @@
 
              ],
     "activeVersion":  {
-                          "updatedAt":  "2026-06-22T03:01:03.561Z",
-                          "createdAt":  "2026-06-22T03:01:03.561Z",
-                          "versionId":  "22dacb4a-4a3e-4c86-8942-72d78d86c050",
+                          "updatedAt":  "2026-07-05T23:46:33.167Z",
+                          "createdAt":  "2026-07-05T23:46:33.167Z",
+                          "versionId":  "af5594e7-4707-453d-968a-e6d83cf31f3b",
                           "workflowId":  "6SwQvQ5IVL8oVtUk",
                           "nodes":  [
                                         {
@@ -1656,7 +1656,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -1719,7 +1719,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -1854,7 +1854,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -1894,7 +1894,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -2030,7 +2030,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -2093,7 +2093,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -2133,7 +2133,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -2214,7 +2214,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -2271,7 +2271,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -2341,7 +2341,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -2411,7 +2411,7 @@
                                                          ],
                                             "parameters":  {
                                                                "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/sofia",
+                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
@@ -2751,10 +2751,10 @@
                           "autosaved":  false,
                           "workflowPublishHistory":  [
                                                          {
-                                                             "createdAt":  "2026-06-22T03:01:13.737Z",
-                                                             "id":  1430,
+                                                             "createdAt":  "2026-07-05T23:46:39.456Z",
+                                                             "id":  1510,
                                                              "workflowId":  "6SwQvQ5IVL8oVtUk",
-                                                             "versionId":  "22dacb4a-4a3e-4c86-8942-72d78d86c050",
+                                                             "versionId":  "af5594e7-4707-453d-968a-e6d83cf31f3b",
                                                              "event":  "activated",
                                                              "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
                                                          }
