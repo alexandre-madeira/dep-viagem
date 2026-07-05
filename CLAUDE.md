@@ -29,7 +29,6 @@ UPDATE erros_dpv SET status = 'lido', lido_em = NOW() WHERE status = 'pendente';
 
 - **Nunca** use a credencial `DB_n8n_contratos` (ID: `3z35ZPyLInGNam1Y`) em workflows DPV
 - **Sempre** use `DB_dep_viagem` (ID: `ggViIQGkepjwuOdv`) para o banco `dep_viagem`
-- **Nunca** ative o WF-DPV.01 sem confirmar que o P16 (bug SWITCH) está resolvido
 - **Sempre** commitar migrations antes de aplicar no banco
 
 ---
@@ -42,5 +41,5 @@ UPDATE erros_dpv SET status = 'lido', lido_em = NOW() WHERE status = 'pendente';
 | Banco projeto | `dep_viagem` |
 | Credencial DB | `DB_dep_viagem` / `ggViIQGkepjwuOdv` |
 | WF-DPV.CHK | `1c8Ag8NgvtOiRYr7` |
-| WF-DPV.01 | `z0F4H4NUyLErFjZ7` — **MANTER DESATIVADO até P16 resolvido** |
+| WF-DPV.01 | `z0F4H4NUyLErFjZ7` — Ativo (P16 resolvido 20/06/2026) |
 | Repositório | `C:\GITHUB\DPV` |
