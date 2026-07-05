@@ -1,5 +1,5 @@
 ﻿{
-    "updatedAt":  "2026-06-28T20:44:23.593Z",
+    "updatedAt":  "2026-07-05T23:04:46.142Z",
     "createdAt":  "2026-06-09T22:30:26.966Z",
     "id":  "z0F4H4NUyLErFjZ7",
     "name":  "WF-DPV.01 - Receptor de NF [dep-viagem]",
@@ -21,7 +21,7 @@
                       "type":  "n8n-nodes-base.webhook",
                       "typeVersion":  2.1,
                       "position":  [
-                                       -192,
+                                       -224,
                                        192
                                    ],
                       "webhookId":  "06a2c6b5-b29e-44d5-9a55-24274e36a323"
@@ -34,7 +34,7 @@
                                                                                      "id":  "phone",
                                                                                      "name":  "phone",
                                                                                      "type":  "string",
-                                                                                     "value":  "={{ $json.body.data.key.remoteJid.replace(\u0027@s.whatsapp.net\u0027, \u0027\u0027).replace(\u0027@g.us\u0027, \u0027\u0027) }}"
+                                                                                     "value":  "={{ $json.body.data.key.remoteJid.split(\u0027@\u0027)[0].split(\u0027:\u0027)[0] }}"
                                                                                  },
                                                                                  {
                                                                                      "id":  "messageType",
@@ -77,6 +77,12 @@
                                                                                      "name":  "from_me",
                                                                                      "type":  "boolean",
                                                                                      "value":  "={{ $json.body.data.key.fromMe ?? false }}"
+                                                                                 },
+                                                                                 {
+                                                                                     "id":  "event",
+                                                                                     "name":  "event",
+                                                                                     "type":  "string",
+                                                                                     "value":  "={{ $json.body.event ?? \u0027\u0027 }}"
                                                                                  }
                                                                              ]
                                                          },
@@ -89,7 +95,7 @@
                       "type":  "n8n-nodes-base.set",
                       "typeVersion":  3.4,
                       "position":  [
-                                       48,
+                                       16,
                                        192
                                    ]
                   },
@@ -239,6 +245,14 @@
                                                                         },
                                                             "conditions":  [
                                                                                {
+                                                                                   "leftValue":  "={{ $json.event }}",
+                                                                                   "operator":  {
+                                                                                                    "type":  "string",
+                                                                                                    "operation":  "equals"
+                                                                                                },
+                                                                                   "rightValue":  "messages.upsert"
+                                                                               },
+                                                                               {
                                                                                    "leftValue":  "={{ $json.from_me }}",
                                                                                    "operator":  {
                                                                                                     "type":  "boolean",
@@ -348,8 +362,8 @@
                       "type":  "n8n-nodes-base.code",
                       "typeVersion":  2,
                       "position":  [
-                                       720,
-                                       -128
+                                       512,
+                                       -64
                                    ]
                   }
               ],
@@ -495,11 +509,55 @@
 
                    ],
     "pinData":  {
+                    "WF-DPV.01 - TRIGGER | Webhook Evolution API":  [
+                                                                        {
+                                                                            "json":  {
+                                                                                         "headers":  {
+                                                                                                         "host":  "n8n.solucaomadeira.com",
+                                                                                                         "user-agent":  "axios/1.13.2",
+                                                                                                         "content-length":  "515",
+                                                                                                         "accept":  "application/json, text/plain, */*",
+                                                                                                         "accept-encoding":  "gzip, compress, deflate, br",
+                                                                                                         "content-type":  "application/json",
+                                                                                                         "x-forwarded-for":  "172.18.0.1",
+                                                                                                         "x-forwarded-host":  "n8n.solucaomadeira.com",
+                                                                                                         "x-forwarded-port":  "443",
+                                                                                                         "x-forwarded-proto":  "https",
+                                                                                                         "x-forwarded-server":  "8d47b62b0e05",
+                                                                                                         "x-real-ip":  "172.18.0.1"
+                                                                                                     },
+                                                                                         "params":  {
 
+                                                                                                    },
+                                                                                         "query":  {
+
+                                                                                                   },
+                                                                                         "body":  {
+                                                                                                      "event":  "messages.update",
+                                                                                                      "instance":  "VIDROCOM_AG",
+                                                                                                      "data":  {
+                                                                                                                   "keyId":  "AC66D203B72C585D4F5A8A823735BF71",
+                                                                                                                   "remoteJid":  "243168331202629@lid",
+                                                                                                                   "fromMe":  false,
+                                                                                                                   "status":  "READ",
+                                                                                                                   "instanceId":  "59ad793b-01dd-4a2f-917c-632c203a9a2a",
+                                                                                                                   "messageId":  "cmr8arr48000vo14j9wtd39mi"
+                                                                                                               },
+                                                                                                      "destination":  "https://n8n.solucaomadeira.com/webhook/dpv-whatsapp-receiver",
+                                                                                                      "date_time":  "2026-07-05T18:40:52.448Z",
+                                                                                                      "sender":  "558681344881@s.whatsapp.net",
+                                                                                                      "server_url":  "https://evolution.solucaomadeira.com",
+                                                                                                      "apikey":  "A5C9B722A0A9-477E-B39D-1AD78010CBC0"
+                                                                                                  },
+                                                                                         "webhookUrl":  "https://n8n.solucaomadeira.com/webhook/dpv-whatsapp-receiver",
+                                                                                         "executionMode":  "production"
+                                                                                     }
+                                                                        }
+                                                                    ]
                 },
-    "versionId":  "0c6a7810-9d1c-4bad-9c4f-9b7a735c5459",
-    "activeVersionId":  "812a94e3-c004-4490-8a68-5ce3b6819428",
-    "versionCounter":  65,
+    "versionId":  "abb0c060-51df-41d2-9222-2e082eaca468",
+    "activeVersionId":  "abb0c060-51df-41d2-9222-2e082eaca468",
+    "versionCounter":  74,
     "triggerCount":  1,
     "sourceWorkflowId":  null,
     "shared":  [
@@ -528,9 +586,9 @@
 
              ],
     "activeVersion":  {
-                          "updatedAt":  "2026-06-20T18:52:19.048Z",
-                          "createdAt":  "2026-06-20T18:52:19.048Z",
-                          "versionId":  "812a94e3-c004-4490-8a68-5ce3b6819428",
+                          "updatedAt":  "2026-07-05T23:04:46.144Z",
+                          "createdAt":  "2026-07-05T23:04:46.144Z",
+                          "versionId":  "abb0c060-51df-41d2-9222-2e082eaca468",
                           "workflowId":  "z0F4H4NUyLErFjZ7",
                           "nodes":  [
                                         {
@@ -547,7 +605,7 @@
                                             "type":  "n8n-nodes-base.webhook",
                                             "typeVersion":  2.1,
                                             "position":  [
-                                                             -192,
+                                                             -224,
                                                              192
                                                          ],
                                             "webhookId":  "06a2c6b5-b29e-44d5-9a55-24274e36a323"
@@ -560,7 +618,7 @@
                                                                                                            "id":  "phone",
                                                                                                            "name":  "phone",
                                                                                                            "type":  "string",
-                                                                                                           "value":  "={{ $json.body.data.key.remoteJid.replace(\u0027@s.whatsapp.net\u0027, \u0027\u0027).replace(\u0027@g.us\u0027, \u0027\u0027) }}"
+                                                                                                           "value":  "={{ $json.body.data.key.remoteJid.split(\u0027@\u0027)[0].split(\u0027:\u0027)[0] }}"
                                                                                                        },
                                                                                                        {
                                                                                                            "id":  "messageType",
@@ -603,6 +661,12 @@
                                                                                                            "name":  "from_me",
                                                                                                            "type":  "boolean",
                                                                                                            "value":  "={{ $json.body.data.key.fromMe ?? false }}"
+                                                                                                       },
+                                                                                                       {
+                                                                                                           "id":  "event",
+                                                                                                           "name":  "event",
+                                                                                                           "type":  "string",
+                                                                                                           "value":  "={{ $json.body.event ?? \u0027\u0027 }}"
                                                                                                        }
                                                                                                    ]
                                                                                },
@@ -615,7 +679,7 @@
                                             "type":  "n8n-nodes-base.set",
                                             "typeVersion":  3.4,
                                             "position":  [
-                                                             48,
+                                                             16,
                                                              192
                                                          ]
                                         },
@@ -765,6 +829,14 @@
                                                                                               },
                                                                                   "conditions":  [
                                                                                                      {
+                                                                                                         "leftValue":  "={{ $json.event }}",
+                                                                                                         "operator":  {
+                                                                                                                          "type":  "string",
+                                                                                                                          "operation":  "equals"
+                                                                                                                      },
+                                                                                                         "rightValue":  "messages.upsert"
+                                                                                                     },
+                                                                                                     {
                                                                                                          "leftValue":  "={{ $json.from_me }}",
                                                                                                          "operator":  {
                                                                                                                           "type":  "boolean",
@@ -793,7 +865,7 @@
                                                                "operation":  "executeQuery",
                                                                "query":  "{{ \"SELECT id::text as id FROM funcionarios WHERE phone = \u0027\" + $json.phone + \"\u0027 AND ativo = true LIMIT 1\" }}",
                                                                "options":  {
-                                                                               "includeInputFields":  true
+
                                                                            }
                                                            },
                                             "id":  "592fe7d1-ba1b-42e1-8acb-ff4b6ea262c0",
@@ -866,17 +938,17 @@
                                                          ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "jsCode":  "const normalized = $(\u0027WF-DPV.01 - SET | Normalizar Payload\u0027).item.json;\nconst dbResult = $json;\nreturn [{\n  json: {\n    phone:        normalized.phone        || \u0027\u0027,\n    messageType:  normalized.messageType  || \u0027\u0027,\n    caption:      normalized.caption      || \u0027\u0027,\n    instanceName: normalized.instanceName || \u0027\u0027,\n    messageId:    normalized.messageId    || \u0027\u0027,\n    imageUrl:     normalized.imageUrl     || \u0027\u0027,\n    imageBase64:  normalized.imageBase64  || \u0027\u0027,\n    from_me:      normalized.from_me      ?? false,\n    id:           dbResult.id             || null\n  }\n}];"
+                                                           },
                                             "id":  "aab1c2d3-e4f5-6789-abcd-ef0123456789",
                                             "name":  "WF-DPV.01 - CODE | Merge Dados",
                                             "type":  "n8n-nodes-base.code",
                                             "typeVersion":  2,
                                             "position":  [
-                                                             720,
-                                                             176
-                                                         ],
-                                            "parameters":  {
-                                                               "jsCode":  "const normalized = $(\u0027WF-DPV.01 - SET | Normalizar Payload\u0027).item.json;\nconst dbResult = $json;\nreturn [{\n  json: {\n    phone:        normalized.phone        || \u0027\u0027,\n    messageType:  normalized.messageType  || \u0027\u0027,\n    caption:      normalized.caption      || \u0027\u0027,\n    instanceName: normalized.instanceName || \u0027\u0027,\n    messageId:    normalized.messageId    || \u0027\u0027,\n    imageUrl:     normalized.imageUrl     || \u0027\u0027,\n    imageBase64:  normalized.imageBase64  || \u0027\u0027,\n    from_me:      normalized.from_me      ?? false,\n    id:           dbResult.id             || null\n  }\n}];"
-                                                           }
+                                                             512,
+                                                             -64
+                                                         ]
                                         }
                                     ],
                           "connections":  {
@@ -1010,18 +1082,10 @@
                           "autosaved":  false,
                           "workflowPublishHistory":  [
                                                          {
-                                                             "createdAt":  "2026-06-20T18:52:19.093Z",
-                                                             "id":  1422,
+                                                             "createdAt":  "2026-07-05T23:04:50.739Z",
+                                                             "id":  1498,
                                                              "workflowId":  "z0F4H4NUyLErFjZ7",
-                                                             "versionId":  "812a94e3-c004-4490-8a68-5ce3b6819428",
-                                                             "event":  "deactivated",
-                                                             "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
-                                                         },
-                                                         {
-                                                             "createdAt":  "2026-06-20T18:52:19.125Z",
-                                                             "id":  1423,
-                                                             "workflowId":  "z0F4H4NUyLErFjZ7",
-                                                             "versionId":  "812a94e3-c004-4490-8a68-5ce3b6819428",
+                                                             "versionId":  "abb0c060-51df-41d2-9222-2e082eaca468",
                                                              "event":  "activated",
                                                              "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
                                                          }
