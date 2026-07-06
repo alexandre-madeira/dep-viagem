@@ -1,5 +1,5 @@
 ﻿{
-    "updatedAt":  "2026-07-06T02:18:51.729Z",
+    "updatedAt":  "2026-07-06T02:25:14.783Z",
     "createdAt":  "2026-06-19T14:43:37.585Z",
     "id":  "6SwQvQ5IVL8oVtUk",
     "name":  "WF-DPV.07 - Cadastro de Usuários [dep-viagem]",
@@ -227,7 +227,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "{{ \"INSERT INTO cadastros_pendentes (phone, step, criado_em, atualizado_em) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027aguardando_nome\u0027, NOW(), NOW()) ON CONFLICT (phone) DO UPDATE SET step = \u0027aguardando_nome\u0027, atualizado_em = NOW()\" }}",
+                                         "query":  "{{ \"INSERT INTO cadastros_pendentes (phone, step, created_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027aguardando_nome\u0027, NOW()) ON CONFLICT (phone) DO UPDATE SET step = \u0027aguardando_nome\u0027\" }}",
                                          "options":  {
 
                                                      }
@@ -288,7 +288,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "{{ \"UPDATE cadastros_pendentes SET nome_temp = \u0027\" + $json.caption.replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, step = \u0027aguardando_email\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "query":  "{{ \"UPDATE cadastros_pendentes SET nome_temp = \u0027\" + $json.caption.replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, step = \u0027aguardando_email\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                          "options":  {
 
                                                      }
@@ -395,7 +395,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "{{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "query":  "{{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                          "options":  {
 
                                                      }
@@ -598,7 +598,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "{{ \"INSERT INTO funcionarios (phone, nome, email, empresa, ativo, created_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027\" + ($json.nome || \u0027\u0027).replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, \u0027\" + $json.email + \"\u0027, \u0027A definir\u0027, true, NOW()) ON CONFLICT (phone) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, ativo = true; UPDATE cadastros_pendentes SET step = \u0027aguardando_cpf\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "query":  "{{ \"INSERT INTO funcionarios (phone, nome, email, empresa, ativo, created_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027\" + ($json.nome || \u0027\u0027).replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, \u0027\" + $json.email + \"\u0027, \u0027A definir\u0027, true, NOW()) ON CONFLICT (phone) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, ativo = true; UPDATE cadastros_pendentes SET step = \u0027aguardando_cpf\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                          "options":  {
 
                                                      }
@@ -659,7 +659,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "{{ \"UPDATE cadastros_pendentes SET tentativas = tentativas + 1, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "query":  "{{ \"UPDATE cadastros_pendentes SET tentativas = tentativas + 1 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                          "options":  {
 
                                                      }
@@ -831,7 +831,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "{{ \"UPDATE funcionarios SET cpf_cnpj = \u0027\" + $json.cpf_cnpj + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_tipo\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "query":  "{{ \"UPDATE funcionarios SET cpf_cnpj = \u0027\" + $json.cpf_cnpj + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_tipo\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                          "options":  {
 
                                                      }
@@ -899,7 +899,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "{{ \"UPDATE funcionarios SET tipo_pagador_padrao = \u0027\" + $json.tipo_pagador + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_forma\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "query":  "{{ \"UPDATE funcionarios SET tipo_pagador_padrao = \u0027\" + $json.tipo_pagador + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_forma\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                          "options":  {
 
                                                      }
@@ -1343,9 +1343,9 @@
     "pinData":  {
 
                 },
-    "versionId":  "11f5f650-9400-4c56-b220-623d6c10d9c4",
-    "activeVersionId":  "11f5f650-9400-4c56-b220-623d6c10d9c4",
-    "versionCounter":  5,
+    "versionId":  "c5b4a60e-ec72-438e-af22-39b27376608a",
+    "activeVersionId":  "c5b4a60e-ec72-438e-af22-39b27376608a",
+    "versionCounter":  6,
     "triggerCount":  0,
     "sourceWorkflowId":  null,
     "shared":  [
@@ -1374,9 +1374,9 @@
 
              ],
     "activeVersion":  {
-                          "updatedAt":  "2026-07-06T02:18:51.732Z",
-                          "createdAt":  "2026-07-06T02:18:51.732Z",
-                          "versionId":  "11f5f650-9400-4c56-b220-623d6c10d9c4",
+                          "updatedAt":  "2026-07-06T02:25:14.784Z",
+                          "createdAt":  "2026-07-06T02:25:14.784Z",
+                          "versionId":  "c5b4a60e-ec72-438e-af22-39b27376608a",
                           "workflowId":  "6SwQvQ5IVL8oVtUk",
                           "nodes":  [
                                         {
@@ -1599,7 +1599,7 @@
                                         {
                                             "parameters":  {
                                                                "operation":  "executeQuery",
-                                                               "query":  "{{ \"INSERT INTO cadastros_pendentes (phone, step, criado_em, atualizado_em) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027aguardando_nome\u0027, NOW(), NOW()) ON CONFLICT (phone) DO UPDATE SET step = \u0027aguardando_nome\u0027, atualizado_em = NOW()\" }}",
+                                                               "query":  "{{ \"INSERT INTO cadastros_pendentes (phone, step, created_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027aguardando_nome\u0027, NOW()) ON CONFLICT (phone) DO UPDATE SET step = \u0027aguardando_nome\u0027\" }}",
                                                                "options":  {
 
                                                                            }
@@ -1660,7 +1660,7 @@
                                         {
                                             "parameters":  {
                                                                "operation":  "executeQuery",
-                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET nome_temp = \u0027\" + $json.caption.replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, step = \u0027aguardando_email\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET nome_temp = \u0027\" + $json.caption.replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, step = \u0027aguardando_email\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                                                "options":  {
 
                                                                            }
@@ -1767,7 +1767,7 @@
                                         {
                                             "parameters":  {
                                                                "operation":  "executeQuery",
-                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                                                "options":  {
 
                                                                            }
@@ -1970,7 +1970,7 @@
                                         {
                                             "parameters":  {
                                                                "operation":  "executeQuery",
-                                                               "query":  "{{ \"INSERT INTO funcionarios (phone, nome, email, empresa, ativo, created_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027\" + ($json.nome || \u0027\u0027).replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, \u0027\" + $json.email + \"\u0027, \u0027A definir\u0027, true, NOW()) ON CONFLICT (phone) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, ativo = true; UPDATE cadastros_pendentes SET step = \u0027aguardando_cpf\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "query":  "{{ \"INSERT INTO funcionarios (phone, nome, email, empresa, ativo, created_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027\" + ($json.nome || \u0027\u0027).replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, \u0027\" + $json.email + \"\u0027, \u0027A definir\u0027, true, NOW()) ON CONFLICT (phone) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, ativo = true; UPDATE cadastros_pendentes SET step = \u0027aguardando_cpf\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                                                "options":  {
 
                                                                            }
@@ -2031,7 +2031,7 @@
                                         {
                                             "parameters":  {
                                                                "operation":  "executeQuery",
-                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET tentativas = tentativas + 1, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET tentativas = tentativas + 1 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                                                "options":  {
 
                                                                            }
@@ -2203,7 +2203,7 @@
                                         {
                                             "parameters":  {
                                                                "operation":  "executeQuery",
-                                                               "query":  "{{ \"UPDATE funcionarios SET cpf_cnpj = \u0027\" + $json.cpf_cnpj + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_tipo\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "query":  "{{ \"UPDATE funcionarios SET cpf_cnpj = \u0027\" + $json.cpf_cnpj + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_tipo\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                                                "options":  {
 
                                                                            }
@@ -2271,7 +2271,7 @@
                                         {
                                             "parameters":  {
                                                                "operation":  "executeQuery",
-                                                               "query":  "{{ \"UPDATE funcionarios SET tipo_pagador_padrao = \u0027\" + $json.tipo_pagador + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_forma\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "query":  "{{ \"UPDATE funcionarios SET tipo_pagador_padrao = \u0027\" + $json.tipo_pagador + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_forma\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                                                "options":  {
 
                                                                            }
@@ -2708,10 +2708,10 @@
                           "autosaved":  false,
                           "workflowPublishHistory":  [
                                                          {
-                                                             "createdAt":  "2026-07-06T02:18:56.007Z",
-                                                             "id":  1520,
+                                                             "createdAt":  "2026-07-06T02:25:19.708Z",
+                                                             "id":  1522,
                                                              "workflowId":  "6SwQvQ5IVL8oVtUk",
-                                                             "versionId":  "11f5f650-9400-4c56-b220-623d6c10d9c4",
+                                                             "versionId":  "c5b4a60e-ec72-438e-af22-39b27376608a",
                                                              "event":  "activated",
                                                              "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
                                                          }
