@@ -1,5 +1,5 @@
 ﻿{
-    "updatedAt":  "2026-07-05T23:46:33.165Z",
+    "updatedAt":  "2026-07-06T02:18:51.729Z",
     "createdAt":  "2026-06-19T14:43:37.585Z",
     "id":  "6SwQvQ5IVL8oVtUk",
     "name":  "WF-DPV.07 - Cadastro de Usuários [dep-viagem]",
@@ -8,19 +8,26 @@
     "isArchived":  false,
     "nodes":  [
                   {
+                      "parameters":  {
+
+                                     },
                       "id":  "f937a53a-c378-4863-b542-68000bc621d4",
                       "name":  "WF-DPV.07 - TRIGGER | Iniciar Cadastro",
                       "type":  "n8n-nodes-base.executeWorkflowTrigger",
                       "typeVersion":  1,
                       "position":  [
-                                       0,
+                                       -32,
                                        288
-                                   ],
-                      "parameters":  {
-
-                                     }
+                                   ]
                   },
                   {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "{{ \"SELECT step, nome_temp, email_temp, tentativas FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "3675c3a0-702b-44f6-960e-cbcfa2fa4251",
                       "name":  "WF-DPV.07 - DB | Buscar Etapa Cadastro",
                       "type":  "n8n-nodes-base.postgres",
@@ -29,21 +36,18 @@
                                        224,
                                        288
                                    ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "={{ \"SELECT step, nome_temp, email_temp, tentativas FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                         "options":  {
-                                                         "alwaysOutputData":  true
-                                                     }
-                                     },
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
                                                            "name":  "DB_dep_viagem"
                                                        }
-                                      }
+                                      },
+                      "alwaysOutputData":  true
                   },
                   {
+                      "parameters":  {
+                                         "jsCode":  "\nconst input = $input.first().json;\nconst phone = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone;\nconst caption = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.caption || \u0027\u0027;\nconst pushName = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.pushName || \u0027\u0027;\nconst step = input.step || \u0027novo\u0027;\nconst nomePadrao = pushName ? pushName.split(\u0027 \u0027)[0] : \u0027\u0027;\nreturn [{\n  json: {\n    phone, caption: caption.trim(), step,\n    nome_temp: input.nome_temp || \u0027\u0027,\n    email_temp: input.email_temp || \u0027\u0027,\n    tentativas: input.tentativas || 0,\n    pushName, nomePadrao\n  }\n}];\n"
+                                     },
                       "id":  "a7e61c21-f36d-4b86-99e6-9464ea2c1421",
                       "name":  "WF-DPV.07 - CODE | Processar Etapa",
                       "type":  "n8n-nodes-base.code",
@@ -51,25 +55,13 @@
                       "position":  [
                                        448,
                                        288
-                                   ],
-                      "parameters":  {
-                                         "jsCode":  "\nconst input = $input.first().json;\nconst phone = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone;\nconst caption = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.caption || \u0027\u0027;\nconst pushName = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.pushName || \u0027\u0027;\nconst step = input.step || \u0027novo\u0027;\nconst nomePadrao = pushName ? pushName.split(\u0027 \u0027)[0] : \u0027\u0027;\nreturn [{\n  json: {\n    phone, caption: caption.trim(), step,\n    nome_temp: input.nome_temp || \u0027\u0027,\n    email_temp: input.email_temp || \u0027\u0027,\n    tentativas: input.tentativas || 0,\n    pushName, nomePadrao\n  }\n}];\n"
-                                     }
+                                   ]
                   },
                   {
-                      "id":  "5c4d1b0d-db16-468f-8e5b-7e3d58a11635",
-                      "name":  "WF-DPV.07 - SWITCH | Roteamento por Etapa",
-                      "type":  "n8n-nodes-base.switch",
-                      "typeVersion":  3.2,
-                      "position":  [
-                                       672,
-                                       256
-                                   ],
                       "parameters":  {
                                          "rules":  {
                                                        "values":  [
                                                                       {
-                                                                          "outputKey":  "novo",
                                                                           "conditions":  {
                                                                                              "options":  {
                                                                                                              "caseSensitive":  false,
@@ -91,7 +83,6 @@
                                                                                          }
                                                                       },
                                                                       {
-                                                                          "outputKey":  "aguardando_nome",
                                                                           "conditions":  {
                                                                                              "options":  {
                                                                                                              "caseSensitive":  false,
@@ -113,7 +104,6 @@
                                                                                          }
                                                                       },
                                                                       {
-                                                                          "outputKey":  "aguardando_email",
                                                                           "conditions":  {
                                                                                              "options":  {
                                                                                                              "caseSensitive":  false,
@@ -135,7 +125,6 @@
                                                                                          }
                                                                       },
                                                                       {
-                                                                          "outputKey":  "aguardando_confirmacao",
                                                                           "conditions":  {
                                                                                              "options":  {
                                                                                                              "caseSensitive":  false,
@@ -157,7 +146,6 @@
                                                                                          }
                                                                       },
                                                                       {
-                                                                          "outputKey":  "aguardando_cpf",
                                                                           "conditions":  {
                                                                                              "options":  {
                                                                                                              "caseSensitive":  false,
@@ -179,7 +167,6 @@
                                                                                          }
                                                                       },
                                                                       {
-                                                                          "outputKey":  "aguardando_tipo",
                                                                           "conditions":  {
                                                                                              "options":  {
                                                                                                              "caseSensitive":  false,
@@ -201,7 +188,6 @@
                                                                                          }
                                                                       },
                                                                       {
-                                                                          "outputKey":  "aguardando_forma",
                                                                           "conditions":  {
                                                                                              "options":  {
                                                                                                              "caseSensitive":  false,
@@ -228,9 +214,24 @@
                                                          "fallbackOutput":  "extra",
                                                          "renameFallbackOutput":  "Ignorar"
                                                      }
-                                     }
+                                     },
+                      "id":  "5c4d1b0d-db16-468f-8e5b-7e3d58a11635",
+                      "name":  "WF-DPV.07 - SWITCH | Roteamento por Etapa",
+                      "type":  "n8n-nodes-base.switch",
+                      "typeVersion":  3.2,
+                      "position":  [
+                                       672,
+                                       256
+                                   ]
                   },
                   {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "{{ \"INSERT INTO cadastros_pendentes (phone, step, criado_em, atualizado_em) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027aguardando_nome\u0027, NOW(), NOW()) ON CONFLICT (phone) DO UPDATE SET step = \u0027aguardando_nome\u0027, atualizado_em = NOW()\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "f9684c4d-81d6-4d1b-905b-af3bbc5b6355",
                       "name":  "WF-DPV.07 - DB | Criar Cadastro Pendente",
                       "type":  "n8n-nodes-base.postgres",
@@ -239,13 +240,6 @@
                                        896,
                                        0
                                    ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "={{ \"INSERT INTO cadastros_pendentes (phone, step, criado_em, atualizado_em) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027aguardando_nome\u0027, NOW(), NOW()) ON CONFLICT (phone) DO UPDATE SET step = \u0027aguardando_nome\u0027, atualizado_em = NOW()\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
@@ -254,22 +248,12 @@
                                       }
                   },
                   {
-                      "id":  "82137f06-53e8-4612-94e4-498913a3cf41",
-                      "name":  "WF-DPV.07 - HTTP | Pedir Nome",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1120,
-                                       0
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -286,6 +270,14 @@
 
                                                      }
                                      },
+                      "id":  "82137f06-53e8-4612-94e4-498913a3cf41",
+                      "name":  "WF-DPV.07 - HTTP | Pedir Nome",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       1120,
+                                       0
+                                   ],
                       "credentials":  {
                                           "httpHeaderAuth":  {
                                                                  "id":  "Ka0C8J4zfOklD1lw",
@@ -294,6 +286,13 @@
                                       }
                   },
                   {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "{{ \"UPDATE cadastros_pendentes SET nome_temp = \u0027\" + $json.caption.replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, step = \u0027aguardando_email\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "7fbee36d-0ce8-4b7e-8f36-464a4fcb6e1f",
                       "name":  "WF-DPV.07 - DB | Salvar Nome",
                       "type":  "n8n-nodes-base.postgres",
@@ -302,13 +301,6 @@
                                        896,
                                        192
                                    ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "={{ \"UPDATE cadastros_pendentes SET nome_temp = \u0027\" + $json.caption.replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, step = \u0027aguardando_email\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
@@ -317,22 +309,12 @@
                                       }
                   },
                   {
-                      "id":  "a167ac93-0bc1-4a14-a751-3c580932e28a",
-                      "name":  "WF-DPV.07 - HTTP | Pedir Email",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1120,
-                                       192
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -349,6 +331,14 @@
 
                                                      }
                                      },
+                      "id":  "a167ac93-0bc1-4a14-a751-3c580932e28a",
+                      "name":  "WF-DPV.07 - HTTP | Pedir Email",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       1120,
+                                       192
+                                   ],
                       "credentials":  {
                                           "httpHeaderAuth":  {
                                                                  "id":  "Ka0C8J4zfOklD1lw",
@@ -357,6 +347,9 @@
                                       }
                   },
                   {
+                      "parameters":  {
+                                         "jsCode":  "\nconst phone = $json.phone;\nconst email = $json.caption.trim().toLowerCase();\nconst nome = $json.nome_temp || \u0027\u0027;\nconst emailValido = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\nconst codigo = Math.floor(100000 + Math.random() * 900000).toString();\nconst expira = new Date(Date.now() + 15 * 60 * 1000).toISOString();\nreturn [{ json: { phone, email, emailValido, codigo, expira, nome } }];\n"
+                                     },
                       "id":  "ac03af60-de92-4ef3-8774-03e1ec7f51af",
                       "name":  "WF-DPV.07 - CODE | Processar Email",
                       "type":  "n8n-nodes-base.code",
@@ -364,20 +357,9 @@
                       "position":  [
                                        896,
                                        384
-                                   ],
-                      "parameters":  {
-                                         "jsCode":  "\nconst phone = $json.phone;\nconst email = $json.caption.trim().toLowerCase();\nconst nome = $json.nome_temp || \u0027\u0027;\nconst emailValido = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\nconst codigo = Math.floor(100000 + Math.random() * 900000).toString();\nconst expira = new Date(Date.now() + 15 * 60 * 1000).toISOString();\nreturn [{ json: { phone, email, emailValido, codigo, expira, nome } }];\n"
-                                     }
+                                   ]
                   },
                   {
-                      "id":  "dca1a410-1206-416e-986a-4b83d2e33fbd",
-                      "name":  "WF-DPV.07 - IF | Email Valido?",
-                      "type":  "n8n-nodes-base.if",
-                      "typeVersion":  2.2,
-                      "position":  [
-                                       1120,
-                                       384
-                                   ],
                       "parameters":  {
                                          "conditions":  {
                                                             "options":  {
@@ -396,10 +378,28 @@
                                                                                }
                                                                            ],
                                                             "combinator":  "and"
-                                                        }
-                                     }
+                                                        },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "dca1a410-1206-416e-986a-4b83d2e33fbd",
+                      "name":  "WF-DPV.07 - IF | Email Valido?",
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.2,
+                      "position":  [
+                                       1120,
+                                       384
+                                   ]
                   },
                   {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "{{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "349d192d-aaa4-4327-acf5-3c1b7dbf36cf",
                       "name":  "WF-DPV.07 - DB | Salvar Email e Codigo",
                       "type":  "n8n-nodes-base.postgres",
@@ -408,13 +408,6 @@
                                        1344,
                                        288
                                    ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "={{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
@@ -423,6 +416,18 @@
                                       }
                   },
                   {
+                      "parameters":  {
+                                         "method":  "POST",
+                                         "url":  "https://api.mailersend.com/v1/email",
+                                         "authentication":  "genericCredentialType",
+                                         "genericAuthType":  "httpHeaderAuth",
+                                         "sendBody":  true,
+                                         "specifyBody":  "json",
+                                         "jsonBody":  "={{ JSON.stringify({ from: { email: \"noreply@test-eqvygm0x5d8l0p7w.mlsender.net\", name: \"dep-viagem\" }, to: [{ email: $json.email, name: $json.nome }], subject: \"Código de confirmação: \" + $json.codigo, html: \"\u003ch2\u003eConfirme seu cadastro\u003c/h2\u003e\u003cp\u003eOlá, \" + $json.nome + \"!\u003c/p\u003e\u003cp\u003eSeu código de verificação é:\u003c/p\u003e\u003ch1 style=\u0027font-size:40px;letter-spacing:8px;color:#2563eb\u0027\u003e\" + $json.codigo + \"\u003c/h1\u003e\u003cp\u003eVálido por 15 minutos.\u003c/p\u003e\" }) }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "20a30362-6fd1-49ba-bb61-6a93721b5cb5",
                       "name":  "WF-DPV.07 - HTTP | Enviar Codigo MailerSend",
                       "type":  "n8n-nodes-base.httpRequest",
@@ -431,19 +436,6 @@
                                        1568,
                                        288
                                    ],
-                      "parameters":  {
-                                         "method":  "POST",
-                                         "url":  "https://api.mailersend.com/v1/email",
-                                         "authentication":  "genericCredentialType",
-                                         "genericAuthType":  "httpHeaderAuth",
-                                         "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "json",
-                                         "jsonBody":  "={{ JSON.stringify({ from: { email: \"noreply@test-eqvygm0x5d8l0p7w.mlsender.net\", name: \"dep-viagem\" }, to: [{ email: $json.email, name: $json.nome }], subject: \"Código de confirmação: \" + $json.codigo, html: \"\u003ch2\u003eConfirme seu cadastro\u003c/h2\u003e\u003cp\u003eOlá, \" + $json.nome + \"!\u003c/p\u003e\u003cp\u003eSeu código de verificação é:\u003c/p\u003e\u003ch1 style=\u0027font-size:40px;letter-spacing:8px;color:#2563eb\u0027\u003e\" + $json.codigo + \"\u003c/h1\u003e\u003cp\u003eVálido por 15 minutos.\u003c/p\u003e\" }) }}",
-                                         "options":  {
-
-                                                     }
-                                     },
                       "credentials":  {
                                           "httpHeaderAuth":  {
                                                                  "id":  "hx3Z9csTHPS00ghb",
@@ -452,22 +444,12 @@
                                       }
                   },
                   {
-                      "id":  "f1059820-8377-4e21-bf0b-73630a0327a0",
-                      "name":  "WF-DPV.07 - HTTP | Avisar Codigo Enviado",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1792,
-                                       288
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -484,6 +466,14 @@
 
                                                      }
                                      },
+                      "id":  "f1059820-8377-4e21-bf0b-73630a0327a0",
+                      "name":  "WF-DPV.07 - HTTP | Avisar Codigo Enviado",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       1792,
+                                       288
+                                   ],
                       "credentials":  {
                                           "httpHeaderAuth":  {
                                                                  "id":  "Ka0C8J4zfOklD1lw",
@@ -492,22 +482,12 @@
                                       }
                   },
                   {
-                      "id":  "58705b65-747c-41ce-a248-3a80c6bef41c",
-                      "name":  "WF-DPV.07 - HTTP | Email Invalido",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1344,
-                                       480
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -524,6 +504,14 @@
 
                                                      }
                                      },
+                      "id":  "58705b65-747c-41ce-a248-3a80c6bef41c",
+                      "name":  "WF-DPV.07 - HTTP | Email Invalido",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       1344,
+                                       480
+                                   ],
                       "credentials":  {
                                           "httpHeaderAuth":  {
                                                                  "id":  "Ka0C8J4zfOklD1lw",
@@ -532,6 +520,13 @@
                                       }
                   },
                   {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "{{ \"SELECT nome_temp, email_temp, codigo, codigo_expira, tentativas FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "1fe5101d-6b12-4244-b60f-3110357a4d06",
                       "name":  "WF-DPV.07 - DB | Validar Codigo",
                       "type":  "n8n-nodes-base.postgres",
@@ -540,13 +535,6 @@
                                        896,
                                        672
                                    ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "={{ \"SELECT nome_temp, email_temp, codigo, codigo_expira, tentativas FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
@@ -555,6 +543,9 @@
                                       }
                   },
                   {
+                      "parameters":  {
+                                         "jsCode":  "\nconst phone = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone;\nconst codigoDigitado = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.caption.trim();\nconst db = $input.first().json;\nconst codigoCorreto = db.codigo === codigoDigitado;\nconst expirado = new Date(db.codigo_expira) \u003c new Date();\nconst tentativas = (db.tentativas || 0) + 1;\nconst bloqueado = tentativas \u003e 5;\nreturn [{ json: { phone, codigoCorreto, expirado, bloqueado, tentativas, nome: db.nome_temp, email: db.email_temp } }];\n"
+                                     },
                       "id":  "23055090-118c-4503-a803-57f9d3476da9",
                       "name":  "WF-DPV.07 - CODE | Validar Codigo",
                       "type":  "n8n-nodes-base.code",
@@ -562,20 +553,9 @@
                       "position":  [
                                        1120,
                                        672
-                                   ],
-                      "parameters":  {
-                                         "jsCode":  "\nconst phone = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone;\nconst codigoDigitado = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.caption.trim();\nconst db = $input.first().json;\nconst codigoCorreto = db.codigo === codigoDigitado;\nconst expirado = new Date(db.codigo_expira) \u003c new Date();\nconst tentativas = (db.tentativas || 0) + 1;\nconst bloqueado = tentativas \u003e 5;\nreturn [{ json: { phone, codigoCorreto, expirado, bloqueado, tentativas, nome: db.nome_temp, email: db.email_temp } }];\n"
-                                     }
+                                   ]
                   },
                   {
-                      "id":  "851be80a-3057-40e9-bd44-1a6bf7595c05",
-                      "name":  "WF-DPV.07 - IF | Codigo Correto?",
-                      "type":  "n8n-nodes-base.if",
-                      "typeVersion":  2.2,
-                      "position":  [
-                                       1344,
-                                       672
-                                   ],
                       "parameters":  {
                                          "conditions":  {
                                                             "options":  {
@@ -601,10 +581,28 @@
                                                                                }
                                                                            ],
                                                             "combinator":  "and"
-                                                        }
-                                     }
+                                                        },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "851be80a-3057-40e9-bd44-1a6bf7595c05",
+                      "name":  "WF-DPV.07 - IF | Codigo Correto?",
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.2,
+                      "position":  [
+                                       1344,
+                                       672
+                                   ]
                   },
                   {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "{{ \"INSERT INTO funcionarios (phone, nome, email, empresa, ativo, created_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027\" + ($json.nome || \u0027\u0027).replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, \u0027\" + $json.email + \"\u0027, \u0027A definir\u0027, true, NOW()) ON CONFLICT (phone) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, ativo = true; UPDATE cadastros_pendentes SET step = \u0027aguardando_cpf\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "419ed5e2-9547-4fdf-b63c-0917226fcef6",
                       "name":  "WF-DPV.07 - DB | Cadastrar Funcionario",
                       "type":  "n8n-nodes-base.postgres",
@@ -613,13 +611,6 @@
                                        1568,
                                        576
                                    ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "={{ \"INSERT INTO funcionarios (phone, nome, email, empresa, ativo, created_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027\" + ($json.nome || \u0027\u0027).replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, \u0027\" + $json.email + \"\u0027, \u0027A definir\u0027, true, NOW()) ON CONFLICT (phone) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, ativo = true; UPDATE cadastros_pendentes SET step = \u0027aguardando_cpf\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
@@ -628,22 +619,12 @@
                                       }
                   },
                   {
-                      "id":  "c3cb5858-dd6f-4c8a-af75-ddd7c28975a8",
-                      "name":  "WF-DPV.07 - HTTP | Boas Vindas",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1792,
-                                       576
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -660,6 +641,14 @@
 
                                                      }
                                      },
+                      "id":  "c3cb5858-dd6f-4c8a-af75-ddd7c28975a8",
+                      "name":  "WF-DPV.07 - HTTP | Boas Vindas",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       1792,
+                                       576
+                                   ],
                       "credentials":  {
                                           "httpHeaderAuth":  {
                                                                  "id":  "Ka0C8J4zfOklD1lw",
@@ -668,6 +657,13 @@
                                       }
                   },
                   {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "{{ \"UPDATE cadastros_pendentes SET tentativas = tentativas + 1, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "ad6904aa-f316-466d-a163-8dfd0d0f0cb8",
                       "name":  "WF-DPV.07 - DB | Incrementar Tentativas",
                       "type":  "n8n-nodes-base.postgres",
@@ -676,13 +672,6 @@
                                        1568,
                                        768
                                    ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "={{ \"UPDATE cadastros_pendentes SET tentativas = tentativas + 1, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
@@ -691,22 +680,12 @@
                                       }
                   },
                   {
-                      "id":  "39afa0ba-f348-4242-a8df-4f9568595b47",
-                      "name":  "WF-DPV.07 - HTTP | Codigo Errado",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1792,
-                                       768
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -723,6 +702,14 @@
 
                                                      }
                                      },
+                      "id":  "39afa0ba-f348-4242-a8df-4f9568595b47",
+                      "name":  "WF-DPV.07 - HTTP | Codigo Errado",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       1792,
+                                       768
+                                   ],
                       "credentials":  {
                                           "httpHeaderAuth":  {
                                                                  "id":  "Ka0C8J4zfOklD1lw",
@@ -731,22 +718,12 @@
                                       }
                   },
                   {
-                      "id":  "722850a9-18ff-498e-9826-552fddaf00fe",
-                      "name":  "WF-DPV.07 - HTTP | Pedir CPF",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       2016,
-                                       576
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -762,9 +739,20 @@
                                          "options":  {
 
                                                      }
-                                     }
+                                     },
+                      "id":  "722850a9-18ff-498e-9826-552fddaf00fe",
+                      "name":  "WF-DPV.07 - HTTP | Pedir CPF",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       2016,
+                                       576
+                                   ]
                   },
                   {
+                      "parameters":  {
+                                         "jsCode":  "const cpf = String($json.caption || \u0027\u0027).replace(/[^0-9]/g, \u0027\u0027);\nconst valido = cpf.length === 11 || cpf.length === 14;\nreturn [{ json: { ...$json, cpf_cnpj: cpf, cpf_valido: valido, cpf_erro: valido ? null : \u0027CPF/CNPJ invalido: deve ter 11 ou 14 digitos (recebido: \u0027 + cpf.length + \u0027)\u0027 } }];"
+                                     },
                       "id":  "3eaca017-132f-4eb0-8c62-c28099faf34d",
                       "name":  "WF-DPV.07 - CODE | Parse CPF",
                       "type":  "n8n-nodes-base.code",
@@ -772,20 +760,9 @@
                       "position":  [
                                        896,
                                        960
-                                   ],
-                      "parameters":  {
-                                         "jsCode":  "const cpf = String($json.caption || \u0027\u0027).replace(/[^0-9]/g, \u0027\u0027);\nconst valido = cpf.length === 11 || cpf.length === 14;\nreturn [{ json: { ...$json, cpf_cnpj: cpf, cpf_valido: valido, cpf_erro: valido ? null : \u0027CPF/CNPJ invalido: deve ter 11 ou 14 digitos (recebido: \u0027 + cpf.length + \u0027)\u0027 } }];"
-                                     }
+                                   ]
                   },
                   {
-                      "id":  "7098b922-d824-48ae-a791-a10ea520b4a9",
-                      "name":  "WF-DPV.07 - IF | CPF Valido",
-                      "type":  "n8n-nodes-base.if",
-                      "typeVersion":  2.2,
-                      "position":  [
-                                       1120,
-                                       960
-                                   ],
                       "parameters":  {
                                          "conditions":  {
                                                             "options":  {
@@ -809,25 +786,23 @@
                                          "options":  {
 
                                                      }
-                                     }
+                                     },
+                      "id":  "7098b922-d824-48ae-a791-a10ea520b4a9",
+                      "name":  "WF-DPV.07 - IF | CPF Valido",
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.2,
+                      "position":  [
+                                       1120,
+                                       960
+                                   ]
                   },
                   {
-                      "id":  "1524c3d5-0076-4560-9a2f-8a0ae6889916",
-                      "name":  "WF-DPV.07 - HTTP | CPF Invalido",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1344,
-                                       1056
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -843,9 +818,24 @@
                                          "options":  {
 
                                                      }
-                                     }
+                                     },
+                      "id":  "1524c3d5-0076-4560-9a2f-8a0ae6889916",
+                      "name":  "WF-DPV.07 - HTTP | CPF Invalido",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       1344,
+                                       1056
+                                   ]
                   },
                   {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "{{ \"UPDATE funcionarios SET cpf_cnpj = \u0027\" + $json.cpf_cnpj + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_tipo\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "36d44291-97a3-4fcf-8a00-63d396552899",
                       "name":  "WF-DPV.07 - DB | Salvar CPF Avancar",
                       "type":  "n8n-nodes-base.postgres",
@@ -854,13 +844,6 @@
                                        1344,
                                        864
                                    ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "={{ \"UPDATE funcionarios SET cpf_cnpj = \u0027\" + $json.cpf_cnpj + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_tipo\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
@@ -869,22 +852,12 @@
                                       }
                   },
                   {
-                      "id":  "d1d76a04-6a37-48e5-a76c-0a4374a7f524",
-                      "name":  "WF-DPV.07 - HTTP | Pedir Tipo",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1568,
-                                       864
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -900,9 +873,20 @@
                                          "options":  {
 
                                                      }
-                                     }
+                                     },
+                      "id":  "d1d76a04-6a37-48e5-a76c-0a4374a7f524",
+                      "name":  "WF-DPV.07 - HTTP | Pedir Tipo",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       1568,
+                                       864
+                                   ]
                   },
                   {
+                      "parameters":  {
+                                         "jsCode":  "const input = String($json.caption || \u0027\u0027).trim().toLowerCase().replace(/[^a-z0-9]/g, \u0027\u0027);\nlet tipo = null;\nif (input === \u00271\u0027 || input === \u0027empresa\u0027 || input.startsWith(\u0027empr\u0027)) tipo = \u0027empresa\u0027;\nelse if (input === \u00272\u0027 || input === \u0027particular\u0027 || input.startsWith(\u0027part\u0027)) tipo = \u0027particular\u0027;\nreturn [{ json: { ...$json, tipo_pagador: tipo || \u0027particular\u0027 } }];"
+                                     },
                       "id":  "cd1f80ab-b465-41cd-b977-8ce2efd8e30c",
                       "name":  "WF-DPV.07 - CODE | Parse Tipo",
                       "type":  "n8n-nodes-base.code",
@@ -910,12 +894,16 @@
                       "position":  [
                                        896,
                                        1152
-                                   ],
-                      "parameters":  {
-                                         "jsCode":  "const input = String($json.caption || \u0027\u0027).trim().toLowerCase().replace(/[^a-z0-9]/g, \u0027\u0027);\nlet tipo = null;\nif (input === \u00271\u0027 || input === \u0027empresa\u0027 || input.startsWith(\u0027empr\u0027)) tipo = \u0027empresa\u0027;\nelse if (input === \u00272\u0027 || input === \u0027particular\u0027 || input.startsWith(\u0027part\u0027)) tipo = \u0027particular\u0027;\nreturn [{ json: { ...$json, tipo_pagador: tipo || \u0027particular\u0027 } }];"
-                                     }
+                                   ]
                   },
                   {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "{{ \"UPDATE funcionarios SET tipo_pagador_padrao = \u0027\" + $json.tipo_pagador + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_forma\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "99735a13-b28a-43d1-a4bc-0d83af623d5d",
                       "name":  "WF-DPV.07 - DB | Salvar Tipo Avancar",
                       "type":  "n8n-nodes-base.postgres",
@@ -924,13 +912,6 @@
                                        1120,
                                        1152
                                    ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "={{ \"UPDATE funcionarios SET tipo_pagador_padrao = \u0027\" + $json.tipo_pagador + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_forma\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
@@ -939,22 +920,12 @@
                                       }
                   },
                   {
-                      "id":  "7e3e20be-6319-470b-9fac-43e2eb9ac14c",
-                      "name":  "WF-DPV.07 - HTTP | Pedir Forma",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1344,
-                                       1152
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -970,9 +941,20 @@
                                          "options":  {
 
                                                      }
-                                     }
+                                     },
+                      "id":  "7e3e20be-6319-470b-9fac-43e2eb9ac14c",
+                      "name":  "WF-DPV.07 - HTTP | Pedir Forma",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       1344,
+                                       1152
+                                   ]
                   },
                   {
+                      "parameters":  {
+                                         "jsCode":  "const input = String($json.caption || \u0027\u0027).trim().toLowerCase().replace(/[^a-z]/g, \u0027\u0027);\nlet forma = null;\nif (input === \u0027a\u0027 || input === \u0027cartao\u0027 || input.startsWith(\u0027cart\u0027)) forma = \u0027cartao\u0027;\nelse if (input === \u0027b\u0027 || input === \u0027dinheiro\u0027 || input.startsWith(\u0027dinh\u0027)) forma = \u0027dinheiro\u0027;\nreturn [{ json: { ...$json, forma_pagamento: forma || \u0027cartao\u0027 } }];"
+                                     },
                       "id":  "1151ffee-0bfa-4b39-b013-fb35f1321849",
                       "name":  "WF-DPV.07 - CODE | Parse Forma",
                       "type":  "n8n-nodes-base.code",
@@ -980,12 +962,16 @@
                       "position":  [
                                        896,
                                        1344
-                                   ],
-                      "parameters":  {
-                                         "jsCode":  "const input = String($json.caption || \u0027\u0027).trim().toLowerCase().replace(/[^a-z]/g, \u0027\u0027);\nlet forma = null;\nif (input === \u0027a\u0027 || input === \u0027cartao\u0027 || input.startsWith(\u0027cart\u0027)) forma = \u0027cartao\u0027;\nelse if (input === \u0027b\u0027 || input === \u0027dinheiro\u0027 || input.startsWith(\u0027dinh\u0027)) forma = \u0027dinheiro\u0027;\nreturn [{ json: { ...$json, forma_pagamento: forma || \u0027cartao\u0027 } }];"
-                                     }
+                                   ]
                   },
                   {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "{{ \"UPDATE funcionarios SET forma_pagamento_padrao = \u0027\" + $json.forma_pagamento + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; DELETE FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
                       "id":  "0be7fca6-5c3b-444b-a6b2-6e0bcab1553c",
                       "name":  "WF-DPV.07 - DB | Finalizar Cadastro",
                       "type":  "n8n-nodes-base.postgres",
@@ -994,13 +980,6 @@
                                        1120,
                                        1344
                                    ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "={{ \"UPDATE funcionarios SET forma_pagamento_padrao = \u0027\" + $json.forma_pagamento + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; DELETE FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
@@ -1009,22 +988,12 @@
                                       }
                   },
                   {
-                      "id":  "38d9e2d6-3624-4d8e-ae70-fa38e4da597f",
-                      "name":  "WF-DPV.07 - HTTP | Boas Vindas P17",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1344,
-                                       1344
-                                   ],
                       "parameters":  {
                                          "method":  "POST",
                                          "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -1040,7 +1009,15 @@
                                          "options":  {
 
                                                      }
-                                     }
+                                     },
+                      "id":  "38d9e2d6-3624-4d8e-ae70-fa38e4da597f",
+                      "name":  "WF-DPV.07 - HTTP | Boas Vindas P17",
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.3,
+                      "position":  [
+                                       1344,
+                                       1344
+                                   ]
                   }
               ],
     "connections":  {
@@ -1352,7 +1329,8 @@
                     },
     "settings":  {
                      "executionOrder":  "v1",
-                     "availableInMCP":  true
+                     "availableInMCP":  true,
+                     "binaryMode":  "separate"
                  },
     "staticData":  null,
     "meta":  {
@@ -1362,10 +1340,12 @@
     "nodeGroups":  [
 
                    ],
-    "pinData":  null,
-    "versionId":  "af5594e7-4707-453d-968a-e6d83cf31f3b",
-    "activeVersionId":  "af5594e7-4707-453d-968a-e6d83cf31f3b",
-    "versionCounter":  3,
+    "pinData":  {
+
+                },
+    "versionId":  "11f5f650-9400-4c56-b220-623d6c10d9c4",
+    "activeVersionId":  "11f5f650-9400-4c56-b220-623d6c10d9c4",
+    "versionCounter":  5,
     "triggerCount":  0,
     "sourceWorkflowId":  null,
     "shared":  [
@@ -1394,25 +1374,32 @@
 
              ],
     "activeVersion":  {
-                          "updatedAt":  "2026-07-05T23:46:33.167Z",
-                          "createdAt":  "2026-07-05T23:46:33.167Z",
-                          "versionId":  "af5594e7-4707-453d-968a-e6d83cf31f3b",
+                          "updatedAt":  "2026-07-06T02:18:51.732Z",
+                          "createdAt":  "2026-07-06T02:18:51.732Z",
+                          "versionId":  "11f5f650-9400-4c56-b220-623d6c10d9c4",
                           "workflowId":  "6SwQvQ5IVL8oVtUk",
                           "nodes":  [
                                         {
+                                            "parameters":  {
+
+                                                           },
                                             "id":  "f937a53a-c378-4863-b542-68000bc621d4",
                                             "name":  "WF-DPV.07 - TRIGGER | Iniciar Cadastro",
                                             "type":  "n8n-nodes-base.executeWorkflowTrigger",
                                             "typeVersion":  1,
                                             "position":  [
-                                                             0,
+                                                             -32,
                                                              288
-                                                         ],
-                                            "parameters":  {
-
-                                                           }
+                                                         ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "{{ \"SELECT step, nome_temp, email_temp, tentativas FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "3675c3a0-702b-44f6-960e-cbcfa2fa4251",
                                             "name":  "WF-DPV.07 - DB | Buscar Etapa Cadastro",
                                             "type":  "n8n-nodes-base.postgres",
@@ -1421,21 +1408,18 @@
                                                              224,
                                                              288
                                                          ],
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "={{ \"SELECT step, nome_temp, email_temp, tentativas FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                                               "options":  {
-                                                                               "alwaysOutputData":  true
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
                                                                                  "name":  "DB_dep_viagem"
                                                                              }
-                                                            }
+                                                            },
+                                            "alwaysOutputData":  true
                                         },
                                         {
+                                            "parameters":  {
+                                                               "jsCode":  "\nconst input = $input.first().json;\nconst phone = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone;\nconst caption = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.caption || \u0027\u0027;\nconst pushName = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.pushName || \u0027\u0027;\nconst step = input.step || \u0027novo\u0027;\nconst nomePadrao = pushName ? pushName.split(\u0027 \u0027)[0] : \u0027\u0027;\nreturn [{\n  json: {\n    phone, caption: caption.trim(), step,\n    nome_temp: input.nome_temp || \u0027\u0027,\n    email_temp: input.email_temp || \u0027\u0027,\n    tentativas: input.tentativas || 0,\n    pushName, nomePadrao\n  }\n}];\n"
+                                                           },
                                             "id":  "a7e61c21-f36d-4b86-99e6-9464ea2c1421",
                                             "name":  "WF-DPV.07 - CODE | Processar Etapa",
                                             "type":  "n8n-nodes-base.code",
@@ -1443,25 +1427,13 @@
                                             "position":  [
                                                              448,
                                                              288
-                                                         ],
-                                            "parameters":  {
-                                                               "jsCode":  "\nconst input = $input.first().json;\nconst phone = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone;\nconst caption = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.caption || \u0027\u0027;\nconst pushName = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.pushName || \u0027\u0027;\nconst step = input.step || \u0027novo\u0027;\nconst nomePadrao = pushName ? pushName.split(\u0027 \u0027)[0] : \u0027\u0027;\nreturn [{\n  json: {\n    phone, caption: caption.trim(), step,\n    nome_temp: input.nome_temp || \u0027\u0027,\n    email_temp: input.email_temp || \u0027\u0027,\n    tentativas: input.tentativas || 0,\n    pushName, nomePadrao\n  }\n}];\n"
-                                                           }
+                                                         ]
                                         },
                                         {
-                                            "id":  "5c4d1b0d-db16-468f-8e5b-7e3d58a11635",
-                                            "name":  "WF-DPV.07 - SWITCH | Roteamento por Etapa",
-                                            "type":  "n8n-nodes-base.switch",
-                                            "typeVersion":  3.2,
-                                            "position":  [
-                                                             672,
-                                                             256
-                                                         ],
                                             "parameters":  {
                                                                "rules":  {
                                                                              "values":  [
                                                                                             {
-                                                                                                "outputKey":  "novo",
                                                                                                 "conditions":  {
                                                                                                                    "options":  {
                                                                                                                                    "caseSensitive":  false,
@@ -1483,7 +1455,6 @@
                                                                                                                }
                                                                                             },
                                                                                             {
-                                                                                                "outputKey":  "aguardando_nome",
                                                                                                 "conditions":  {
                                                                                                                    "options":  {
                                                                                                                                    "caseSensitive":  false,
@@ -1505,7 +1476,6 @@
                                                                                                                }
                                                                                             },
                                                                                             {
-                                                                                                "outputKey":  "aguardando_email",
                                                                                                 "conditions":  {
                                                                                                                    "options":  {
                                                                                                                                    "caseSensitive":  false,
@@ -1527,7 +1497,6 @@
                                                                                                                }
                                                                                             },
                                                                                             {
-                                                                                                "outputKey":  "aguardando_confirmacao",
                                                                                                 "conditions":  {
                                                                                                                    "options":  {
                                                                                                                                    "caseSensitive":  false,
@@ -1549,7 +1518,6 @@
                                                                                                                }
                                                                                             },
                                                                                             {
-                                                                                                "outputKey":  "aguardando_cpf",
                                                                                                 "conditions":  {
                                                                                                                    "options":  {
                                                                                                                                    "caseSensitive":  false,
@@ -1571,7 +1539,6 @@
                                                                                                                }
                                                                                             },
                                                                                             {
-                                                                                                "outputKey":  "aguardando_tipo",
                                                                                                 "conditions":  {
                                                                                                                    "options":  {
                                                                                                                                    "caseSensitive":  false,
@@ -1593,7 +1560,6 @@
                                                                                                                }
                                                                                             },
                                                                                             {
-                                                                                                "outputKey":  "aguardando_forma",
                                                                                                 "conditions":  {
                                                                                                                    "options":  {
                                                                                                                                    "caseSensitive":  false,
@@ -1620,9 +1586,24 @@
                                                                                "fallbackOutput":  "extra",
                                                                                "renameFallbackOutput":  "Ignorar"
                                                                            }
-                                                           }
+                                                           },
+                                            "id":  "5c4d1b0d-db16-468f-8e5b-7e3d58a11635",
+                                            "name":  "WF-DPV.07 - SWITCH | Roteamento por Etapa",
+                                            "type":  "n8n-nodes-base.switch",
+                                            "typeVersion":  3.2,
+                                            "position":  [
+                                                             672,
+                                                             256
+                                                         ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "{{ \"INSERT INTO cadastros_pendentes (phone, step, criado_em, atualizado_em) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027aguardando_nome\u0027, NOW(), NOW()) ON CONFLICT (phone) DO UPDATE SET step = \u0027aguardando_nome\u0027, atualizado_em = NOW()\" }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "f9684c4d-81d6-4d1b-905b-af3bbc5b6355",
                                             "name":  "WF-DPV.07 - DB | Criar Cadastro Pendente",
                                             "type":  "n8n-nodes-base.postgres",
@@ -1631,13 +1612,6 @@
                                                              896,
                                                              0
                                                          ],
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "={{ \"INSERT INTO cadastros_pendentes (phone, step, criado_em, atualizado_em) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027aguardando_nome\u0027, NOW(), NOW()) ON CONFLICT (phone) DO UPDATE SET step = \u0027aguardando_nome\u0027, atualizado_em = NOW()\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
@@ -1646,22 +1620,12 @@
                                                             }
                                         },
                                         {
-                                            "id":  "82137f06-53e8-4612-94e4-498913a3cf41",
-                                            "name":  "WF-DPV.07 - HTTP | Pedir Nome",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1120,
-                                                             0
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -1678,6 +1642,14 @@
 
                                                                            }
                                                            },
+                                            "id":  "82137f06-53e8-4612-94e4-498913a3cf41",
+                                            "name":  "WF-DPV.07 - HTTP | Pedir Nome",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             1120,
+                                                             0
+                                                         ],
                                             "credentials":  {
                                                                 "httpHeaderAuth":  {
                                                                                        "id":  "Ka0C8J4zfOklD1lw",
@@ -1686,6 +1658,13 @@
                                                             }
                                         },
                                         {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET nome_temp = \u0027\" + $json.caption.replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, step = \u0027aguardando_email\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "7fbee36d-0ce8-4b7e-8f36-464a4fcb6e1f",
                                             "name":  "WF-DPV.07 - DB | Salvar Nome",
                                             "type":  "n8n-nodes-base.postgres",
@@ -1694,13 +1673,6 @@
                                                              896,
                                                              192
                                                          ],
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "={{ \"UPDATE cadastros_pendentes SET nome_temp = \u0027\" + $json.caption.replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, step = \u0027aguardando_email\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
@@ -1709,22 +1681,12 @@
                                                             }
                                         },
                                         {
-                                            "id":  "a167ac93-0bc1-4a14-a751-3c580932e28a",
-                                            "name":  "WF-DPV.07 - HTTP | Pedir Email",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1120,
-                                                             192
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -1741,6 +1703,14 @@
 
                                                                            }
                                                            },
+                                            "id":  "a167ac93-0bc1-4a14-a751-3c580932e28a",
+                                            "name":  "WF-DPV.07 - HTTP | Pedir Email",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             1120,
+                                                             192
+                                                         ],
                                             "credentials":  {
                                                                 "httpHeaderAuth":  {
                                                                                        "id":  "Ka0C8J4zfOklD1lw",
@@ -1749,6 +1719,9 @@
                                                             }
                                         },
                                         {
+                                            "parameters":  {
+                                                               "jsCode":  "\nconst phone = $json.phone;\nconst email = $json.caption.trim().toLowerCase();\nconst nome = $json.nome_temp || \u0027\u0027;\nconst emailValido = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\nconst codigo = Math.floor(100000 + Math.random() * 900000).toString();\nconst expira = new Date(Date.now() + 15 * 60 * 1000).toISOString();\nreturn [{ json: { phone, email, emailValido, codigo, expira, nome } }];\n"
+                                                           },
                                             "id":  "ac03af60-de92-4ef3-8774-03e1ec7f51af",
                                             "name":  "WF-DPV.07 - CODE | Processar Email",
                                             "type":  "n8n-nodes-base.code",
@@ -1756,20 +1729,9 @@
                                             "position":  [
                                                              896,
                                                              384
-                                                         ],
-                                            "parameters":  {
-                                                               "jsCode":  "\nconst phone = $json.phone;\nconst email = $json.caption.trim().toLowerCase();\nconst nome = $json.nome_temp || \u0027\u0027;\nconst emailValido = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\nconst codigo = Math.floor(100000 + Math.random() * 900000).toString();\nconst expira = new Date(Date.now() + 15 * 60 * 1000).toISOString();\nreturn [{ json: { phone, email, emailValido, codigo, expira, nome } }];\n"
-                                                           }
+                                                         ]
                                         },
                                         {
-                                            "id":  "dca1a410-1206-416e-986a-4b83d2e33fbd",
-                                            "name":  "WF-DPV.07 - IF | Email Valido?",
-                                            "type":  "n8n-nodes-base.if",
-                                            "typeVersion":  2.2,
-                                            "position":  [
-                                                             1120,
-                                                             384
-                                                         ],
                                             "parameters":  {
                                                                "conditions":  {
                                                                                   "options":  {
@@ -1788,10 +1750,28 @@
                                                                                                      }
                                                                                                  ],
                                                                                   "combinator":  "and"
-                                                                              }
-                                                           }
+                                                                              },
+                                                               "options":  {
+
+                                                                           }
+                                                           },
+                                            "id":  "dca1a410-1206-416e-986a-4b83d2e33fbd",
+                                            "name":  "WF-DPV.07 - IF | Email Valido?",
+                                            "type":  "n8n-nodes-base.if",
+                                            "typeVersion":  2.2,
+                                            "position":  [
+                                                             1120,
+                                                             384
+                                                         ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "349d192d-aaa4-4327-acf5-3c1b7dbf36cf",
                                             "name":  "WF-DPV.07 - DB | Salvar Email e Codigo",
                                             "type":  "n8n-nodes-base.postgres",
@@ -1800,13 +1780,6 @@
                                                              1344,
                                                              288
                                                          ],
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "={{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
@@ -1815,6 +1788,18 @@
                                                             }
                                         },
                                         {
+                                            "parameters":  {
+                                                               "method":  "POST",
+                                                               "url":  "https://api.mailersend.com/v1/email",
+                                                               "authentication":  "genericCredentialType",
+                                                               "genericAuthType":  "httpHeaderAuth",
+                                                               "sendBody":  true,
+                                                               "specifyBody":  "json",
+                                                               "jsonBody":  "={{ JSON.stringify({ from: { email: \"noreply@test-eqvygm0x5d8l0p7w.mlsender.net\", name: \"dep-viagem\" }, to: [{ email: $json.email, name: $json.nome }], subject: \"Código de confirmação: \" + $json.codigo, html: \"\u003ch2\u003eConfirme seu cadastro\u003c/h2\u003e\u003cp\u003eOlá, \" + $json.nome + \"!\u003c/p\u003e\u003cp\u003eSeu código de verificação é:\u003c/p\u003e\u003ch1 style=\u0027font-size:40px;letter-spacing:8px;color:#2563eb\u0027\u003e\" + $json.codigo + \"\u003c/h1\u003e\u003cp\u003eVálido por 15 minutos.\u003c/p\u003e\" }) }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "20a30362-6fd1-49ba-bb61-6a93721b5cb5",
                                             "name":  "WF-DPV.07 - HTTP | Enviar Codigo MailerSend",
                                             "type":  "n8n-nodes-base.httpRequest",
@@ -1823,19 +1808,6 @@
                                                              1568,
                                                              288
                                                          ],
-                                            "parameters":  {
-                                                               "method":  "POST",
-                                                               "url":  "https://api.mailersend.com/v1/email",
-                                                               "authentication":  "genericCredentialType",
-                                                               "genericAuthType":  "httpHeaderAuth",
-                                                               "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "json",
-                                                               "jsonBody":  "={{ JSON.stringify({ from: { email: \"noreply@test-eqvygm0x5d8l0p7w.mlsender.net\", name: \"dep-viagem\" }, to: [{ email: $json.email, name: $json.nome }], subject: \"Código de confirmação: \" + $json.codigo, html: \"\u003ch2\u003eConfirme seu cadastro\u003c/h2\u003e\u003cp\u003eOlá, \" + $json.nome + \"!\u003c/p\u003e\u003cp\u003eSeu código de verificação é:\u003c/p\u003e\u003ch1 style=\u0027font-size:40px;letter-spacing:8px;color:#2563eb\u0027\u003e\" + $json.codigo + \"\u003c/h1\u003e\u003cp\u003eVálido por 15 minutos.\u003c/p\u003e\" }) }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "httpHeaderAuth":  {
                                                                                        "id":  "hx3Z9csTHPS00ghb",
@@ -1844,22 +1816,12 @@
                                                             }
                                         },
                                         {
-                                            "id":  "f1059820-8377-4e21-bf0b-73630a0327a0",
-                                            "name":  "WF-DPV.07 - HTTP | Avisar Codigo Enviado",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1792,
-                                                             288
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -1876,6 +1838,14 @@
 
                                                                            }
                                                            },
+                                            "id":  "f1059820-8377-4e21-bf0b-73630a0327a0",
+                                            "name":  "WF-DPV.07 - HTTP | Avisar Codigo Enviado",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             1792,
+                                                             288
+                                                         ],
                                             "credentials":  {
                                                                 "httpHeaderAuth":  {
                                                                                        "id":  "Ka0C8J4zfOklD1lw",
@@ -1884,22 +1854,12 @@
                                                             }
                                         },
                                         {
-                                            "id":  "58705b65-747c-41ce-a248-3a80c6bef41c",
-                                            "name":  "WF-DPV.07 - HTTP | Email Invalido",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1344,
-                                                             480
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -1916,6 +1876,14 @@
 
                                                                            }
                                                            },
+                                            "id":  "58705b65-747c-41ce-a248-3a80c6bef41c",
+                                            "name":  "WF-DPV.07 - HTTP | Email Invalido",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             1344,
+                                                             480
+                                                         ],
                                             "credentials":  {
                                                                 "httpHeaderAuth":  {
                                                                                        "id":  "Ka0C8J4zfOklD1lw",
@@ -1924,6 +1892,13 @@
                                                             }
                                         },
                                         {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "{{ \"SELECT nome_temp, email_temp, codigo, codigo_expira, tentativas FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "1fe5101d-6b12-4244-b60f-3110357a4d06",
                                             "name":  "WF-DPV.07 - DB | Validar Codigo",
                                             "type":  "n8n-nodes-base.postgres",
@@ -1932,13 +1907,6 @@
                                                              896,
                                                              672
                                                          ],
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "={{ \"SELECT nome_temp, email_temp, codigo, codigo_expira, tentativas FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
@@ -1947,6 +1915,9 @@
                                                             }
                                         },
                                         {
+                                            "parameters":  {
+                                                               "jsCode":  "\nconst phone = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone;\nconst codigoDigitado = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.caption.trim();\nconst db = $input.first().json;\nconst codigoCorreto = db.codigo === codigoDigitado;\nconst expirado = new Date(db.codigo_expira) \u003c new Date();\nconst tentativas = (db.tentativas || 0) + 1;\nconst bloqueado = tentativas \u003e 5;\nreturn [{ json: { phone, codigoCorreto, expirado, bloqueado, tentativas, nome: db.nome_temp, email: db.email_temp } }];\n"
+                                                           },
                                             "id":  "23055090-118c-4503-a803-57f9d3476da9",
                                             "name":  "WF-DPV.07 - CODE | Validar Codigo",
                                             "type":  "n8n-nodes-base.code",
@@ -1954,20 +1925,9 @@
                                             "position":  [
                                                              1120,
                                                              672
-                                                         ],
-                                            "parameters":  {
-                                                               "jsCode":  "\nconst phone = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone;\nconst codigoDigitado = $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.caption.trim();\nconst db = $input.first().json;\nconst codigoCorreto = db.codigo === codigoDigitado;\nconst expirado = new Date(db.codigo_expira) \u003c new Date();\nconst tentativas = (db.tentativas || 0) + 1;\nconst bloqueado = tentativas \u003e 5;\nreturn [{ json: { phone, codigoCorreto, expirado, bloqueado, tentativas, nome: db.nome_temp, email: db.email_temp } }];\n"
-                                                           }
+                                                         ]
                                         },
                                         {
-                                            "id":  "851be80a-3057-40e9-bd44-1a6bf7595c05",
-                                            "name":  "WF-DPV.07 - IF | Codigo Correto?",
-                                            "type":  "n8n-nodes-base.if",
-                                            "typeVersion":  2.2,
-                                            "position":  [
-                                                             1344,
-                                                             672
-                                                         ],
                                             "parameters":  {
                                                                "conditions":  {
                                                                                   "options":  {
@@ -1993,10 +1953,28 @@
                                                                                                      }
                                                                                                  ],
                                                                                   "combinator":  "and"
-                                                                              }
-                                                           }
+                                                                              },
+                                                               "options":  {
+
+                                                                           }
+                                                           },
+                                            "id":  "851be80a-3057-40e9-bd44-1a6bf7595c05",
+                                            "name":  "WF-DPV.07 - IF | Codigo Correto?",
+                                            "type":  "n8n-nodes-base.if",
+                                            "typeVersion":  2.2,
+                                            "position":  [
+                                                             1344,
+                                                             672
+                                                         ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "{{ \"INSERT INTO funcionarios (phone, nome, email, empresa, ativo, created_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027\" + ($json.nome || \u0027\u0027).replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, \u0027\" + $json.email + \"\u0027, \u0027A definir\u0027, true, NOW()) ON CONFLICT (phone) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, ativo = true; UPDATE cadastros_pendentes SET step = \u0027aguardando_cpf\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "419ed5e2-9547-4fdf-b63c-0917226fcef6",
                                             "name":  "WF-DPV.07 - DB | Cadastrar Funcionario",
                                             "type":  "n8n-nodes-base.postgres",
@@ -2005,13 +1983,6 @@
                                                              1568,
                                                              576
                                                          ],
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "={{ \"INSERT INTO funcionarios (phone, nome, email, empresa, ativo, created_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027\" + ($json.nome || \u0027\u0027).replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, \u0027\" + $json.email + \"\u0027, \u0027A definir\u0027, true, NOW()) ON CONFLICT (phone) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, ativo = true; UPDATE cadastros_pendentes SET step = \u0027aguardando_cpf\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
@@ -2020,22 +1991,12 @@
                                                             }
                                         },
                                         {
-                                            "id":  "c3cb5858-dd6f-4c8a-af75-ddd7c28975a8",
-                                            "name":  "WF-DPV.07 - HTTP | Boas Vindas",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1792,
-                                                             576
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -2052,6 +2013,14 @@
 
                                                                            }
                                                            },
+                                            "id":  "c3cb5858-dd6f-4c8a-af75-ddd7c28975a8",
+                                            "name":  "WF-DPV.07 - HTTP | Boas Vindas",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             1792,
+                                                             576
+                                                         ],
                                             "credentials":  {
                                                                 "httpHeaderAuth":  {
                                                                                        "id":  "Ka0C8J4zfOklD1lw",
@@ -2060,6 +2029,13 @@
                                                             }
                                         },
                                         {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET tentativas = tentativas + 1, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "ad6904aa-f316-466d-a163-8dfd0d0f0cb8",
                                             "name":  "WF-DPV.07 - DB | Incrementar Tentativas",
                                             "type":  "n8n-nodes-base.postgres",
@@ -2068,13 +2044,6 @@
                                                              1568,
                                                              768
                                                          ],
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "={{ \"UPDATE cadastros_pendentes SET tentativas = tentativas + 1, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
@@ -2083,22 +2052,12 @@
                                                             }
                                         },
                                         {
-                                            "id":  "39afa0ba-f348-4242-a8df-4f9568595b47",
-                                            "name":  "WF-DPV.07 - HTTP | Codigo Errado",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1792,
-                                                             768
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -2115,6 +2074,14 @@
 
                                                                            }
                                                            },
+                                            "id":  "39afa0ba-f348-4242-a8df-4f9568595b47",
+                                            "name":  "WF-DPV.07 - HTTP | Codigo Errado",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             1792,
+                                                             768
+                                                         ],
                                             "credentials":  {
                                                                 "httpHeaderAuth":  {
                                                                                        "id":  "Ka0C8J4zfOklD1lw",
@@ -2123,22 +2090,12 @@
                                                             }
                                         },
                                         {
-                                            "id":  "722850a9-18ff-498e-9826-552fddaf00fe",
-                                            "name":  "WF-DPV.07 - HTTP | Pedir CPF",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             2016,
-                                                             576
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -2154,9 +2111,20 @@
                                                                "options":  {
 
                                                                            }
-                                                           }
+                                                           },
+                                            "id":  "722850a9-18ff-498e-9826-552fddaf00fe",
+                                            "name":  "WF-DPV.07 - HTTP | Pedir CPF",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             2016,
+                                                             576
+                                                         ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "jsCode":  "const cpf = String($json.caption || \u0027\u0027).replace(/[^0-9]/g, \u0027\u0027);\nconst valido = cpf.length === 11 || cpf.length === 14;\nreturn [{ json: { ...$json, cpf_cnpj: cpf, cpf_valido: valido, cpf_erro: valido ? null : \u0027CPF/CNPJ invalido: deve ter 11 ou 14 digitos (recebido: \u0027 + cpf.length + \u0027)\u0027 } }];"
+                                                           },
                                             "id":  "3eaca017-132f-4eb0-8c62-c28099faf34d",
                                             "name":  "WF-DPV.07 - CODE | Parse CPF",
                                             "type":  "n8n-nodes-base.code",
@@ -2164,20 +2132,9 @@
                                             "position":  [
                                                              896,
                                                              960
-                                                         ],
-                                            "parameters":  {
-                                                               "jsCode":  "const cpf = String($json.caption || \u0027\u0027).replace(/[^0-9]/g, \u0027\u0027);\nconst valido = cpf.length === 11 || cpf.length === 14;\nreturn [{ json: { ...$json, cpf_cnpj: cpf, cpf_valido: valido, cpf_erro: valido ? null : \u0027CPF/CNPJ invalido: deve ter 11 ou 14 digitos (recebido: \u0027 + cpf.length + \u0027)\u0027 } }];"
-                                                           }
+                                                         ]
                                         },
                                         {
-                                            "id":  "7098b922-d824-48ae-a791-a10ea520b4a9",
-                                            "name":  "WF-DPV.07 - IF | CPF Valido",
-                                            "type":  "n8n-nodes-base.if",
-                                            "typeVersion":  2.2,
-                                            "position":  [
-                                                             1120,
-                                                             960
-                                                         ],
                                             "parameters":  {
                                                                "conditions":  {
                                                                                   "options":  {
@@ -2201,25 +2158,23 @@
                                                                "options":  {
 
                                                                            }
-                                                           }
+                                                           },
+                                            "id":  "7098b922-d824-48ae-a791-a10ea520b4a9",
+                                            "name":  "WF-DPV.07 - IF | CPF Valido",
+                                            "type":  "n8n-nodes-base.if",
+                                            "typeVersion":  2.2,
+                                            "position":  [
+                                                             1120,
+                                                             960
+                                                         ]
                                         },
                                         {
-                                            "id":  "1524c3d5-0076-4560-9a2f-8a0ae6889916",
-                                            "name":  "WF-DPV.07 - HTTP | CPF Invalido",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1344,
-                                                             1056
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -2235,9 +2190,24 @@
                                                                "options":  {
 
                                                                            }
-                                                           }
+                                                           },
+                                            "id":  "1524c3d5-0076-4560-9a2f-8a0ae6889916",
+                                            "name":  "WF-DPV.07 - HTTP | CPF Invalido",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             1344,
+                                                             1056
+                                                         ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "{{ \"UPDATE funcionarios SET cpf_cnpj = \u0027\" + $json.cpf_cnpj + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_tipo\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "36d44291-97a3-4fcf-8a00-63d396552899",
                                             "name":  "WF-DPV.07 - DB | Salvar CPF Avancar",
                                             "type":  "n8n-nodes-base.postgres",
@@ -2246,13 +2216,6 @@
                                                              1344,
                                                              864
                                                          ],
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "={{ \"UPDATE funcionarios SET cpf_cnpj = \u0027\" + $json.cpf_cnpj + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_tipo\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
@@ -2261,22 +2224,12 @@
                                                             }
                                         },
                                         {
-                                            "id":  "d1d76a04-6a37-48e5-a76c-0a4374a7f524",
-                                            "name":  "WF-DPV.07 - HTTP | Pedir Tipo",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1568,
-                                                             864
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -2292,9 +2245,20 @@
                                                                "options":  {
 
                                                                            }
-                                                           }
+                                                           },
+                                            "id":  "d1d76a04-6a37-48e5-a76c-0a4374a7f524",
+                                            "name":  "WF-DPV.07 - HTTP | Pedir Tipo",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             1568,
+                                                             864
+                                                         ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "jsCode":  "const input = String($json.caption || \u0027\u0027).trim().toLowerCase().replace(/[^a-z0-9]/g, \u0027\u0027);\nlet tipo = null;\nif (input === \u00271\u0027 || input === \u0027empresa\u0027 || input.startsWith(\u0027empr\u0027)) tipo = \u0027empresa\u0027;\nelse if (input === \u00272\u0027 || input === \u0027particular\u0027 || input.startsWith(\u0027part\u0027)) tipo = \u0027particular\u0027;\nreturn [{ json: { ...$json, tipo_pagador: tipo || \u0027particular\u0027 } }];"
+                                                           },
                                             "id":  "cd1f80ab-b465-41cd-b977-8ce2efd8e30c",
                                             "name":  "WF-DPV.07 - CODE | Parse Tipo",
                                             "type":  "n8n-nodes-base.code",
@@ -2302,12 +2266,16 @@
                                             "position":  [
                                                              896,
                                                              1152
-                                                         ],
-                                            "parameters":  {
-                                                               "jsCode":  "const input = String($json.caption || \u0027\u0027).trim().toLowerCase().replace(/[^a-z0-9]/g, \u0027\u0027);\nlet tipo = null;\nif (input === \u00271\u0027 || input === \u0027empresa\u0027 || input.startsWith(\u0027empr\u0027)) tipo = \u0027empresa\u0027;\nelse if (input === \u00272\u0027 || input === \u0027particular\u0027 || input.startsWith(\u0027part\u0027)) tipo = \u0027particular\u0027;\nreturn [{ json: { ...$json, tipo_pagador: tipo || \u0027particular\u0027 } }];"
-                                                           }
+                                                         ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "{{ \"UPDATE funcionarios SET tipo_pagador_padrao = \u0027\" + $json.tipo_pagador + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_forma\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "99735a13-b28a-43d1-a4bc-0d83af623d5d",
                                             "name":  "WF-DPV.07 - DB | Salvar Tipo Avancar",
                                             "type":  "n8n-nodes-base.postgres",
@@ -2316,13 +2284,6 @@
                                                              1120,
                                                              1152
                                                          ],
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "={{ \"UPDATE funcionarios SET tipo_pagador_padrao = \u0027\" + $json.tipo_pagador + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; UPDATE cadastros_pendentes SET step = \u0027aguardando_forma\u0027, atualizado_em = NOW() WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
@@ -2331,22 +2292,12 @@
                                                             }
                                         },
                                         {
-                                            "id":  "7e3e20be-6319-470b-9fac-43e2eb9ac14c",
-                                            "name":  "WF-DPV.07 - HTTP | Pedir Forma",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1344,
-                                                             1152
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -2362,9 +2313,20 @@
                                                                "options":  {
 
                                                                            }
-                                                           }
+                                                           },
+                                            "id":  "7e3e20be-6319-470b-9fac-43e2eb9ac14c",
+                                            "name":  "WF-DPV.07 - HTTP | Pedir Forma",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             1344,
+                                                             1152
+                                                         ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "jsCode":  "const input = String($json.caption || \u0027\u0027).trim().toLowerCase().replace(/[^a-z]/g, \u0027\u0027);\nlet forma = null;\nif (input === \u0027a\u0027 || input === \u0027cartao\u0027 || input.startsWith(\u0027cart\u0027)) forma = \u0027cartao\u0027;\nelse if (input === \u0027b\u0027 || input === \u0027dinheiro\u0027 || input.startsWith(\u0027dinh\u0027)) forma = \u0027dinheiro\u0027;\nreturn [{ json: { ...$json, forma_pagamento: forma || \u0027cartao\u0027 } }];"
+                                                           },
                                             "id":  "1151ffee-0bfa-4b39-b013-fb35f1321849",
                                             "name":  "WF-DPV.07 - CODE | Parse Forma",
                                             "type":  "n8n-nodes-base.code",
@@ -2372,12 +2334,16 @@
                                             "position":  [
                                                              896,
                                                              1344
-                                                         ],
-                                            "parameters":  {
-                                                               "jsCode":  "const input = String($json.caption || \u0027\u0027).trim().toLowerCase().replace(/[^a-z]/g, \u0027\u0027);\nlet forma = null;\nif (input === \u0027a\u0027 || input === \u0027cartao\u0027 || input.startsWith(\u0027cart\u0027)) forma = \u0027cartao\u0027;\nelse if (input === \u0027b\u0027 || input === \u0027dinheiro\u0027 || input.startsWith(\u0027dinh\u0027)) forma = \u0027dinheiro\u0027;\nreturn [{ json: { ...$json, forma_pagamento: forma || \u0027cartao\u0027 } }];"
-                                                           }
+                                                         ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "{{ \"UPDATE funcionarios SET forma_pagamento_padrao = \u0027\" + $json.forma_pagamento + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; DELETE FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
                                             "id":  "0be7fca6-5c3b-444b-a6b2-6e0bcab1553c",
                                             "name":  "WF-DPV.07 - DB | Finalizar Cadastro",
                                             "type":  "n8n-nodes-base.postgres",
@@ -2386,13 +2352,6 @@
                                                              1120,
                                                              1344
                                                          ],
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "={{ \"UPDATE funcionarios SET forma_pagamento_padrao = \u0027\" + $json.forma_pagamento + \"\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027; DELETE FROM cadastros_pendentes WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
@@ -2401,22 +2360,12 @@
                                                             }
                                         },
                                         {
-                                            "id":  "38d9e2d6-3624-4d8e-ae70-fa38e4da597f",
-                                            "name":  "WF-DPV.07 - HTTP | Boas Vindas P17",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1344,
-                                                             1344
-                                                         ],
                                             "parameters":  {
                                                                "method":  "POST",
                                                                "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
-                                                               "contentType":  "json",
-                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -2432,7 +2381,15 @@
                                                                "options":  {
 
                                                                            }
-                                                           }
+                                                           },
+                                            "id":  "38d9e2d6-3624-4d8e-ae70-fa38e4da597f",
+                                            "name":  "WF-DPV.07 - HTTP | Boas Vindas P17",
+                                            "type":  "n8n-nodes-base.httpRequest",
+                                            "typeVersion":  4.3,
+                                            "position":  [
+                                                             1344,
+                                                             1344
+                                                         ]
                                         }
                                     ],
                           "connections":  {
@@ -2751,10 +2708,10 @@
                           "autosaved":  false,
                           "workflowPublishHistory":  [
                                                          {
-                                                             "createdAt":  "2026-07-05T23:46:39.456Z",
-                                                             "id":  1510,
+                                                             "createdAt":  "2026-07-06T02:18:56.007Z",
+                                                             "id":  1520,
                                                              "workflowId":  "6SwQvQ5IVL8oVtUk",
-                                                             "versionId":  "af5594e7-4707-453d-968a-e6d83cf31f3b",
+                                                             "versionId":  "11f5f650-9400-4c56-b220-623d6c10d9c4",
                                                              "event":  "activated",
                                                              "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
                                                          }
