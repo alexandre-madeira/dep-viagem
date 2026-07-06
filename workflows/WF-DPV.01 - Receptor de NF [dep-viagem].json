@@ -1,5 +1,5 @@
 ﻿{
-    "updatedAt":  "2026-07-05T23:27:24.056Z",
+    "updatedAt":  "2026-07-06T02:29:42.018Z",
     "createdAt":  "2026-06-09T22:30:26.966Z",
     "id":  "z0F4H4NUyLErFjZ7",
     "name":  "WF-DPV.01 - Receptor de NF [dep-viagem]",
@@ -21,7 +21,7 @@
                       "type":  "n8n-nodes-base.webhook",
                       "typeVersion":  2.1,
                       "position":  [
-                                       -224,
+                                       -336,
                                        192
                                    ],
                       "webhookId":  "06a2c6b5-b29e-44d5-9a55-24274e36a323"
@@ -95,7 +95,7 @@
                       "type":  "n8n-nodes-base.set",
                       "typeVersion":  3.4,
                       "position":  [
-                                       16,
+                                       -80,
                                        192
                                    ]
                   },
@@ -272,7 +272,7 @@
                       "type":  "n8n-nodes-base.if",
                       "typeVersion":  2.2,
                       "position":  [
-                                       240,
+                                       96,
                                        192
                                    ]
                   },
@@ -289,16 +289,16 @@
                       "type":  "n8n-nodes-base.postgres",
                       "typeVersion":  2.5,
                       "position":  [
-                                       512,
+                                       352,
                                        176
                                    ],
+                      "alwaysOutputData":  true,
                       "credentials":  {
                                           "postgres":  {
                                                            "id":  "ggViIQGkepjwuOdv",
                                                            "name":  "DB_dep_viagem"
                                                        }
-                                      },
-                      "alwaysOutputData":  true
+                                      }
                   },
                   {
                       "parameters":  {
@@ -331,15 +331,17 @@
                       "typeVersion":  2.2,
                       "position":  [
                                        736,
-                                       176
+                                       384
                                    ]
                   },
                   {
                       "parameters":  {
                                          "workflowId":  {
                                                             "__rl":  true,
-                                                            "mode":  "id",
-                                                            "value":  "6SwQvQ5IVL8oVtUk"
+                                                            "value":  "6SwQvQ5IVL8oVtUk",
+                                                            "mode":  "list",
+                                                            "cachedResultUrl":  "/workflow/6SwQvQ5IVL8oVtUk",
+                                                            "cachedResultName":  "WF-DPV.07 - Cadastro de Usuários [dep-viagem]"
                                                         },
                                          "options":  {
 
@@ -363,22 +365,22 @@
                       "type":  "n8n-nodes-base.code",
                       "typeVersion":  2,
                       "position":  [
-                                       512,
-                                       -64
+                                       560,
+                                       -16
                                    ]
                   },
                   {
+                      "parameters":  {
+                                         "jsCode":  "const items = $input.all();\nif (items.length === 0 || !items[0].json.id) {\n  return [{ json: { id: null } }];\n}\nreturn items;"
+                                     },
                       "id":  "7b2beebb-11e1-4656-b28d-4ef412552d7a",
                       "name":  "WF-DPV.01 - CODE | Tratar Funcionario Nao Encontrado",
                       "type":  "n8n-nodes-base.code",
                       "typeVersion":  2,
                       "position":  [
-                                       512,
-                                       56
+                                       352,
+                                       -16
                                    ],
-                      "parameters":  {
-                                         "jsCode":  "const items = $input.all();\nif (items.length === 0 || !items[0].json.id) {\n  return [{ json: { id: null } }];\n}\nreturn items;"
-                                     },
                       "alwaysOutputData":  true
                   }
               ],
@@ -524,7 +526,9 @@
                      "saveManualExecutions":  true,
                      "saveDataErrorExecution":  "all",
                      "saveDataSuccessExecution":  "all",
-                     "timezone":  "America/Sao_Paulo"
+                     "timezone":  "America/Sao_Paulo",
+                     "timeSavedMode":  "fixed",
+                     "callerPolicy":  "workflowsFromSameOwner"
                  },
     "staticData":  null,
     "meta":  {
@@ -537,9 +541,9 @@
     "pinData":  {
 
                 },
-    "versionId":  "059d7413-577c-4341-92d4-0d8f7c02a985",
-    "activeVersionId":  "059d7413-577c-4341-92d4-0d8f7c02a985",
-    "versionCounter":  78,
+    "versionId":  "90db5e3a-a0d7-4f8f-94e9-374f770f3503",
+    "activeVersionId":  "375357a8-95b3-4722-9c7c-e9370f5a4054",
+    "versionCounter":  90,
     "triggerCount":  1,
     "sourceWorkflowId":  null,
     "shared":  [
@@ -568,9 +572,9 @@
 
              ],
     "activeVersion":  {
-                          "updatedAt":  "2026-07-05T23:27:24.059Z",
-                          "createdAt":  "2026-07-05T23:27:24.059Z",
-                          "versionId":  "059d7413-577c-4341-92d4-0d8f7c02a985",
+                          "updatedAt":  "2026-07-06T02:06:07.204Z",
+                          "createdAt":  "2026-07-06T01:55:15.283Z",
+                          "versionId":  "375357a8-95b3-4722-9c7c-e9370f5a4054",
                           "workflowId":  "z0F4H4NUyLErFjZ7",
                           "nodes":  [
                                         {
@@ -587,7 +591,7 @@
                                             "type":  "n8n-nodes-base.webhook",
                                             "typeVersion":  2.1,
                                             "position":  [
-                                                             -224,
+                                                             -336,
                                                              192
                                                          ],
                                             "webhookId":  "06a2c6b5-b29e-44d5-9a55-24274e36a323"
@@ -661,7 +665,7 @@
                                             "type":  "n8n-nodes-base.set",
                                             "typeVersion":  3.4,
                                             "position":  [
-                                                             16,
+                                                             -80,
                                                              192
                                                          ]
                                         },
@@ -838,7 +842,7 @@
                                             "type":  "n8n-nodes-base.if",
                                             "typeVersion":  2.2,
                                             "position":  [
-                                                             240,
+                                                             96,
                                                              192
                                                          ]
                                         },
@@ -855,16 +859,16 @@
                                             "type":  "n8n-nodes-base.postgres",
                                             "typeVersion":  2.5,
                                             "position":  [
-                                                             512,
+                                                             352,
                                                              176
                                                          ],
+                                            "alwaysOutputData":  true,
                                             "credentials":  {
                                                                 "postgres":  {
                                                                                  "id":  "ggViIQGkepjwuOdv",
                                                                                  "name":  "DB_dep_viagem"
                                                                              }
-                                                            },
-                                            "alwaysOutputData":  true
+                                                            }
                                         },
                                         {
                                             "parameters":  {
@@ -897,7 +901,7 @@
                                             "typeVersion":  2.2,
                                             "position":  [
                                                              736,
-                                                             176
+                                                             384
                                                          ]
                                         },
                                         {
@@ -929,22 +933,22 @@
                                             "type":  "n8n-nodes-base.code",
                                             "typeVersion":  2,
                                             "position":  [
-                                                             512,
-                                                             -64
+                                                             560,
+                                                             -16
                                                          ]
                                         },
                                         {
+                                            "parameters":  {
+                                                               "jsCode":  "const items = $input.all();\nif (items.length === 0 || !items[0].json.id) {\n  return [{ json: { id: null } }];\n}\nreturn items;"
+                                                           },
                                             "id":  "7b2beebb-11e1-4656-b28d-4ef412552d7a",
                                             "name":  "WF-DPV.01 - CODE | Tratar Funcionario Nao Encontrado",
                                             "type":  "n8n-nodes-base.code",
                                             "typeVersion":  2,
                                             "position":  [
-                                                             512,
-                                                             56
+                                                             352,
+                                                             -16
                                                          ],
-                                            "parameters":  {
-                                                               "jsCode":  "const items = $input.all();\nif (items.length === 0 || !items[0].json.id) {\n  return [{ json: { id: null } }];\n}\nreturn items;"
-                                                           },
                                             "alwaysOutputData":  true
                                         }
                                     ],
@@ -1085,15 +1089,31 @@
 
                                          ],
                           "authors":  "ALEXANDRE E CUNHA",
-                          "name":  null,
-                          "description":  null,
-                          "autosaved":  false,
+                          "name":  "Version 375357a8",
+                          "description":  "",
+                          "autosaved":  true,
                           "workflowPublishHistory":  [
                                                          {
-                                                             "createdAt":  "2026-07-05T23:27:27.212Z",
-                                                             "id":  1502,
+                                                             "createdAt":  "2026-07-06T02:06:07.202Z",
+                                                             "id":  1514,
                                                              "workflowId":  "z0F4H4NUyLErFjZ7",
-                                                             "versionId":  "059d7413-577c-4341-92d4-0d8f7c02a985",
+                                                             "versionId":  "375357a8-95b3-4722-9c7c-e9370f5a4054",
+                                                             "event":  "activated",
+                                                             "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
+                                                         },
+                                                         {
+                                                             "createdAt":  "2026-07-06T02:06:12.896Z",
+                                                             "id":  1515,
+                                                             "workflowId":  "z0F4H4NUyLErFjZ7",
+                                                             "versionId":  "375357a8-95b3-4722-9c7c-e9370f5a4054",
+                                                             "event":  "deactivated",
+                                                             "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
+                                                         },
+                                                         {
+                                                             "createdAt":  "2026-07-06T02:06:12.911Z",
+                                                             "id":  1516,
+                                                             "workflowId":  "z0F4H4NUyLErFjZ7",
+                                                             "versionId":  "375357a8-95b3-4722-9c7c-e9370f5a4054",
                                                              "event":  "activated",
                                                              "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
                                                          }
