@@ -1,5 +1,5 @@
 ﻿{
-    "updatedAt":  "2026-07-06T02:25:14.783Z",
+    "updatedAt":  "2026-07-06T02:33:45.808Z",
     "createdAt":  "2026-06-19T14:43:37.585Z",
     "id":  "6SwQvQ5IVL8oVtUk",
     "name":  "WF-DPV.07 - Cadastro de Usuários [dep-viagem]",
@@ -254,11 +254,13 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
                                                                                        "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
+                                                                                       "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
@@ -315,11 +317,13 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
                                                                                        "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
+                                                                                       "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
@@ -450,11 +454,13 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
                                                                                        "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
+                                                                                       "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
@@ -488,11 +494,13 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
                                                                                        "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
+                                                                                       "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
@@ -625,11 +633,13 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
                                                                                        "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
+                                                                                       "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
@@ -686,11 +696,13 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
                                                                                        "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
+                                                                                       "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
@@ -724,11 +736,13 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
                                                                                        "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
+                                                                                       "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
@@ -803,11 +817,13 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
                                                                                        "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
+                                                                                       "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
@@ -858,11 +874,13 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
                                                                                        "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
+                                                                                       "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
@@ -926,11 +944,13 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
                                                                                        "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
+                                                                                       "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
@@ -1343,9 +1363,9 @@
     "pinData":  {
 
                 },
-    "versionId":  "c5b4a60e-ec72-438e-af22-39b27376608a",
-    "activeVersionId":  "c5b4a60e-ec72-438e-af22-39b27376608a",
-    "versionCounter":  6,
+    "versionId":  "b7ded9db-f9ea-486a-aeba-ccbfcd3c7d43",
+    "activeVersionId":  "b7ded9db-f9ea-486a-aeba-ccbfcd3c7d43",
+    "versionCounter":  7,
     "triggerCount":  0,
     "sourceWorkflowId":  null,
     "shared":  [
@@ -1374,9 +1394,9 @@
 
              ],
     "activeVersion":  {
-                          "updatedAt":  "2026-07-06T02:25:14.784Z",
-                          "createdAt":  "2026-07-06T02:25:14.784Z",
-                          "versionId":  "c5b4a60e-ec72-438e-af22-39b27376608a",
+                          "updatedAt":  "2026-07-06T02:33:45.809Z",
+                          "createdAt":  "2026-07-06T02:33:45.809Z",
+                          "versionId":  "b7ded9db-f9ea-486a-aeba-ccbfcd3c7d43",
                           "workflowId":  "6SwQvQ5IVL8oVtUk",
                           "nodes":  [
                                         {
@@ -1626,11 +1646,13 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
                                                                                                              "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
+                                                                                                             "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
@@ -1687,11 +1709,13 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
                                                                                                              "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
+                                                                                                             "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
@@ -1822,11 +1846,13 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
                                                                                                              "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
+                                                                                                             "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
@@ -1860,11 +1886,13 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
                                                                                                              "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
+                                                                                                             "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
@@ -1997,11 +2025,13 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
                                                                                                              "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
+                                                                                                             "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
@@ -2058,11 +2088,13 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
                                                                                                              "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
+                                                                                                             "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
@@ -2096,11 +2128,13 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
                                                                                                              "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
+                                                                                                             "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
@@ -2175,11 +2209,13 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
                                                                                                              "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
+                                                                                                             "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
@@ -2230,11 +2266,13 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
                                                                                                              "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
+                                                                                                             "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
@@ -2298,11 +2336,13 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
                                                                                                              "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
+                                                                                                             "value":  "={{ $(\u0027WF-DPV.07 - TRIGGER | Iniciar Cadastro\u0027).first().json.phone }}"
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
@@ -2708,10 +2748,10 @@
                           "autosaved":  false,
                           "workflowPublishHistory":  [
                                                          {
-                                                             "createdAt":  "2026-07-06T02:25:19.708Z",
-                                                             "id":  1522,
+                                                             "createdAt":  "2026-07-06T02:33:54.368Z",
+                                                             "id":  1524,
                                                              "workflowId":  "6SwQvQ5IVL8oVtUk",
-                                                             "versionId":  "c5b4a60e-ec72-438e-af22-39b27376608a",
+                                                             "versionId":  "b7ded9db-f9ea-486a-aeba-ccbfcd3c7d43",
                                                              "event":  "activated",
                                                              "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
                                                          }
