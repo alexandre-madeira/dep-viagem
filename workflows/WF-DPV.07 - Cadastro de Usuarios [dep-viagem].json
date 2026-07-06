@@ -327,7 +327,7 @@
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
-                                                                                       "value":  "={{ \"Ótimo, \" + $json.caption + \"! 😊\\n\\nAgora informe seu e-mail corporativo para confirmarmos o cadastro:\" }}"
+                                                                                       "value":  "={{ \"Ótimo, \" + $('WF-DPV.07 - CODE | Processar Etapa').first().json.caption + \"! 😊\\n\\nAgora informe seu e-mail corporativo para confirmarmos o cadastro:\" }}"
                                                                                    }
                                                                                ]
                                                             },
@@ -399,7 +399,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "{{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "query":  "{{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $('WF-DPV.07 - CODE | Processar Email').first().json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                          "options":  {
 
                                                      }
@@ -427,7 +427,7 @@
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
                                          "specifyBody":  "json",
-                                         "jsonBody":  "={{ JSON.stringify({ from: { email: \"noreply@test-eqvygm0x5d8l0p7w.mlsender.net\", name: \"dep-viagem\" }, to: [{ email: $json.email, name: $json.nome }], subject: \"Código de confirmação: \" + $json.codigo, html: \"\u003ch2\u003eConfirme seu cadastro\u003c/h2\u003e\u003cp\u003eOlá, \" + $json.nome + \"!\u003c/p\u003e\u003cp\u003eSeu código de verificação é:\u003c/p\u003e\u003ch1 style=\u0027font-size:40px;letter-spacing:8px;color:#2563eb\u0027\u003e\" + $json.codigo + \"\u003c/h1\u003e\u003cp\u003eVálido por 15 minutos.\u003c/p\u003e\" }) }}",
+                                         "jsonBody":  "={{ JSON.stringify({ from: { email: \"noreply@test-eqvygm0x5d8l0p7w.mlsender.net\", name: \"dep-viagem\" }, to: [{ email: $('WF-DPV.07 - CODE | Processar Email').first().json.email, name: $('WF-DPV.07 - CODE | Processar Email').first().json.nome }], subject: \"Código de confirmação: \" + $('WF-DPV.07 - CODE | Processar Email').first().json.codigo, html: \"\u003ch2\u003eConfirme seu cadastro\u003c/h2\u003e\u003cp\u003eOlá, \" + $('WF-DPV.07 - CODE | Processar Email').first().json.nome + \"!\u003c/p\u003e\u003cp\u003eSeu código de verificação é:\u003c/p\u003e\u003ch1 style=\u0027font-size:40px;letter-spacing:8px;color:#2563eb\u0027\u003e\" + $('WF-DPV.07 - CODE | Processar Email').first().json.codigo + \"\u003c/h1\u003e\u003cp\u003eVálido por 15 minutos.\u003c/p\u003e\" }) }}",
                                          "options":  {
 
                                                      }
@@ -464,7 +464,7 @@
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
-                                                                                       "value":  "={{ \"📧 Código enviado para \" + $json.email + \"!\\n\\nDigite o código de 6 dígitos aqui para confirmar seu cadastro.\\n\\n⏱ Válido por 15 minutos.\" }}"
+                                                                                       "value":  "={{ \"📧 Código enviado para \" + $('WF-DPV.07 - CODE | Processar Email').first().json.email + \"!\\n\\nDigite o código de 6 dígitos aqui para confirmar seu cadastro.\\n\\n⏱ Válido por 15 minutos.\" }}"
                                                                                    }
                                                                                ]
                                                             },
@@ -706,7 +706,7 @@
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
-                                                                                       "value":  "={{ $json.expirado ? \"⏱ Código expirado. Digite seu e-mail novamente para receber um novo código:\" : ($json.bloqueado ? \"🔒 Muitas tentativas incorretas. Entre em contato com o administrador.\" : \"❌ Código inválido. Tente novamente (\" + (6 - $json.tentativas) + \" tentativas restantes):\") }}"
+                                                                                       "value":  "={{ $('WF-DPV.07 - CODE | Validar Codigo').first().json.expirado ? \"⏱ Código expirado. Digite seu e-mail novamente para receber um novo código:\" : ($('WF-DPV.07 - CODE | Validar Codigo').first().json.bloqueado ? \"🔒 Muitas tentativas incorretas. Entre em contato com o administrador.\" : \"❌ Código inválido. Tente novamente (\" + (6 - $('WF-DPV.07 - CODE | Validar Codigo').first().json.tentativas) + \" tentativas restantes):\") }}"
                                                                                    }
                                                                                ]
                                                             },
@@ -1719,7 +1719,7 @@
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
-                                                                                                             "value":  "={{ \"Ótimo, \" + $json.caption + \"! 😊\\n\\nAgora informe seu e-mail corporativo para confirmarmos o cadastro:\" }}"
+                                                                                                             "value":  "={{ \"Ótimo, \" + $('WF-DPV.07 - CODE | Processar Etapa').first().json.caption + \"! 😊\\n\\nAgora informe seu e-mail corporativo para confirmarmos o cadastro:\" }}"
                                                                                                          }
                                                                                                      ]
                                                                                   },
@@ -1791,7 +1791,7 @@
                                         {
                                             "parameters":  {
                                                                "operation":  "executeQuery",
-                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET email_temp = \u0027\" + $json.email + \"\u0027, codigo = \u0027\" + $('WF-DPV.07 - CODE | Processar Email').first().json.codigo + \"\u0027, codigo_expira = \u0027\" + $json.expira + \"\u0027, step = \u0027aguardando_confirmacao\u0027, tentativas = 0 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
                                                                "options":  {
 
                                                                            }
@@ -1819,7 +1819,7 @@
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
                                                                "specifyBody":  "json",
-                                                               "jsonBody":  "={{ JSON.stringify({ from: { email: \"noreply@test-eqvygm0x5d8l0p7w.mlsender.net\", name: \"dep-viagem\" }, to: [{ email: $json.email, name: $json.nome }], subject: \"Código de confirmação: \" + $json.codigo, html: \"\u003ch2\u003eConfirme seu cadastro\u003c/h2\u003e\u003cp\u003eOlá, \" + $json.nome + \"!\u003c/p\u003e\u003cp\u003eSeu código de verificação é:\u003c/p\u003e\u003ch1 style=\u0027font-size:40px;letter-spacing:8px;color:#2563eb\u0027\u003e\" + $json.codigo + \"\u003c/h1\u003e\u003cp\u003eVálido por 15 minutos.\u003c/p\u003e\" }) }}",
+                                                               "jsonBody":  "={{ JSON.stringify({ from: { email: \"noreply@test-eqvygm0x5d8l0p7w.mlsender.net\", name: \"dep-viagem\" }, to: [{ email: $('WF-DPV.07 - CODE | Processar Email').first().json.email, name: $('WF-DPV.07 - CODE | Processar Email').first().json.nome }], subject: \"Código de confirmação: \" + $('WF-DPV.07 - CODE | Processar Email').first().json.codigo, html: \"\u003ch2\u003eConfirme seu cadastro\u003c/h2\u003e\u003cp\u003eOlá, \" + $('WF-DPV.07 - CODE | Processar Email').first().json.nome + \"!\u003c/p\u003e\u003cp\u003eSeu código de verificação é:\u003c/p\u003e\u003ch1 style=\u0027font-size:40px;letter-spacing:8px;color:#2563eb\u0027\u003e\" + $('WF-DPV.07 - CODE | Processar Email').first().json.codigo + \"\u003c/h1\u003e\u003cp\u003eVálido por 15 minutos.\u003c/p\u003e\" }) }}",
                                                                "options":  {
 
                                                                            }
@@ -1856,7 +1856,7 @@
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
-                                                                                                             "value":  "={{ \"📧 Código enviado para \" + $json.email + \"!\\n\\nDigite o código de 6 dígitos aqui para confirmar seu cadastro.\\n\\n⏱ Válido por 15 minutos.\" }}"
+                                                                                                             "value":  "={{ \"📧 Código enviado para \" + $('WF-DPV.07 - CODE | Processar Email').first().json.email + \"!\\n\\nDigite o código de 6 dígitos aqui para confirmar seu cadastro.\\n\\n⏱ Válido por 15 minutos.\" }}"
                                                                                                          }
                                                                                                      ]
                                                                                   },
@@ -2098,7 +2098,7 @@
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
-                                                                                                             "value":  "={{ $json.expirado ? \"⏱ Código expirado. Digite seu e-mail novamente para receber um novo código:\" : ($json.bloqueado ? \"🔒 Muitas tentativas incorretas. Entre em contato com o administrador.\" : \"❌ Código inválido. Tente novamente (\" + (6 - $json.tentativas) + \" tentativas restantes):\") }}"
+                                                                                                             "value":  "={{ $('WF-DPV.07 - CODE | Validar Codigo').first().json.expirado ? \"⏱ Código expirado. Digite seu e-mail novamente para receber um novo código:\" : ($('WF-DPV.07 - CODE | Validar Codigo').first().json.bloqueado ? \"🔒 Muitas tentativas incorretas. Entre em contato com o administrador.\" : \"❌ Código inválido. Tente novamente (\" + (6 - $('WF-DPV.07 - CODE | Validar Codigo').first().json.tentativas) + \" tentativas restantes):\") }}"
                                                                                                          }
                                                                                                      ]
                                                                                   },
