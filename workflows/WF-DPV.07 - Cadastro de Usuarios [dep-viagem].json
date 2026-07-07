@@ -643,7 +643,7 @@
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
-                                                                                       "value":  "={{ \"✅ Cadastro confirmado, \" + $json.nome.split(\u0027 \u0027)[0] + \"!\\n\\nAgora você pode usar o sistema:\\n\\n🚀 *INICIAR [nome]* — iniciar viagem\\n🏁 *ENCERRAR VIAGEM* — encerrar viagem\\n📊 *RELATORIO* — gerar PDF\\n📷 *Foto de NF* — registrar despesa\" }}"
+                                                                                       "value":  "={{ \"✅ Cadastro confirmado, \" + $('WF-DPV.07 - CODE | Validar Codigo').first().json.nome.split(\u0027 \u0027)[0] + \"!\\n\\nAgora você pode usar o sistema:\\n\\n🚀 *INICIAR [nome]* — iniciar viagem\\n🏁 *ENCERRAR VIAGEM* — encerrar viagem\\n📊 *RELATORIO* — gerar PDF\\n📷 *Foto de NF* — registrar despesa\" }}"
                                                                                    }
                                                                                ]
                                                             },
@@ -1255,13 +1255,24 @@
                                                                        "main":  [
                                                                                     [
                                                                                         {
-                                                                                            "node":  "WF-DPV.07 - HTTP | Pedir CPF",
+                                                                                            "node":  "WF-DPV.07 - HTTP | Boas Vindas",
                                                                                             "type":  "main",
                                                                                             "index":  0
                                                                                         }
                                                                                     ]
                                                                                 ]
                                                                    },
+                        "WF-DPV.07 - HTTP | Boas Vindas":  {
+                                                               "main":  [
+                                                                            [
+                                                                                {
+                                                                                    "node":  "WF-DPV.07 - HTTP | Pedir CPF",
+                                                                                    "type":  "main",
+                                                                                    "index":  0
+                                                                                }
+                                                                            ]
+                                                                        ]
+                                                           },
                         "WF-DPV.07 - CODE | Parse CPF":  {
                                                              "main":  [
                                                                           [
@@ -2035,7 +2046,7 @@
                                                                                                          },
                                                                                                          {
                                                                                                              "name":  "text",
-                                                                                                             "value":  "={{ \"✅ Cadastro confirmado, \" + $json.nome.split(\u0027 \u0027)[0] + \"!\\n\\nAgora você pode usar o sistema:\\n\\n🚀 *INICIAR [nome]* — iniciar viagem\\n🏁 *ENCERRAR VIAGEM* — encerrar viagem\\n📊 *RELATORIO* — gerar PDF\\n📷 *Foto de NF* — registrar despesa\" }}"
+                                                                                                             "value":  "={{ \"✅ Cadastro confirmado, \" + $('WF-DPV.07 - CODE | Validar Codigo').first().json.nome.split(\u0027 \u0027)[0] + \"!\\n\\nAgora você pode usar o sistema:\\n\\n🚀 *INICIAR [nome]* — iniciar viagem\\n🏁 *ENCERRAR VIAGEM* — encerrar viagem\\n📊 *RELATORIO* — gerar PDF\\n📷 *Foto de NF* — registrar despesa\" }}"
                                                                                                          }
                                                                                                      ]
                                                                                   },
@@ -2647,13 +2658,24 @@
                                                                                              "main":  [
                                                                                                           [
                                                                                                               {
-                                                                                                                  "node":  "WF-DPV.07 - HTTP | Pedir CPF",
+                                                                                                                  "node":  "WF-DPV.07 - HTTP | Boas Vindas",
                                                                                                                   "type":  "main",
                                                                                                                   "index":  0
                                                                                                               }
                                                                                                           ]
                                                                                                       ]
                                                                                          },
+                                              "WF-DPV.07 - HTTP | Boas Vindas":  {
+                                                                                     "main":  [
+                                                                                                  [
+                                                                                                      {
+                                                                                                          "node":  "WF-DPV.07 - HTTP | Pedir CPF",
+                                                                                                          "type":  "main",
+                                                                                                          "index":  0
+                                                                                                      }
+                                                                                                  ]
+                                                                                              ]
+                                                                                 },
                                               "WF-DPV.07 - CODE | Parse CPF":  {
                                                                                    "main":  [
                                                                                                 [
