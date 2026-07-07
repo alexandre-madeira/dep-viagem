@@ -669,7 +669,7 @@
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "{{ \"UPDATE cadastros_pendentes SET tentativas = tentativas + 1 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                         "query":  "={{ $json.expirado ? (\"UPDATE cadastros_pendentes SET step = 'aguardando_email' WHERE phone = '\" + $json.phone + \"'\") : (\"UPDATE cadastros_pendentes SET tentativas = tentativas + 1 WHERE phone = '\" + $json.phone + \"'\") }}",
                                          "options":  {
 
                                                      }
@@ -2072,7 +2072,7 @@
                                         {
                                             "parameters":  {
                                                                "operation":  "executeQuery",
-                                                               "query":  "{{ \"UPDATE cadastros_pendentes SET tentativas = tentativas + 1 WHERE phone = \u0027\" + $json.phone + \"\u0027\" }}",
+                                                               "query":  "={{ $json.expirado ? (\"UPDATE cadastros_pendentes SET step = 'aguardando_email' WHERE phone = '\" + $json.phone + \"'\") : (\"UPDATE cadastros_pendentes SET tentativas = tentativas + 1 WHERE phone = '\" + $json.phone + \"'\") }}",
                                                                "options":  {
 
                                                                            }
