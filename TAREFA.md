@@ -1,15 +1,15 @@
-﻿Registrar no banco dep_viagem onde paramos hoje 05/07/2026.
+﻿Corrigir WF-DPV.07 (ID: 6SwQvQ5IVL8oVtUk) - bugs no fluxo de cadastro.
 
-TAREFA 1 - INSERT em erros_dpv:
-workflow_id: DPV-SESSAO-05072026
-status: info
-erro_msg: Sessao 05/07/2026 encerrada. Proxima tarefa: testar cadastro real via WhatsApp com numero 554896289237. WF-DPV.07 corrigido 3 bugs: zero-itens silencioso, colunas created_at, referencia phone nos HTTP nodes. WF-DPV.01 corrigido: messages.update filtrado, parse lid, funcionario nao cadastrado. Instancia sofia substituida por VIDROCOM_AG em todos os workflows. Pendente: testar fluxo completo NF imagem com Claude Vision e cadastro real.
+CONTEXTO: execucao real 06/07/2026 entre 15:17:08 e 15:17:45.
+Registro no banco: phone=554896289237, step=aguardando_confirmacao, nome_temp=Alexandre., email_temp=alexandremade@gmail.com, codigo=933071, tentativas=1.
 
-TAREFA 2 - Exportar JSONs atualizados:
-- WF-DPV.01 (z0F4H4NUyLErFjZ7) para workflows/
-- WF-DPV.07 (6SwQvQ5IVL8oVtUk) para workflows/
+BUG 1: mensagem exibe "undefined" no lugar do nome.
+O nome foi salvo como nome_temp=Alexandre. no banco mas o no que envia a mensagem de confirmacao do email nao esta lendo nome_temp corretamente. Verificar de onde o no le o nome e corrigir a referencia.
 
-TAREFA 3 - Commitar e push:
-git add workflows/
-git commit -m "docs: estado sessao 05/07 e export workflows corrigidos"
+BUG 2: exibe "NaN tentativas restantes" ao validar codigo.
+O no que calcula tentativas restantes nao esta lendo o campo tentativas do banco corretamente. Verificar a expressao que calcula tentativas restantes e corrigir.
+
+Buscar execucoes do WF-DPV.07 entre 15:17:00 e 15:18:00 UTC de hoje para ver os erros exatos.
+Corrigir ambos os bugs.
+Commitar: fix: WF-DPV.07 corrigir nome undefined e NaN tentativas
 git push
