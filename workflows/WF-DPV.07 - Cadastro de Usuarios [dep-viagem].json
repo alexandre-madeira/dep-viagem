@@ -1,4 +1,4 @@
-﻿{
+{
     "updatedAt":  "2026-07-06T02:33:45.808Z",
     "createdAt":  "2026-06-19T14:43:37.585Z",
     "id":  "6SwQvQ5IVL8oVtUk",
@@ -761,7 +761,13 @@
                       "position":  [
                                        2016,
                                        576
-                                   ]
+                                   ],
+                      "credentials":  {
+                                          "httpHeaderAuth":  {
+                                                                 "id":  "Ka0C8J4zfOklD1lw",
+                                                                 "name":  "HEADER_API_EVOLUTION_ENVIO"
+                                                             }
+                                      }
                   },
                   {
                       "parameters":  {
@@ -842,7 +848,13 @@
                       "position":  [
                                        1344,
                                        1056
-                                   ]
+                                   ],
+                      "credentials":  {
+                                          "httpHeaderAuth":  {
+                                                                 "id":  "Ka0C8J4zfOklD1lw",
+                                                                 "name":  "HEADER_API_EVOLUTION_ENVIO"
+                                                             }
+                                      }
                   },
                   {
                       "parameters":  {
@@ -899,7 +911,13 @@
                       "position":  [
                                        1568,
                                        864
-                                   ]
+                                   ],
+                      "credentials":  {
+                                          "httpHeaderAuth":  {
+                                                                 "id":  "Ka0C8J4zfOklD1lw",
+                                                                 "name":  "HEADER_API_EVOLUTION_ENVIO"
+                                                             }
+                                      }
                   },
                   {
                       "parameters":  {
@@ -969,7 +987,13 @@
                       "position":  [
                                        1344,
                                        1152
-                                   ]
+                                   ],
+                      "credentials":  {
+                                          "httpHeaderAuth":  {
+                                                                 "id":  "Ka0C8J4zfOklD1lw",
+                                                                 "name":  "HEADER_API_EVOLUTION_ENVIO"
+                                                             }
+                                      }
                   },
                   {
                       "parameters":  {
@@ -1014,6 +1038,8 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -1037,7 +1063,13 @@
                       "position":  [
                                        1344,
                                        1344
-                                   ]
+                                   ],
+                      "credentials":  {
+                                          "httpHeaderAuth":  {
+                                                                 "id":  "Ka0C8J4zfOklD1lw",
+                                                                 "name":  "HEADER_API_EVOLUTION_ENVIO"
+                                                             }
+                                      }
                   }
               ],
     "connections":  {
@@ -2164,7 +2196,13 @@
                                             "position":  [
                                                              2016,
                                                              576
-                                                         ]
+                                                         ],
+                                            "credentials":  {
+                                                                "httpHeaderAuth":  {
+                                                                                       "id":  "Ka0C8J4zfOklD1lw",
+                                                                                       "name":  "HEADER_API_EVOLUTION_ENVIO"
+                                                                                   }
+                                                            }
                                         },
                                         {
                                             "parameters":  {
@@ -2245,7 +2283,13 @@
                                             "position":  [
                                                              1344,
                                                              1056
-                                                         ]
+                                                         ],
+                                            "credentials":  {
+                                                                "httpHeaderAuth":  {
+                                                                                       "id":  "Ka0C8J4zfOklD1lw",
+                                                                                       "name":  "HEADER_API_EVOLUTION_ENVIO"
+                                                                                   }
+                                                            }
                                         },
                                         {
                                             "parameters":  {
@@ -2302,7 +2346,13 @@
                                             "position":  [
                                                              1568,
                                                              864
-                                                         ]
+                                                         ],
+                                            "credentials":  {
+                                                                "httpHeaderAuth":  {
+                                                                                       "id":  "Ka0C8J4zfOklD1lw",
+                                                                                       "name":  "HEADER_API_EVOLUTION_ENVIO"
+                                                                                   }
+                                                            }
                                         },
                                         {
                                             "parameters":  {
@@ -2372,7 +2422,13 @@
                                             "position":  [
                                                              1344,
                                                              1152
-                                                         ]
+                                                         ],
+                                            "credentials":  {
+                                                                "httpHeaderAuth":  {
+                                                                                       "id":  "Ka0C8J4zfOklD1lw",
+                                                                                       "name":  "HEADER_API_EVOLUTION_ENVIO"
+                                                                                   }
+                                                            }
                                         },
                                         {
                                             "parameters":  {
@@ -2417,6 +2473,8 @@
                                                                "authentication":  "genericCredentialType",
                                                                "genericAuthType":  "httpHeaderAuth",
                                                                "sendBody":  true,
+                                                               "contentType":  "json",
+                                                               "specifyBody":  "keypair",
                                                                "bodyParameters":  {
                                                                                       "parameters":  [
                                                                                                          {
@@ -2440,7 +2498,13 @@
                                             "position":  [
                                                              1344,
                                                              1344
-                                                         ]
+                                                         ],
+                                            "credentials":  {
+                                                                "httpHeaderAuth":  {
+                                                                                       "id":  "Ka0C8J4zfOklD1lw",
+                                                                                       "name":  "HEADER_API_EVOLUTION_ENVIO"
+                                                                                   }
+                                                            }
                                         }
                                     ],
                           "connections":  {

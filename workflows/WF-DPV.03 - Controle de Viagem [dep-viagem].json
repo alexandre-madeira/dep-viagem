@@ -192,6 +192,8 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -200,7 +202,7 @@
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
-                                                                                       "value":  "={{ \"?? Viagem iniciada em \" + $now.toFormat(\"dd/MM/yyyy HH:mm\") + \"!\\n\\nEnvie fotos das suas notas fiscais para registrar as despesas.\\n\\nComandos dispon�veis:\\n?? RELATORIO - gerar relat�rio\\n?? ENCERRAR VIAGEM - finalizar viagem\" }}"
+                                                                                       "value":  "={{ \"🚀 Viagem iniciada em \" + $now.toFormat(\"dd/MM/yyyy HH:mm\") + \"!\\n\\nEnvie fotos das suas notas fiscais para registrar as despesas.\\n\\nComandos disponíveis:\\n📊 RELATORIO - gerar relatório\\n🏁 ENCERRAR VIAGEM - finalizar viagem\" }}"
                                                                                    }
                                                                                ]
                                                             },
@@ -253,6 +255,8 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -261,7 +265,7 @@
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
-                                                                                       "value":  "={{ \"?? Viagem encerrada!\\nIn�cio: \" + $json.data_inicio + \"\\nFim: \" + $json.data_fim + \"\\n\\nEnvie RELATORIO para receber o PDF de presta��o de contas.\" }}"
+                                                                                       "value":  "={{ \"🏁 Viagem encerrada!\\nInício: \" + $json.data_inicio + \"\\nFim: \" + $json.data_fim + \"\\n\\nEnvie RELATORIO para receber o PDF de prestação de contas.\" }}"
                                                                                    }
                                                                                ]
                                                             },
@@ -334,6 +338,8 @@
                                          "authentication":  "genericCredentialType",
                                          "genericAuthType":  "httpHeaderAuth",
                                          "sendBody":  true,
+                                         "contentType":  "json",
+                                         "specifyBody":  "keypair",
                                          "bodyParameters":  {
                                                                 "parameters":  [
                                                                                    {
@@ -342,7 +348,7 @@
                                                                                    },
                                                                                    {
                                                                                        "name":  "text",
-                                                                                       "value":  "?? Comandos dispon�veis:\\n\\n?? INICIAR VIAGEM\\n?? ENCERRAR VIAGEM\\n?? RELATORIO\\n\\nOu envie uma foto de nota fiscal para registrar despesa."
+                                                                                       "value":  "={{ \"💬 Comandos disponíveis:\\n\\n🚀 INICIAR VIAGEM\\n🏁 ENCERRAR VIAGEM\\n📊 RELATORIO\\n\\nOu envie uma foto de nota fiscal para registrar despesa.\" }}"
                                                                                    }
                                                                                ]
                                                             },

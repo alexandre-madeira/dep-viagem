@@ -1,5 +1,5 @@
 ﻿{
-    "updatedAt":  "2026-07-06T02:29:42.018Z",
+    "updatedAt":  "2026-07-07T02:17:24.338Z",
     "createdAt":  "2026-06-09T22:30:26.966Z",
     "id":  "z0F4H4NUyLErFjZ7",
     "name":  "WF-DPV.01 - Receptor de NF [dep-viagem]",
@@ -21,8 +21,8 @@
                       "type":  "n8n-nodes-base.webhook",
                       "typeVersion":  2.1,
                       "position":  [
-                                       -336,
-                                       192
+                                       -576,
+                                       160
                                    ],
                       "webhookId":  "06a2c6b5-b29e-44d5-9a55-24274e36a323"
                   },
@@ -95,8 +95,8 @@
                       "type":  "n8n-nodes-base.set",
                       "typeVersion":  3.4,
                       "position":  [
-                                       -80,
-                                       192
+                                       -336,
+                                       160
                                    ]
                   },
                   {
@@ -272,14 +272,14 @@
                       "type":  "n8n-nodes-base.if",
                       "typeVersion":  2.2,
                       "position":  [
-                                       96,
-                                       192
+                                       -144,
+                                       160
                                    ]
                   },
                   {
                       "parameters":  {
                                          "operation":  "executeQuery",
-                                         "query":  "{{ \"SELECT id::text as id FROM funcionarios WHERE phone = \u0027\" + $json.phone + \"\u0027 AND ativo = true LIMIT 1\" }}",
+                                         "query":  "={{ \"SELECT id::text as id FROM funcionarios WHERE phone = \u0027\" + $(\u0027WF-DPV.01 - SET | Normalizar Payload\u0027).item.json.phone + \"\u0027 AND ativo = true LIMIT 1\" }}",
                                          "options":  {
 
                                                      }
@@ -289,8 +289,8 @@
                       "type":  "n8n-nodes-base.postgres",
                       "typeVersion":  2.5,
                       "position":  [
-                                       352,
-                                       176
+                                       112,
+                                       144
                                    ],
                       "alwaysOutputData":  true,
                       "credentials":  {
@@ -330,8 +330,8 @@
                       "type":  "n8n-nodes-base.if",
                       "typeVersion":  2.2,
                       "position":  [
-                                       736,
-                                       384
+                                       768,
+                                       320
                                    ]
                   },
                   {
@@ -365,8 +365,8 @@
                       "type":  "n8n-nodes-base.code",
                       "typeVersion":  2,
                       "position":  [
-                                       560,
-                                       -16
+                                       576,
+                                       144
                                    ]
                   },
                   {
@@ -378,10 +378,80 @@
                       "type":  "n8n-nodes-base.code",
                       "typeVersion":  2,
                       "position":  [
-                                       352,
-                                       -16
+                                       336,
+                                       144
                                    ],
                       "alwaysOutputData":  true
+                  },
+                  {
+                      "id":  "5494553a-249f-4818-90a3-eb6a1d1ab478",
+                      "name":  "WF-DPV.01 - DB | Dedup Mensagem",
+                      "type":  "n8n-nodes-base.postgres",
+                      "typeVersion":  2.5,
+                      "position":  [
+                                       -16,
+                                       160
+                                   ],
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "={{ \"INSERT INTO mensagens_processadas (message_id, phone) VALUES (\u0027\" + $json.messageId.replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, \u0027\" + $json.phone + \"\u0027) ON CONFLICT (message_id) DO NOTHING RETURNING message_id\" }}",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "credentials":  {
+                                          "postgres":  {
+                                                           "id":  "ggViIQGkepjwuOdv",
+                                                           "name":  "DB_dep_viagem"
+                                                       }
+                                      }
+                  },
+                  {
+                      "id":  "9ef615a5-9f07-48c8-b769-87ede66a6424",
+                      "name":  "WF-DPV.01 - IF | Mensagem Nova?",
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.2,
+                      "position":  [
+                                       -16,
+                                       320
+                                   ],
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "options":  {
+                                                                            "caseSensitive":  true,
+                                                                            "leftValue":  "",
+                                                                            "typeValidation":  "loose",
+                                                                            "version":  1
+                                                                        },
+                                                            "conditions":  [
+                                                                               {
+                                                                                   "leftValue":  "={{ $json.message_id }}",
+                                                                                   "operator":  {
+                                                                                                    "type":  "string",
+                                                                                                    "operation":  "notEmpty"
+                                                                                                },
+                                                                                   "rightValue":  ""
+                                                                               }
+                                                                           ],
+                                                            "combinator":  "and"
+                                                        }
+                                     },
+                      "options":  {
+
+                                  }
+                  },
+                  {
+                      "id":  "13651205-0f50-4cc8-b92c-9eb1bee4b548",
+                      "name":  "WF-DPV.01 - NOOP | Ignorar Duplicata",
+                      "type":  "n8n-nodes-base.noOp",
+                      "typeVersion":  1,
+                      "position":  [
+                                       176,
+                                       448
+                                   ],
+                      "parameters":  {
+
+                                     }
                   }
               ],
     "connections":  {
@@ -454,17 +524,6 @@
                                                                                   ]
                                                                               ]
                                                                  },
-                        "WF-DPV.01 - IF | Ignorar Mensagens do Bot":  {
-                                                                          "main":  [
-                                                                                       [
-                                                                                           {
-                                                                                               "node":  "WF-DPV.01 - DB | Verificar Funcionario",
-                                                                                               "type":  "main",
-                                                                                               "index":  0
-                                                                                           }
-                                                                                       ]
-                                                                                   ]
-                                                                      },
                         "WF-DPV.01 - IF | Funcionario Cadastrado?":  {
                                                                          "main":  [
                                                                                       [
@@ -515,7 +574,47 @@
                                                                                                       }
                                                                                                   ]
                                                                                               ]
+                                                                                 },
+                        "WF-DPV.01 - IF | Ignorar Mensagens do Bot":  {
+                                                                          "main":  [
+                                                                                       [
+                                                                                           {
+                                                                                               "node":  "WF-DPV.01 - DB | Dedup Mensagem",
+                                                                                               "type":  "main",
+                                                                                               "index":  0
+                                                                                           }
+                                                                                       ]
+                                                                                   ]
+                                                                      },
+                        "WF-DPV.01 - DB | Dedup Mensagem":  {
+                                                                "main":  [
+                                                                             [
+                                                                                 {
+                                                                                     "node":  "WF-DPV.01 - IF | Mensagem Nova?",
+                                                                                     "type":  "main",
+                                                                                     "index":  0
                                                                                  }
+                                                                             ]
+                                                                         ]
+                                                            },
+                        "WF-DPV.01 - IF | Mensagem Nova?":  {
+                                                                "main":  [
+                                                                             [
+                                                                                 {
+                                                                                     "node":  "WF-DPV.01 - DB | Verificar Funcionario",
+                                                                                     "type":  "main",
+                                                                                     "index":  0
+                                                                                 }
+                                                                             ],
+                                                                             [
+                                                                                 {
+                                                                                     "node":  "WF-DPV.01 - NOOP | Ignorar Duplicata",
+                                                                                     "type":  "main",
+                                                                                     "index":  0
+                                                                                 }
+                                                                             ]
+                                                                         ]
+                                                            }
                     },
     "settings":  {
                      "executionOrder":  "v1",
@@ -541,8 +640,8 @@
     "pinData":  {
 
                 },
-    "versionId":  "90db5e3a-a0d7-4f8f-94e9-374f770f3503",
-    "activeVersionId":  "375357a8-95b3-4722-9c7c-e9370f5a4054",
+    "versionId":  "45c928ea-282e-4b0d-804b-0d24d9e80311",
+    "activeVersionId":  "45c928ea-282e-4b0d-804b-0d24d9e80311",
     "versionCounter":  90,
     "triggerCount":  1,
     "sourceWorkflowId":  null,
@@ -572,386 +671,461 @@
 
              ],
     "activeVersion":  {
-                          "updatedAt":  "2026-07-06T02:06:07.204Z",
+                          "updatedAt":  "2026-07-07T02:17:24.338Z",
                           "createdAt":  "2026-07-06T01:55:15.283Z",
-                          "versionId":  "375357a8-95b3-4722-9c7c-e9370f5a4054",
+                          "versionId":  "45c928ea-282e-4b0d-804b-0d24d9e80311",
                           "workflowId":  "z0F4H4NUyLErFjZ7",
-                          "nodes":  [
-                                        {
-                                            "parameters":  {
-                                                               "httpMethod":  "POST",
-                                                               "path":  "dpv-whatsapp-receiver",
-                                                               "responseMode":  "responseNode",
-                                                               "options":  {
+                          "nodes":  {
+                                        "value":  [
+                                                      {
+                                                          "parameters":  {
+                                                                             "httpMethod":  "POST",
+                                                                             "path":  "dpv-whatsapp-receiver",
+                                                                             "responseMode":  "responseNode",
+                                                                             "options":  {
 
-                                                                           }
-                                                           },
-                                            "id":  "20921edd-f12f-4a99-b15d-d6cf1b5eba90",
-                                            "name":  "WF-DPV.01 - TRIGGER | Webhook Evolution API",
-                                            "type":  "n8n-nodes-base.webhook",
-                                            "typeVersion":  2.1,
-                                            "position":  [
-                                                             -336,
-                                                             192
-                                                         ],
-                                            "webhookId":  "06a2c6b5-b29e-44d5-9a55-24274e36a323"
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "assignments":  {
-                                                                                   "assignments":  [
-                                                                                                       {
-                                                                                                           "id":  "phone",
-                                                                                                           "name":  "phone",
-                                                                                                           "type":  "string",
-                                                                                                           "value":  "={{ $json.body.data.key.remoteJid.split(\u0027@\u0027)[0].split(\u0027:\u0027)[0] }}"
-                                                                                                       },
-                                                                                                       {
-                                                                                                           "id":  "messageType",
-                                                                                                           "name":  "messageType",
-                                                                                                           "type":  "string",
-                                                                                                           "value":  "={{ $json.body.data.messageType }}"
-                                                                                                       },
-                                                                                                       {
-                                                                                                           "id":  "caption",
-                                                                                                           "name":  "caption",
-                                                                                                           "type":  "string",
-                                                                                                           "value":  "={{ $json.body.data.message?.imageMessage?.caption ?? $json.body.data.message?.extendedTextMessage?.text ?? $json.body.data.message?.conversation ?? \u0027\u0027 }}"
-                                                                                                       },
-                                                                                                       {
-                                                                                                           "id":  "instanceName",
-                                                                                                           "name":  "instanceName",
-                                                                                                           "type":  "string",
-                                                                                                           "value":  "={{ $json.body.instance ?? \u0027\u0027 }}"
-                                                                                                       },
-                                                                                                       {
-                                                                                                           "id":  "messageId",
-                                                                                                           "name":  "messageId",
-                                                                                                           "type":  "string",
-                                                                                                           "value":  "={{ $json.body.data.key.id ?? \u0027\u0027 }}"
-                                                                                                       },
-                                                                                                       {
-                                                                                                           "id":  "imageUrl",
-                                                                                                           "name":  "imageUrl",
-                                                                                                           "type":  "string",
-                                                                                                           "value":  "={{ $json.body.data.message?.imageMessage?.url ?? \u0027\u0027 }}"
-                                                                                                       },
-                                                                                                       {
-                                                                                                           "id":  "imageBase64",
-                                                                                                           "name":  "imageBase64",
-                                                                                                           "type":  "string",
-                                                                                                           "value":  "={{ $json.body.data.message?.imageMessage?.jpegThumbnail ?? \u0027\u0027 }}"
-                                                                                                       },
-                                                                                                       {
-                                                                                                           "id":  "from_me",
-                                                                                                           "name":  "from_me",
-                                                                                                           "type":  "boolean",
-                                                                                                           "value":  "={{ $json.body.data.key.fromMe ?? false }}"
-                                                                                                       },
-                                                                                                       {
-                                                                                                           "id":  "event",
-                                                                                                           "name":  "event",
-                                                                                                           "type":  "string",
-                                                                                                           "value":  "={{ $json.body.event ?? \u0027\u0027 }}"
-                                                                                                       }
-                                                                                                   ]
-                                                                               },
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "d6c3b120-42f6-4795-b645-1ec59e1a05fb",
-                                            "name":  "WF-DPV.01 - SET | Normalizar Payload",
-                                            "type":  "n8n-nodes-base.set",
-                                            "typeVersion":  3.4,
-                                            "position":  [
-                                                             -80,
-                                                             192
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "rules":  {
-                                                                             "values":  [
-                                                                                            {
-                                                                                                "conditions":  {
-                                                                                                                   "options":  {
-                                                                                                                                   "caseSensitive":  false,
-                                                                                                                                   "leftValue":  "",
-                                                                                                                                   "typeValidation":  "loose",
-                                                                                                                                   "version":  1
-                                                                                                                               },
-                                                                                                                   "conditions":  [
-                                                                                                                                      {
-                                                                                                                                          "leftValue":  "={{ $json.messageType }}",
-                                                                                                                                          "operator":  {
-                                                                                                                                                           "type":  "string",
-                                                                                                                                                           "operation":  "equals"
-                                                                                                                                                       },
-                                                                                                                                          "rightValue":  "imageMessage"
-                                                                                                                                      }
-                                                                                                                                  ],
-                                                                                                                   "combinator":  "and"
-                                                                                                               }
-                                                                                            },
-                                                                                            {
-                                                                                                "conditions":  {
-                                                                                                                   "options":  {
-                                                                                                                                   "caseSensitive":  false,
-                                                                                                                                   "leftValue":  "",
-                                                                                                                                   "typeValidation":  "loose",
-                                                                                                                                   "version":  1
-                                                                                                                               },
-                                                                                                                   "conditions":  [
-                                                                                                                                      {
-                                                                                                                                          "leftValue":  "={{ $json.messageType }}",
-                                                                                                                                          "operator":  {
-                                                                                                                                                           "type":  "string",
-                                                                                                                                                           "operation":  "contains"
-                                                                                                                                                       },
-                                                                                                                                          "rightValue":  "conversation"
-                                                                                                                                      }
-                                                                                                                                  ],
-                                                                                                                   "combinator":  "and"
-                                                                                                               }
-                                                                                            }
-                                                                                        ]
+                                                                                         }
                                                                          },
-                                                               "options":  {
-                                                                               "fallbackOutput":  "extra",
-                                                                               "renameFallbackOutput":  "Ignorar"
-                                                                           }
-                                                           },
-                                            "id":  "baa3b5c7-4d16-4aaa-902a-eee2afce839b",
-                                            "name":  "WF-DPV.01 - SWITCH | Tipo de Mensagem",
-                                            "type":  "n8n-nodes-base.switch",
-                                            "typeVersion":  3.2,
-                                            "position":  [
-                                                             976,
-                                                             144
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "workflowId":  {
-                                                                                  "__rl":  true,
-                                                                                  "value":  "31hBkBVq6rduQKXM",
-                                                                                  "mode":  "list",
-                                                                                  "cachedResultUrl":  "/workflow/31hBkBVq6rduQKXM",
-                                                                                  "cachedResultName":  "WF-DPV.02 - Extrator IA [dep-viagem]"
-                                                                              },
-                                                               "options":  {
+                                                          "id":  "20921edd-f12f-4a99-b15d-d6cf1b5eba90",
+                                                          "name":  "WF-DPV.01 - TRIGGER | Webhook Evolution API",
+                                                          "type":  "n8n-nodes-base.webhook",
+                                                          "typeVersion":  2.1,
+                                                          "position":  [
+                                                                           -576,
+                                                                           160
+                                                                       ],
+                                                          "webhookId":  "06a2c6b5-b29e-44d5-9a55-24274e36a323"
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "assignments":  {
+                                                                                                 "assignments":  [
+                                                                                                                     {
+                                                                                                                         "id":  "phone",
+                                                                                                                         "name":  "phone",
+                                                                                                                         "type":  "string",
+                                                                                                                         "value":  "={{ $json.body.data.key.remoteJid.split(\u0027@\u0027)[0].split(\u0027:\u0027)[0] }}"
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         "id":  "messageType",
+                                                                                                                         "name":  "messageType",
+                                                                                                                         "type":  "string",
+                                                                                                                         "value":  "={{ $json.body.data.messageType }}"
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         "id":  "caption",
+                                                                                                                         "name":  "caption",
+                                                                                                                         "type":  "string",
+                                                                                                                         "value":  "={{ $json.body.data.message?.imageMessage?.caption ?? $json.body.data.message?.extendedTextMessage?.text ?? $json.body.data.message?.conversation ?? \u0027\u0027 }}"
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         "id":  "instanceName",
+                                                                                                                         "name":  "instanceName",
+                                                                                                                         "type":  "string",
+                                                                                                                         "value":  "={{ $json.body.instance ?? \u0027\u0027 }}"
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         "id":  "messageId",
+                                                                                                                         "name":  "messageId",
+                                                                                                                         "type":  "string",
+                                                                                                                         "value":  "={{ $json.body.data.key.id ?? \u0027\u0027 }}"
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         "id":  "imageUrl",
+                                                                                                                         "name":  "imageUrl",
+                                                                                                                         "type":  "string",
+                                                                                                                         "value":  "={{ $json.body.data.message?.imageMessage?.url ?? \u0027\u0027 }}"
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         "id":  "imageBase64",
+                                                                                                                         "name":  "imageBase64",
+                                                                                                                         "type":  "string",
+                                                                                                                         "value":  "={{ $json.body.data.message?.imageMessage?.jpegThumbnail ?? \u0027\u0027 }}"
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         "id":  "from_me",
+                                                                                                                         "name":  "from_me",
+                                                                                                                         "type":  "boolean",
+                                                                                                                         "value":  "={{ $json.body.data.key.fromMe ?? false }}"
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         "id":  "event",
+                                                                                                                         "name":  "event",
+                                                                                                                         "type":  "string",
+                                                                                                                         "value":  "={{ $json.body.event ?? \u0027\u0027 }}"
+                                                                                                                     }
+                                                                                                                 ]
+                                                                                             },
+                                                                             "options":  {
 
-                                                                           }
-                                                           },
-                                            "id":  "51644c8d-f8bd-4084-b7af-81aeb41442fb",
-                                            "name":  "WF-DPV.01 - EXEC | Chamar Extrator IA",
-                                            "type":  "n8n-nodes-base.executeWorkflow",
-                                            "typeVersion":  1.1,
-                                            "position":  [
-                                                             1200,
-                                                             0
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "respondWith":  "json",
-                                                               "responseBody":  "{\"status\":\"received\"}",
-                                                               "options":  {
+                                                                                         }
+                                                                         },
+                                                          "id":  "d6c3b120-42f6-4795-b645-1ec59e1a05fb",
+                                                          "name":  "WF-DPV.01 - SET | Normalizar Payload",
+                                                          "type":  "n8n-nodes-base.set",
+                                                          "typeVersion":  3.4,
+                                                          "position":  [
+                                                                           -336,
+                                                                           160
+                                                                       ]
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "rules":  {
+                                                                                           "values":  [
+                                                                                                          {
+                                                                                                              "conditions":  {
+                                                                                                                                 "options":  {
+                                                                                                                                                 "caseSensitive":  false,
+                                                                                                                                                 "leftValue":  "",
+                                                                                                                                                 "typeValidation":  "loose",
+                                                                                                                                                 "version":  1
+                                                                                                                                             },
+                                                                                                                                 "conditions":  [
+                                                                                                                                                    {
+                                                                                                                                                        "leftValue":  "={{ $json.messageType }}",
+                                                                                                                                                        "operator":  {
+                                                                                                                                                                         "type":  "string",
+                                                                                                                                                                         "operation":  "equals"
+                                                                                                                                                                     },
+                                                                                                                                                        "rightValue":  "imageMessage"
+                                                                                                                                                    }
+                                                                                                                                                ],
+                                                                                                                                 "combinator":  "and"
+                                                                                                                             }
+                                                                                                          },
+                                                                                                          {
+                                                                                                              "conditions":  {
+                                                                                                                                 "options":  {
+                                                                                                                                                 "caseSensitive":  false,
+                                                                                                                                                 "leftValue":  "",
+                                                                                                                                                 "typeValidation":  "loose",
+                                                                                                                                                 "version":  1
+                                                                                                                                             },
+                                                                                                                                 "conditions":  [
+                                                                                                                                                    {
+                                                                                                                                                        "leftValue":  "={{ $json.messageType }}",
+                                                                                                                                                        "operator":  {
+                                                                                                                                                                         "type":  "string",
+                                                                                                                                                                         "operation":  "contains"
+                                                                                                                                                                     },
+                                                                                                                                                        "rightValue":  "conversation"
+                                                                                                                                                    }
+                                                                                                                                                ],
+                                                                                                                                 "combinator":  "and"
+                                                                                                                             }
+                                                                                                          }
+                                                                                                      ]
+                                                                                       },
+                                                                             "options":  {
+                                                                                             "fallbackOutput":  "extra",
+                                                                                             "renameFallbackOutput":  "Ignorar"
+                                                                                         }
+                                                                         },
+                                                          "id":  "baa3b5c7-4d16-4aaa-902a-eee2afce839b",
+                                                          "name":  "WF-DPV.01 - SWITCH | Tipo de Mensagem",
+                                                          "type":  "n8n-nodes-base.switch",
+                                                          "typeVersion":  3.2,
+                                                          "position":  [
+                                                                           976,
+                                                                           144
+                                                                       ]
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "workflowId":  {
+                                                                                                "__rl":  true,
+                                                                                                "value":  "31hBkBVq6rduQKXM",
+                                                                                                "mode":  "list",
+                                                                                                "cachedResultUrl":  "/workflow/31hBkBVq6rduQKXM",
+                                                                                                "cachedResultName":  "WF-DPV.02 - Extrator IA [dep-viagem]"
+                                                                                            },
+                                                                             "options":  {
 
-                                                                           }
-                                                           },
-                                            "id":  "adef14a9-be86-4d94-8119-fde3be11fe94",
-                                            "name":  "WF-DPV.01 - RESPOND | OK ao Webhook",
-                                            "type":  "n8n-nodes-base.respondToWebhook",
-                                            "typeVersion":  1.1,
-                                            "position":  [
-                                                             1440,
-                                                             64
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "workflowId":  {
-                                                                                  "__rl":  true,
-                                                                                  "mode":  "list",
-                                                                                  "value":  "ruf039UAwh9KqIZo",
-                                                                                  "cachedResultName":  "WF-DPV.03 - Controle de Viagem [dep-viagem]"
-                                                                              },
-                                                               "options":  {
+                                                                                         }
+                                                                         },
+                                                          "id":  "51644c8d-f8bd-4084-b7af-81aeb41442fb",
+                                                          "name":  "WF-DPV.01 - EXEC | Chamar Extrator IA",
+                                                          "type":  "n8n-nodes-base.executeWorkflow",
+                                                          "typeVersion":  1.1,
+                                                          "position":  [
+                                                                           1200,
+                                                                           0
+                                                                       ]
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "respondWith":  "json",
+                                                                             "responseBody":  "{\"status\":\"received\"}",
+                                                                             "options":  {
 
-                                                                           }
-                                                           },
-                                            "id":  "272dcdc3-7ca4-431d-896f-5707d7534d61",
-                                            "name":  "WF-DPV.01 - EXEC | Chamar Handler Comandos",
-                                            "type":  "n8n-nodes-base.executeWorkflow",
-                                            "typeVersion":  1.1,
-                                            "position":  [
-                                                             1200,
-                                                             192
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
+                                                                                         }
+                                                                         },
+                                                          "id":  "adef14a9-be86-4d94-8119-fde3be11fe94",
+                                                          "name":  "WF-DPV.01 - RESPOND | OK ao Webhook",
+                                                          "type":  "n8n-nodes-base.respondToWebhook",
+                                                          "typeVersion":  1.1,
+                                                          "position":  [
+                                                                           1440,
+                                                                           64
+                                                                       ]
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "workflowId":  {
+                                                                                                "__rl":  true,
+                                                                                                "mode":  "list",
+                                                                                                "value":  "ruf039UAwh9KqIZo",
+                                                                                                "cachedResultName":  "WF-DPV.03 - Controle de Viagem [dep-viagem]"
+                                                                                            },
+                                                                             "options":  {
 
-                                                           },
-                                            "id":  "40470e17-7f18-4fe8-882e-3879ec91f1d4",
-                                            "name":  "WF-DPV.01 - NOOP | Ignorar Mensagem",
-                                            "type":  "n8n-nodes-base.noOp",
-                                            "typeVersion":  1,
-                                            "position":  [
-                                                             1184,
-                                                             400
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "conditions":  {
-                                                                                  "options":  {
-                                                                                                  "caseSensitive":  true,
-                                                                                                  "leftValue":  "",
-                                                                                                  "typeValidation":  "loose",
-                                                                                                  "version":  1
-                                                                                              },
-                                                                                  "conditions":  [
-                                                                                                     {
-                                                                                                         "leftValue":  "={{ $json.event }}",
-                                                                                                         "operator":  {
-                                                                                                                          "type":  "string",
-                                                                                                                          "operation":  "equals"
-                                                                                                                      },
-                                                                                                         "rightValue":  "messages.upsert"
-                                                                                                     },
-                                                                                                     {
-                                                                                                         "leftValue":  "={{ $json.from_me }}",
-                                                                                                         "operator":  {
-                                                                                                                          "type":  "boolean",
-                                                                                                                          "operation":  "false"
-                                                                                                                      },
-                                                                                                         "rightValue":  ""
-                                                                                                     }
-                                                                                                 ],
-                                                                                  "combinator":  "and"
-                                                                              },
-                                                               "options":  {
+                                                                                         }
+                                                                         },
+                                                          "id":  "272dcdc3-7ca4-431d-896f-5707d7534d61",
+                                                          "name":  "WF-DPV.01 - EXEC | Chamar Handler Comandos",
+                                                          "type":  "n8n-nodes-base.executeWorkflow",
+                                                          "typeVersion":  1.1,
+                                                          "position":  [
+                                                                           1200,
+                                                                           192
+                                                                       ]
+                                                      },
+                                                      {
+                                                          "parameters":  {
 
-                                                                           }
-                                                           },
-                                            "id":  "780a9803-e77d-4ba9-b966-58913801ea5d",
-                                            "name":  "WF-DPV.01 - IF | Ignorar Mensagens do Bot",
-                                            "type":  "n8n-nodes-base.if",
-                                            "typeVersion":  2.2,
-                                            "position":  [
-                                                             96,
-                                                             192
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "{{ \"SELECT id::text as id FROM funcionarios WHERE phone = \u0027\" + $json.phone + \"\u0027 AND ativo = true LIMIT 1\" }}",
-                                                               "options":  {
+                                                                         },
+                                                          "id":  "40470e17-7f18-4fe8-882e-3879ec91f1d4",
+                                                          "name":  "WF-DPV.01 - NOOP | Ignorar Mensagem",
+                                                          "type":  "n8n-nodes-base.noOp",
+                                                          "typeVersion":  1,
+                                                          "position":  [
+                                                                           1184,
+                                                                           400
+                                                                       ]
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "conditions":  {
+                                                                                                "options":  {
+                                                                                                                "caseSensitive":  true,
+                                                                                                                "leftValue":  "",
+                                                                                                                "typeValidation":  "loose",
+                                                                                                                "version":  1
+                                                                                                            },
+                                                                                                "conditions":  [
+                                                                                                                   {
+                                                                                                                       "leftValue":  "={{ $json.event }}",
+                                                                                                                       "operator":  {
+                                                                                                                                        "type":  "string",
+                                                                                                                                        "operation":  "equals"
+                                                                                                                                    },
+                                                                                                                       "rightValue":  "messages.upsert"
+                                                                                                                   },
+                                                                                                                   {
+                                                                                                                       "leftValue":  "={{ $json.from_me }}",
+                                                                                                                       "operator":  {
+                                                                                                                                        "type":  "boolean",
+                                                                                                                                        "operation":  "false"
+                                                                                                                                    },
+                                                                                                                       "rightValue":  ""
+                                                                                                                   }
+                                                                                                               ],
+                                                                                                "combinator":  "and"
+                                                                                            },
+                                                                             "options":  {
 
-                                                                           }
-                                                           },
-                                            "id":  "592fe7d1-ba1b-42e1-8acb-ff4b6ea262c0",
-                                            "name":  "WF-DPV.01 - DB | Verificar Funcionario",
-                                            "type":  "n8n-nodes-base.postgres",
-                                            "typeVersion":  2.5,
-                                            "position":  [
-                                                             352,
-                                                             176
-                                                         ],
-                                            "alwaysOutputData":  true,
-                                            "credentials":  {
-                                                                "postgres":  {
-                                                                                 "id":  "ggViIQGkepjwuOdv",
-                                                                                 "name":  "DB_dep_viagem"
-                                                                             }
-                                                            }
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "conditions":  {
-                                                                                  "combinator":  "and",
-                                                                                  "conditions":  [
-                                                                                                     {
-                                                                                                         "leftValue":  "={{ $json.id }}",
-                                                                                                         "operator":  {
-                                                                                                                          "operation":  "notEmpty",
-                                                                                                                          "type":  "string"
-                                                                                                                      },
-                                                                                                         "rightValue":  ""
-                                                                                                     }
-                                                                                                 ],
-                                                                                  "options":  {
-                                                                                                  "caseSensitive":  true,
-                                                                                                  "leftValue":  "",
-                                                                                                  "typeValidation":  "loose",
-                                                                                                  "version":  1
-                                                                                              }
-                                                                              },
-                                                               "options":  {
+                                                                                         }
+                                                                         },
+                                                          "id":  "780a9803-e77d-4ba9-b966-58913801ea5d",
+                                                          "name":  "WF-DPV.01 - IF | Ignorar Mensagens do Bot",
+                                                          "type":  "n8n-nodes-base.if",
+                                                          "typeVersion":  2.2,
+                                                          "position":  [
+                                                                           -144,
+                                                                           160
+                                                                       ]
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "operation":  "executeQuery",
+                                                                             "query":  "={{ \"SELECT id::text as id FROM funcionarios WHERE phone = \u0027\" + $(\u0027WF-DPV.01 - SET | Normalizar Payload\u0027).item.json.phone + \"\u0027 AND ativo = true LIMIT 1\" }}",
+                                                                             "options":  {
 
-                                                                           }
-                                                           },
-                                            "id":  "ae79c943-813e-4447-b272-aec59012eff3",
-                                            "name":  "WF-DPV.01 - IF | Funcionario Cadastrado?",
-                                            "type":  "n8n-nodes-base.if",
-                                            "typeVersion":  2.2,
-                                            "position":  [
-                                                             736,
-                                                             384
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "workflowId":  {
-                                                                                  "__rl":  true,
-                                                                                  "mode":  "id",
-                                                                                  "value":  "6SwQvQ5IVL8oVtUk"
-                                                                              },
-                                                               "options":  {
+                                                                                         }
+                                                                         },
+                                                          "id":  "592fe7d1-ba1b-42e1-8acb-ff4b6ea262c0",
+                                                          "name":  "WF-DPV.01 - DB | Verificar Funcionario",
+                                                          "type":  "n8n-nodes-base.postgres",
+                                                          "typeVersion":  2.5,
+                                                          "position":  [
+                                                                           112,
+                                                                           144
+                                                                       ],
+                                                          "alwaysOutputData":  true,
+                                                          "credentials":  {
+                                                                              "postgres":  {
+                                                                                               "id":  "ggViIQGkepjwuOdv",
+                                                                                               "name":  "DB_dep_viagem"
+                                                                                           }
+                                                                          }
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "conditions":  {
+                                                                                                "combinator":  "and",
+                                                                                                "conditions":  [
+                                                                                                                   {
+                                                                                                                       "leftValue":  "={{ $json.id }}",
+                                                                                                                       "operator":  {
+                                                                                                                                        "operation":  "notEmpty",
+                                                                                                                                        "type":  "string"
+                                                                                                                                    },
+                                                                                                                       "rightValue":  ""
+                                                                                                                   }
+                                                                                                               ],
+                                                                                                "options":  {
+                                                                                                                "caseSensitive":  true,
+                                                                                                                "leftValue":  "",
+                                                                                                                "typeValidation":  "loose",
+                                                                                                                "version":  1
+                                                                                                            }
+                                                                                            },
+                                                                             "options":  {
 
-                                                                           }
-                                                           },
-                                            "id":  "3ec7027a-fced-4798-89c2-60af4362cdc0",
-                                            "name":  "WF-DPV.01 - EXEC | Cadastrar Usuario",
-                                            "type":  "n8n-nodes-base.executeWorkflow",
-                                            "typeVersion":  1.1,
-                                            "position":  [
-                                                             1184,
-                                                             656
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "jsCode":  "const normalized = $(\u0027WF-DPV.01 - SET | Normalizar Payload\u0027).item.json;\nconst dbResult = $json;\nreturn [{\n  json: {\n    phone:        normalized.phone        || \u0027\u0027,\n    messageType:  normalized.messageType  || \u0027\u0027,\n    caption:      normalized.caption      || \u0027\u0027,\n    instanceName: normalized.instanceName || \u0027\u0027,\n    messageId:    normalized.messageId    || \u0027\u0027,\n    imageUrl:     normalized.imageUrl     || \u0027\u0027,\n    imageBase64:  normalized.imageBase64  || \u0027\u0027,\n    from_me:      normalized.from_me      ?? false,\n    id:           dbResult.id             || null\n  }\n}];"
-                                                           },
-                                            "id":  "aab1c2d3-e4f5-6789-abcd-ef0123456789",
-                                            "name":  "WF-DPV.01 - CODE | Merge Dados",
-                                            "type":  "n8n-nodes-base.code",
-                                            "typeVersion":  2,
-                                            "position":  [
-                                                             560,
-                                                             -16
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "jsCode":  "const items = $input.all();\nif (items.length === 0 || !items[0].json.id) {\n  return [{ json: { id: null } }];\n}\nreturn items;"
-                                                           },
-                                            "id":  "7b2beebb-11e1-4656-b28d-4ef412552d7a",
-                                            "name":  "WF-DPV.01 - CODE | Tratar Funcionario Nao Encontrado",
-                                            "type":  "n8n-nodes-base.code",
-                                            "typeVersion":  2,
-                                            "position":  [
-                                                             352,
-                                                             -16
-                                                         ],
-                                            "alwaysOutputData":  true
-                                        }
-                                    ],
+                                                                                         }
+                                                                         },
+                                                          "id":  "ae79c943-813e-4447-b272-aec59012eff3",
+                                                          "name":  "WF-DPV.01 - IF | Funcionario Cadastrado?",
+                                                          "type":  "n8n-nodes-base.if",
+                                                          "typeVersion":  2.2,
+                                                          "position":  [
+                                                                           768,
+                                                                           320
+                                                                       ]
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "workflowId":  {
+                                                                                                "__rl":  true,
+                                                                                                "value":  "6SwQvQ5IVL8oVtUk",
+                                                                                                "mode":  "list",
+                                                                                                "cachedResultUrl":  "/workflow/6SwQvQ5IVL8oVtUk",
+                                                                                                "cachedResultName":  "WF-DPV.07 - Cadastro de Usuários [dep-viagem]"
+                                                                                            },
+                                                                             "options":  {
+
+                                                                                         }
+                                                                         },
+                                                          "id":  "3ec7027a-fced-4798-89c2-60af4362cdc0",
+                                                          "name":  "WF-DPV.01 - EXEC | Cadastrar Usuario",
+                                                          "type":  "n8n-nodes-base.executeWorkflow",
+                                                          "typeVersion":  1.1,
+                                                          "position":  [
+                                                                           1184,
+                                                                           656
+                                                                       ]
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "jsCode":  "const normalized = $(\u0027WF-DPV.01 - SET | Normalizar Payload\u0027).item.json;\nconst dbResult = $json;\nreturn [{\n  json: {\n    phone:        normalized.phone        || \u0027\u0027,\n    messageType:  normalized.messageType  || \u0027\u0027,\n    caption:      normalized.caption      || \u0027\u0027,\n    instanceName: normalized.instanceName || \u0027\u0027,\n    messageId:    normalized.messageId    || \u0027\u0027,\n    imageUrl:     normalized.imageUrl     || \u0027\u0027,\n    imageBase64:  normalized.imageBase64  || \u0027\u0027,\n    from_me:      normalized.from_me      ?? false,\n    id:           dbResult.id             || null\n  }\n}];"
+                                                                         },
+                                                          "id":  "aab1c2d3-e4f5-6789-abcd-ef0123456789",
+                                                          "name":  "WF-DPV.01 - CODE | Merge Dados",
+                                                          "type":  "n8n-nodes-base.code",
+                                                          "typeVersion":  2,
+                                                          "position":  [
+                                                                           576,
+                                                                           144
+                                                                       ]
+                                                      },
+                                                      {
+                                                          "parameters":  {
+                                                                             "jsCode":  "const items = $input.all();\nif (items.length === 0 || !items[0].json.id) {\n  return [{ json: { id: null } }];\n}\nreturn items;"
+                                                                         },
+                                                          "id":  "7b2beebb-11e1-4656-b28d-4ef412552d7a",
+                                                          "name":  "WF-DPV.01 - CODE | Tratar Funcionario Nao Encontrado",
+                                                          "type":  "n8n-nodes-base.code",
+                                                          "typeVersion":  2,
+                                                          "position":  [
+                                                                           336,
+                                                                           144
+                                                                       ],
+                                                          "alwaysOutputData":  true
+                                                      },
+                                                      {
+                                                          "id":  "5494553a-249f-4818-90a3-eb6a1d1ab478",
+                                                          "name":  "WF-DPV.01 - DB | Dedup Mensagem",
+                                                          "type":  "n8n-nodes-base.postgres",
+                                                          "typeVersion":  2.5,
+                                                          "position":  [
+                                                                           -16,
+                                                                           160
+                                                                       ],
+                                                          "parameters":  {
+                                                                             "operation":  "executeQuery",
+                                                                             "query":  "={{ \"INSERT INTO mensagens_processadas (message_id, phone) VALUES (\u0027\" + $json.messageId.replace(/\u0027/g, \"\u0027\u0027\") + \"\u0027, \u0027\" + $json.phone + \"\u0027) ON CONFLICT (message_id) DO NOTHING RETURNING message_id\" }}",
+                                                                             "options":  {
+
+                                                                                         }
+                                                                         },
+                                                          "credentials":  {
+                                                                              "postgres":  {
+                                                                                               "id":  "ggViIQGkepjwuOdv",
+                                                                                               "name":  "DB_dep_viagem"
+                                                                                           }
+                                                                          }
+                                                      },
+                                                      {
+                                                          "id":  "9ef615a5-9f07-48c8-b769-87ede66a6424",
+                                                          "name":  "WF-DPV.01 - IF | Mensagem Nova?",
+                                                          "type":  "n8n-nodes-base.if",
+                                                          "typeVersion":  2.2,
+                                                          "position":  [
+                                                                           -16,
+                                                                           320
+                                                                       ],
+                                                          "parameters":  {
+                                                                             "conditions":  {
+                                                                                                "options":  {
+                                                                                                                "caseSensitive":  true,
+                                                                                                                "leftValue":  "",
+                                                                                                                "typeValidation":  "loose",
+                                                                                                                "version":  1
+                                                                                                            },
+                                                                                                "conditions":  [
+                                                                                                                   {
+                                                                                                                       "leftValue":  "={{ $json.message_id }}",
+                                                                                                                       "operator":  {
+                                                                                                                                        "type":  "string",
+                                                                                                                                        "operation":  "notEmpty"
+                                                                                                                                    },
+                                                                                                                       "rightValue":  ""
+                                                                                                                   }
+                                                                                                               ],
+                                                                                                "combinator":  "and"
+                                                                                            }
+                                                                         },
+                                                          "options":  {
+
+                                                                      }
+                                                      },
+                                                      {
+                                                          "id":  "13651205-0f50-4cc8-b92c-9eb1bee4b548",
+                                                          "name":  "WF-DPV.01 - NOOP | Ignorar Duplicata",
+                                                          "type":  "n8n-nodes-base.noOp",
+                                                          "typeVersion":  1,
+                                                          "position":  [
+                                                                           176,
+                                                                           448
+                                                                       ],
+                                                          "parameters":  {
+
+                                                                         }
+                                                      }
+                                                  ],
+                                        "Count":  16
+                                    },
                           "connections":  {
                                               "WF-DPV.01 - TRIGGER | Webhook Evolution API":  {
                                                                                                   "main":  [
@@ -1022,17 +1196,6 @@
                                                                                                         ]
                                                                                                     ]
                                                                                        },
-                                              "WF-DPV.01 - IF | Ignorar Mensagens do Bot":  {
-                                                                                                "main":  [
-                                                                                                             [
-                                                                                                                 {
-                                                                                                                     "node":  "WF-DPV.01 - DB | Verificar Funcionario",
-                                                                                                                     "type":  "main",
-                                                                                                                     "index":  0
-                                                                                                                 }
-                                                                                                             ]
-                                                                                                         ]
-                                                                                            },
                                               "WF-DPV.01 - IF | Funcionario Cadastrado?":  {
                                                                                                "main":  [
                                                                                                             [
@@ -1083,7 +1246,47 @@
                                                                                                                             }
                                                                                                                         ]
                                                                                                                     ]
+                                                                                                       },
+                                              "WF-DPV.01 - IF | Ignorar Mensagens do Bot":  {
+                                                                                                "main":  [
+                                                                                                             [
+                                                                                                                 {
+                                                                                                                     "node":  "WF-DPV.01 - DB | Dedup Mensagem",
+                                                                                                                     "type":  "main",
+                                                                                                                     "index":  0
+                                                                                                                 }
+                                                                                                             ]
+                                                                                                         ]
+                                                                                            },
+                                              "WF-DPV.01 - DB | Dedup Mensagem":  {
+                                                                                      "main":  [
+                                                                                                   [
+                                                                                                       {
+                                                                                                           "node":  "WF-DPV.01 - IF | Mensagem Nova?",
+                                                                                                           "type":  "main",
+                                                                                                           "index":  0
                                                                                                        }
+                                                                                                   ]
+                                                                                               ]
+                                                                                  },
+                                              "WF-DPV.01 - IF | Mensagem Nova?":  {
+                                                                                      "main":  [
+                                                                                                   [
+                                                                                                       {
+                                                                                                           "node":  "WF-DPV.01 - DB | Verificar Funcionario",
+                                                                                                           "type":  "main",
+                                                                                                           "index":  0
+                                                                                                       }
+                                                                                                   ],
+                                                                                                   [
+                                                                                                       {
+                                                                                                           "node":  "WF-DPV.01 - NOOP | Ignorar Duplicata",
+                                                                                                           "type":  "main",
+                                                                                                           "index":  0
+                                                                                                       }
+                                                                                                   ]
+                                                                                               ]
+                                                                                  }
                                           },
                           "nodeGroups":  [
 
