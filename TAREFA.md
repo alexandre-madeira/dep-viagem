@@ -29,22 +29,33 @@ Criar via gh CLI ou API GitHub.
 
 ---
 
-## FIX WF-DPV.04 - geracao de PDF do relatorio (07-08/07/2026)
+## FIX WF-DPV.04 - geracao e envio do PDF do relatorio (07-08/07/2026) - CONCLUIDO
 
-Cadeia de 3 bugs achados ao depurar RELATORIO nao enviando PDF:
+RELATORIO agora funciona ponta a ponta de verdade (validado com Gotenberg saudavel + simulacao
+direta sem WhatsApp, node de teste temporario removido depois). Cadeia de bugs, todos corrigidos:
 
-1. `WF-DPV.03 - DB | Buscar Total Despesas` nao selecionava `v.phone` — o item passado para
-   `WF-DPV.04` via Execute Workflow ficava sem telefone, fazendo a query de despesas do WF-DPV.04
-   rodar com `WHERE d.phone = ''` (zero resultados). Corrigido junto com o fix de RELATORIO
-   aceitar viagem encerrada (commit anterior).
-2. `WF-DPV.04 - HTTP | Converter HTML para PDF` esperava um arquivo binario (`formBinaryData`)
-   mas recebia direto a string do HTML gerado, sem nenhuma conversao — faltava o node
-   `WF-DPV.04 - CONVERT | HTML para Binario` (novo, `convertToFile` operation `toText`) entre a
-   geracao do HTML e essa chamada, alem do campo `inputDataFieldName` que nunca tinha sido
-   configurado no parametro multipart `files`.
-3. Gotenberg (`http://gotenberg:3000`) inacessivel — confirmado resolvido pelo usuario (healthcheck
-   ok de dentro do container do n8n).
+1. `WF-DPV.03 - DB | Buscar Total Despesas` nao selecionava `v.phone` -> WF-DPV.04 recebia telefone
+   vazio -> zero despesas encontradas.
+2. `WF-DPV.04 - HTTP | Converter HTML para PDF` recebia a string do HTML sem nenhuma conversao para
+   binario -> adicionado node `CONVERT | HTML para Binario` (convertToFile, toText).
+3. Esse mesmo node HTTP tinha `authentication: predefinedCredentialType` com `nodeCredentialType`
+   vazio (credencial fantasma nunca configurada) -> trocado para `authentication: none` (Gotenberg
+   self-hosted nao exige auth).
+4. Gotenberg exige que o arquivo se chame exatamente `index.html` (erro claro da propria API: "form
+   file 'index.html' is required") -> corrigido o fileName no node de conversao.
+5. `WF-DPV.04 - HTTP | Enviar PDF pelo WhatsApp` tinha `inputDataFieldName: ""` vazio no parametro
+   multipart do PDF -> corrigido para `"data"`.
+6. Descoberta mais profunda: o endpoint `/message/sendMedia` da Evolution API **nao aceita
+   multipart/form-data** (retornava 500 "Unexpected field") - o DTO real (`SendMediaDto`, confirmado
+   no codigo-fonte oficial) espera JSON com `media` como string base64. Trocado o node inteiro de
+   multipart para `contentType: json` + node novo `EXTRACT | PDF para Base64`
+   (extractFromFile, binaryToPropery) antes dele.
 
-Fixes 1 e 2 aplicados e publicados em WF-DPV.03/WF-DPV.04. Validado via simulacao direta (node de
-teste temporario no lugar do trigger real, sem precisar de mensagem WhatsApp) — ver commit para
-detalhes do resultado.
+Resultado real: PDF de 28.2kB gerado pelo Gotenberg, enviado via WhatsApp como documentMessage,
+Evolution API confirmou `status: PENDING` (aceito para entrega).
+
+**Pendente, fora do escopo deste fix:** `WF-DPV.04 - HTTP | Notificar Gestor` (ultimo node da
+cadeia, roda depois do envio do PDF) falha com 400 porque `gestorPhone` nunca foi configurado em
+lugar nenhum do sistema - isso faz a execucao inteira aparecer como "error" no n8n mesmo o PDF
+tendo sido entregue com sucesso antes disso. Nao mexi nisso; requer decisao de produto (quem e o
+gestor, ou remover essa notificacao).
