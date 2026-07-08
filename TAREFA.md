@@ -1,29 +1,29 @@
-﻿BUG: erro de timezone nas validacoes de data no WF-DPV.02.
+﻿Corrigir WF-DPV.03 - dois bugs do RELATORIO.
 
-PROBLEMA: servidor em UTC, usuario em UTC-3 (America/Teresina). 
-Data da nota: 2026-06-27. Hoje: 2026-07-07. Diferenca real: 10 dias.
-Sistema esta calculando como mais de 90 dias - calculo errado.
+BUG 1 - Comando case insensitive e sem acento:
+Corrigir reconhecimento de todos os comandos usando .toLowerCase().normalize():
+- RELATORIO: aceitar relatorio, relatório, RELATÓRIO, Relatorio
+- ENCERRAR VIAGEM: aceitar encerrar viagem, encerra viagem, encerra viajem
+- INICIAR: aceitar iniciar, Iniciar, INICIAR
 
-CORRECAO:
-1. Localizar validacao de data no WF-DPV.02
-2. Usar sempre America/Sao_Paulo ou America/Teresina para calcular diferenca de dias
-3. Parse da data_emissao deve considerar que e uma data local (sem timezone)
-4. Comparar apenas datas (sem horas) para evitar problemas de UTC
+BUG 2 - Query do relatorio filtra status ativa mas viagem ja foi encerrada:
+O bot diz "Envie RELATORIO" apos encerrar mas a query busca WHERE status = 'ativa'.
+CORRECAO: mudar query para buscar WHERE status IN ('ativa', 'encerrada') ou remover filtro de status.
 
-Commitar: fix: timezone na validacao de data da NF
+Commitar: fix: RELATORIO aceita acento e busca viagem encerrada
 git push
 
 ---
 
-## DIAGNOSTICO REAL (07/08/07/2026)
+## VALIDADO (07/07/2026, execucoes 61853/61854/61855)
 
-Nao era timezone. Execucao 61813 (comprovante iFood, sem ano impresso na data) mostrou o Claude
-Vision inferindo `data_emissao: "2024-07-06"` (observacoes_modelo: "A data nao contem o ano, foi
-inferido como 2024") quando o ano real e 2026 — diferenca de ~2 anos, nao 10 dias. A validacao de
-90 dias em `CODE | Validar Combinacao` calculou certo dado o input; o input e que veio errado porque
-o modelo nao sabe que ano estamos.
-
-**Fix aplicado:** prompt do `AGENT | Extrair Dados da NF` (WF-DPV.02) agora informa a data atual real
-(`$now.toFormat("dd/MM/yyyy")`) e instrui explicitamente a assumir o ano atual quando o documento nao
-mostra o ano, em vez de chutar um ano passado. Publicado, nao validado ainda com o mesmo comprovante
-(usuario optou por commitar direto).
+Ambos os bugs confirmados corrigidos com teste real:
+- `RELATORIO` (sem acento) roteou certo para a branch de relatorio (antes caia no fallback Ajuda
+  quando vinha acentuado, ex: "Relatório").
+- A query em `WF-DPV.03 - DB | Buscar Total Despesas` achou a viagem 242 mesmo com
+  `status = 'encerrada'` (antes so achava com `status = 'ativa'`, retornando vazio logo apos
+  ENCERRAR VIAGEM — exatamente o fluxo que o proprio bot recomenda).
+- PDF nao foi gerado nessa execucao especifica porque a viagem 242 (teste de INICIAR/ENCERRAR) durou
+  92 segundos e nao tem nenhuma despesa dentro da janela — nao e bug, e falta de dado de teste.
+  `WF-DPV.03 - SWITCH | Tipo de Comando` normalizado para `ENCERR` (em vez de `ENCERRAR`) tambem
+  aceita "encerra viagem"/"encerra viajem".
