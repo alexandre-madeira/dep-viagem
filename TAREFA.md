@@ -1,29 +1,50 @@
-﻿Corrigir WF-DPV.03 - dois bugs do RELATORIO.
+﻿Criar issues no GitHub - melhorias DPV.
 
-BUG 1 - Comando case insensitive e sem acento:
-Corrigir reconhecimento de todos os comandos usando .toLowerCase().normalize():
-- RELATORIO: aceitar relatorio, relatório, RELATÓRIO, Relatorio
-- ENCERRAR VIAGEM: aceitar encerrar viagem, encerra viagem, encerra viajem
-- INICIAR: aceitar iniciar, Iniciar, INICIAR
+ISSUE 1: feat: permitir correcao de despesa apos confirmacao
+Apos despesa registrada, usuario nao consegue corrigir. Adicionar comando CORRIGIR ULTIMA que reabre fluxo guiado para despesa mais recente.
 
-BUG 2 - Query do relatorio filtra status ativa mas viagem ja foi encerrada:
-O bot diz "Envie RELATORIO" apos encerrar mas a query busca WHERE status = 'ativa'.
-CORRECAO: mudar query para buscar WHERE status IN ('ativa', 'encerrada') ou remover filtro de status.
+ISSUE 2: feat: respostas numericas no fluxo guiado
+Bot oferece opcoes numeradas. Usuario responde apenas numero. Validar intervalo.
+Exemplo: Quem pagou? 1.Empresa 2.Eu 3.Cliente
 
-Commitar: fix: RELATORIO aceita acento e busca viagem encerrada
-git push
+ISSUE 3: fix: detectar bebida alcoolica por marca comercial
+Expandir palavras-chave: BRAHMA, HEINEKEN, SKOL, DEVASSA, BUDWEISER, STELLA, CORONA, AMSTEL, ITAIPAVA, ANTARCTICA, BOHEMIA.
+Desconto bebida sempre entre empresa e nome do funcionario cadastrado.
+
+ISSUE 4: feat: adicionar tipo cliente no pagador
+Terceira opcao: 1.Empresa 2.Eu 3.Cliente
+Salvar tipo_despesa=cliente. No relatorio separar despesas a cobrar do cliente.
+Migration: ALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS tipo_despesa VARCHAR(20) DEFAULT empresa.
+
+ISSUE 5: feat: reabrir viagem encerrada para anexar mais NF
+Adicionar comando REABRIR VIAGEM que muda status de encerrada para ativa.
+Apenas a viagem mais recente do usuario pode ser reaberta.
+
+ISSUE 6: feat: nome da viagem com formato cidade_ano
+Ao iniciar viagem, sugerir formato: INICIAR cidade_ano ex: INICIAR teresina_26
+Salvar nome_viagem neste formato para facilitar identificacao no relatorio e painel.
+
+Repositorio: alexandre-madeira/dep-viagem
+Criar via gh CLI ou API GitHub.
 
 ---
 
-## VALIDADO (07/07/2026, execucoes 61853/61854/61855)
+## FIX WF-DPV.04 - geracao de PDF do relatorio (07-08/07/2026)
 
-Ambos os bugs confirmados corrigidos com teste real:
-- `RELATORIO` (sem acento) roteou certo para a branch de relatorio (antes caia no fallback Ajuda
-  quando vinha acentuado, ex: "Relatório").
-- A query em `WF-DPV.03 - DB | Buscar Total Despesas` achou a viagem 242 mesmo com
-  `status = 'encerrada'` (antes so achava com `status = 'ativa'`, retornando vazio logo apos
-  ENCERRAR VIAGEM — exatamente o fluxo que o proprio bot recomenda).
-- PDF nao foi gerado nessa execucao especifica porque a viagem 242 (teste de INICIAR/ENCERRAR) durou
-  92 segundos e nao tem nenhuma despesa dentro da janela — nao e bug, e falta de dado de teste.
-  `WF-DPV.03 - SWITCH | Tipo de Comando` normalizado para `ENCERR` (em vez de `ENCERRAR`) tambem
-  aceita "encerra viagem"/"encerra viajem".
+Cadeia de 3 bugs achados ao depurar RELATORIO nao enviando PDF:
+
+1. `WF-DPV.03 - DB | Buscar Total Despesas` nao selecionava `v.phone` — o item passado para
+   `WF-DPV.04` via Execute Workflow ficava sem telefone, fazendo a query de despesas do WF-DPV.04
+   rodar com `WHERE d.phone = ''` (zero resultados). Corrigido junto com o fix de RELATORIO
+   aceitar viagem encerrada (commit anterior).
+2. `WF-DPV.04 - HTTP | Converter HTML para PDF` esperava um arquivo binario (`formBinaryData`)
+   mas recebia direto a string do HTML gerado, sem nenhuma conversao — faltava o node
+   `WF-DPV.04 - CONVERT | HTML para Binario` (novo, `convertToFile` operation `toText`) entre a
+   geracao do HTML e essa chamada, alem do campo `inputDataFieldName` que nunca tinha sido
+   configurado no parametro multipart `files`.
+3. Gotenberg (`http://gotenberg:3000`) inacessivel — confirmado resolvido pelo usuario (healthcheck
+   ok de dentro do container do n8n).
+
+Fixes 1 e 2 aplicados e publicados em WF-DPV.03/WF-DPV.04. Validado via simulacao direta (node de
+teste temporario no lugar do trigger real, sem precisar de mensagem WhatsApp) — ver commit para
+detalhes do resultado.
