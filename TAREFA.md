@@ -1,58 +1,69 @@
-﻿Analisar execucoes do WF-DPV.01 e WF-DPV.02 entre 00:25:28 e 12:37:17 UTC de hoje 07/07/2026.
+﻿REFATORACAO COMPLETA DO FLUXO DE DESPESAS - DPV
 
-PROBLEMA: diversas fotos de NF foram enviadas pelo WhatsApp mas nenhuma foi salva em despesas_viagem.
+TAREFA 1 - Remover CPF/CNPJ do pagador (simplificacao):
+- Remover cpf_cnpj_pagador de CODE | Validar Combinacao no WF-DPV.02
+- Campos obrigatorios: apenas tipo_pagador e forma_pagamento
+- Campos opcionais: tudo mais
 
-TAREFA:
-1. Buscar todas as execucoes do WF-DPV.01 (z0F4H4NUyLErFjZ7) neste periodo
-2. Para cada execucao com imageMessage: verificar qual foi o lastNodeExecuted e se houve erro
-3. Buscar execucoes do WF-DPV.02 (31hBkBVq6rduQKXM) no mesmo periodo
-4. Identificar onde o fluxo esta parando
-5. Reportar o erro exato de cada falha
+TAREFA 2 - Fluxo guiado passo a passo apos foto NF:
+Quando NF processada, bot faz 3 perguntas:
+1. "Quem pagou? Responda EMPRESA ou EU"
+2. "Como pagou? Responda CARTAO ou DINHEIRO"
+3. "Observacao? Responda: DIVIDIR / DESCONTO BEBIDA / NAO"
 
-Nao corrigir ainda - apenas diagnosticar e reportar.
+TAREFA 3 - Guardar extracao completa em itens_json:
+Salvar em despesas_viagem.itens_json todo o JSON extraido pelo Claude Vision:
+estabelecimento, cnpj, valor_total, data_emissao, categoria, forma_pagamento,
+itens (array completo com descricao/quantidade/valor_unitario/valor_total),
+confianca, observacoes_modelo
 
----
+TAREFA 4 - Divisao de conta:
+Quando usuario responde DIVIDIR:
+- Adicionar colunas em despesas_viagem: valor_empresa NUMERIC, valor_funcionario NUMERIC
+- Bot pergunta: "Informe divisao. Ex: EMPRESA 80% EU 20% ou EMPRESA 80 EU 30"
+- Sistema calcula e salva os dois valores
 
-## DIAGNOSTICO (concluido 07/07/2026)
+TAREFA 5 - Desconto bebida alcoolica:
+Quando usuario responde DESCONTO BEBIDA:
+- Claude Vision ja extraiu os itens
+- Identificar automaticamente por palavra-chave: CERVEJA, VINHO, WHISKY, CACHAÇA, DOSE, DRINK, BEER, ALCOOL
+- Calcular soma dos itens alcoolicos
+- Salvar em valor_funcionario (desconta da empresa)
+- Salvar em itens_json campo alcoolicos_detectados com lista e valor
 
-Janela analisada: 00:25:28-12:37:17 UTC.
-WF-DPV.01: 99 execucoes, todas entre 00:33 e 05:31 UTC (nada depois disso na janela).
-WF-DPV.02: 14 execucoes no periodo, 100% com erro.
+MIGRATIONS NECESSARIAS:
+ALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS valor_empresa NUMERIC;
+ALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS valor_funcionario NUMERIC;
 
-### Causa raiz
-No no `WF-DPV.01 - SET | Normalizar Payload`:
-```
-imageBase64 = {{ $json.body.data.message?.imageMessage?.jpegThumbnail ?? '' }}
-```
-`jpegThumbnail` chega da Evolution API como objeto de bytes (`{"0":255,"1":216,...}`), nao como string base64.
-Como o campo do Set e tipado `string`, o n8n serializa o objeto inteiro (JSON.stringify) em vez de
-converter para base64 valido. Esse "base64" corrompido e enviado ao modelo de IA no WF-DPV.02, que nao
-consegue interpretar a imagem e retorna algo fora do schema esperado.
-
-### Onde o fluxo trava
-`WF-DPV.01 - EXEC | Chamar Extrator IA` -> `WF-DPV.02 - PARSER | Estruturar Dados NF`
-(`@n8n/n8n-nodes-langchain.outputParserStructured`) falha em 100% dos casos com:
-```
-NodeOperationError: Model output doesn't fit required format
-outputParserFailReason: "Invalid JSON in model output"
-```
-A execucao aborta antes de qualquer INSERT em `despesas_viagem`.
-
-### Problema adicional
-Mesmo corrigindo a conversao, `jpegThumbnail` e so a miniatura de baixa resolucao, nao a foto completa.
-A correcao real precisa buscar a imagem completa via `imageUrl` (endpoint de midia da Evolution API).
-
-### Achado secundario (fora do escopo de fotos)
-Execucao 61503 (fluxo de cadastro, nao imagem) falhou no no `WF-DPV.07 - HTTP | Pedir CPF` com
-`Credentials not found` (httpHeaderAuth sem credencial configurada).
+Executar migrations, implementar fluxo, commitar tudo:
+"feat: fluxo guiado despesa + divisao conta + desconto bebida + itens_json"
+git push
 
 ---
 
-## LISTA DE CORRECOES (pendente - nao aplicado ainda)
+## IMPLEMENTADO (07-08/07/2026)
 
-1. **WF-DPV.01 - SET | Normalizar Payload**: trocar leitura de `imageMessage.jpegThumbnail` por
-   download da imagem completa via `imageUrl` na Evolution API, convertendo corretamente para base64.
-2. **WF-DPV.02**: validar que o base64 recebido e uma imagem valida antes de chamar o modelo de IA
-   (fail-fast com mensagem clara em vez de erro generico do parser).
-3. **WF-DPV.07 - HTTP | Pedir CPF**: configurar credencial httpHeaderAuth ausente (erro
-   "Credentials not found" na execucao 61503).
+Migration `v9_divisao_conta_fluxo_guiado.sql` aplicada (valor_empresa/valor_funcionario em
+despesas_viagem + tabela `despesas_pendentes` para staging do fluxo guiado, mesmo padrao de
+`cadastros_pendentes`).
+
+**WF-DPV.02** (31hBkBVq6rduQKXM): `CODE | Validar Combinacao` simplificado — so valida valor>0 e
+data razoavel; tipo_pagador/forma_pagamento/cpf_cnpj_pagador saem inteiramente do OCR e passam a
+vir so do fluxo guiado. Prompt do Claude Vision ganhou `observacoes_modelo`. Em vez de INSERT direto
+em `despesas_viagem`, agora faz UPSERT em `despesas_pendentes` (step=aguardando_pagador) e dispara a
+1a pergunta ("Quem pagou?").
+
+**WF-DPV.03** (ruf039UAwh9KqIZo): novo gate no inicio (`DB | Buscar Despesa Pendente` -> `IF | Tem
+Despesa Pendente`) intercepta respostas de texto quando ha um fluxo guiado em andamento, antes do
+SWITCH de comandos (INICIAR/ENCERRAR/RELATORIO/DESPESA) original — que continua intacto para quando
+nao ha pendencia. Toda a maquina de estados (aguardando_pagador -> aguardando_forma ->
+aguardando_observacao -> [aguardando_divisao | finalize]) esta em `CODE | Processar Fluxo Guiado`,
+incluindo deteccao de itens alcoolicos por palavra-chave e calculo de divisao percentual. Ao
+finalizar, INSERT em despesas_viagem (com itens_json = JSON completo da extracao) + DELETE em
+despesas_pendentes.
+
+**Validado com foto real** (execucoes 61801/61804/61807/61810): fluxo completo ate DESCONTO BEBIDA —
+identificou `CERVEJA IMPERIO PURO MALT` (R$ 11,85) automaticamente, calculou valor_empresa R$ 42,32 /
+valor_funcionario R$ 11,85 (soma bate com valor_total 54,17), salvou despesa id 23, confirmou via
+WhatsApp real. TAREFA 4 (DIVIDIR) implementada mas nao exercitada em teste real ainda — mesma logica
+(`finalize()`) do caminho ja validado, risco residual aceito pelo usuario.
