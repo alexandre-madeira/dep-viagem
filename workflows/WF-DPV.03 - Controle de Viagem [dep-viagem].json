@@ -1,1448 +1,939 @@
-﻿{
-    "updatedAt":  "2026-07-05T23:39:22.376Z",
-    "createdAt":  "2026-06-09T22:32:34.481Z",
-    "id":  "ruf039UAwh9KqIZo",
-    "name":  "WF-DPV.03 - Controle de Viagem [dep-viagem]",
-    "description":  "Handler de comandos de texto via WhatsApp: INICIAR VIAGEM, ENCERRAR VIAGEM e RELATORIO. Gerencia datas início/fim e aciona geração de PDF.",
-    "active":  true,
-    "isArchived":  false,
-    "nodes":  [
-                  {
-                      "parameters":  {
-
-                                     },
-                      "id":  "5405cdf0-74c9-41f1-834d-4e8d672de3ce",
-                      "name":  "WF-DPV.03 - TRIGGER | Iniciar Controle Viagem",
-                      "type":  "n8n-nodes-base.executeWorkflowTrigger",
-                      "typeVersion":  1,
-                      "position":  [
-                                       0,
-                                       288
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "assignments":  {
-                                                             "assignments":  [
-                                                                                 {
-                                                                                     "id":  "cmd",
-                                                                                     "name":  "comando",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ $json.caption.toUpperCase().trim() }}"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "caption_original",
-                                                                                     "name":  "caption_original",
-                                                                                     "type":  "string",
-                                                                                     "value":  "={{ $json.caption.trim() }}"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "from_me",
-                                                                                     "name":  "from_me",
-                                                                                     "type":  "boolean",
-                                                                                     "value":  "={{ $json.from_me ?? false }}"
-                                                                                 }
-                                                                             ]
-                                                         },
-                                         "includeOtherFields":  true,
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "9ac9bad6-4a2a-448e-8940-c037ea37be56",
-                      "name":  "WF-DPV.03 - SET | Normalizar Comando",
-                      "type":  "n8n-nodes-base.set",
-                      "typeVersion":  3.4,
-                      "position":  [
-                                       224,
-                                       288
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "rules":  {
-                                                       "values":  [
-                                                                      {
-                                                                          "conditions":  {
-                                                                                             "options":  {
-                                                                                                             "caseSensitive":  false,
-                                                                                                             "leftValue":  "",
-                                                                                                             "typeValidation":  "loose",
-                                                                                                             "version":  1
-                                                                                                         },
-                                                                                             "conditions":  [
-                                                                                                                {
-                                                                                                                    "leftValue":  "={{ $json.comando }}",
-                                                                                                                    "operator":  {
-                                                                                                                                     "type":  "string",
-                                                                                                                                     "operation":  "contains"
-                                                                                                                                 },
-                                                                                                                    "rightValue":  "INICIAR"
-                                                                                                                }
-                                                                                                            ],
-                                                                                             "combinator":  "and"
-                                                                                         }
-                                                                      },
-                                                                      {
-                                                                          "conditions":  {
-                                                                                             "options":  {
-                                                                                                             "caseSensitive":  false,
-                                                                                                             "leftValue":  "",
-                                                                                                             "typeValidation":  "loose",
-                                                                                                             "version":  1
-                                                                                                         },
-                                                                                             "conditions":  [
-                                                                                                                {
-                                                                                                                    "leftValue":  "={{ $json.comando }}",
-                                                                                                                    "operator":  {
-                                                                                                                                     "type":  "string",
-                                                                                                                                     "operation":  "contains"
-                                                                                                                                 },
-                                                                                                                    "rightValue":  "ENCERRAR"
-                                                                                                                }
-                                                                                                            ],
-                                                                                             "combinator":  "and"
-                                                                                         }
-                                                                      },
-                                                                      {
-                                                                          "conditions":  {
-                                                                                             "options":  {
-                                                                                                             "caseSensitive":  false,
-                                                                                                             "leftValue":  "",
-                                                                                                             "typeValidation":  "loose",
-                                                                                                             "version":  1
-                                                                                                         },
-                                                                                             "conditions":  [
-                                                                                                                {
-                                                                                                                    "leftValue":  "={{ $json.comando }}",
-                                                                                                                    "operator":  {
-                                                                                                                                     "type":  "string",
-                                                                                                                                     "operation":  "contains"
-                                                                                                                                 },
-                                                                                                                    "rightValue":  "RELATORIO"
-                                                                                                                }
-                                                                                                            ],
-                                                                                             "combinator":  "and"
-                                                                                         }
-                                                                      },
-                                                                      {
-                                                                          "conditions":  {
-                                                                                             "options":  {
-                                                                                                             "caseSensitive":  false,
-                                                                                                             "leftValue":  "",
-                                                                                                             "typeValidation":  "loose",
-                                                                                                             "version":  1
-                                                                                                         },
-                                                                                             "conditions":  [
-                                                                                                                {
-                                                                                                                    "leftValue":  "={{ $json.comando }}",
-                                                                                                                    "operator":  {
-                                                                                                                                     "type":  "string",
-                                                                                                                                     "operation":  "contains"
-                                                                                                                                 },
-                                                                                                                    "rightValue":  "DESPESA"
-                                                                                                                }
-                                                                                                            ],
-                                                                                             "combinator":  "and"
-                                                                                         }
-                                                                      }
-                                                                  ]
-                                                   },
-                                         "options":  {
-                                                         "fallbackOutput":  "extra",
-                                                         "renameFallbackOutput":  "Ajuda"
-                                                     }
-                                     },
-                      "id":  "eeae9645-4a4b-49b9-9cc5-ea96359df803",
-                      "name":  "WF-DPV.03 - SWITCH | Tipo de Comando",
-                      "type":  "n8n-nodes-base.switch",
-                      "typeVersion":  3.2,
-                      "position":  [
-                                       448,
-                                       256
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "{{ \"INSERT INTO viagens (phone, nome_viagem, data_inicio, status, created_at, updated_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027\" + ($json.caption_original.replace(/INICIAR/i, \u0027\u0027).trim() || \u0027Viagem \u0027 + $now.toFormat(\u0027MMM/yy\u0027)) + \"\u0027, NOW(), \u0027ativa\u0027, NOW(), NOW()) RETURNING id, nome_viagem, data_inicio\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "73a3d6a6-e4a0-4f49-a4f2-e5be9d5265a8",
-                      "name":  "WF-DPV.03 - DB | Iniciar Viagem no Postgres",
-                      "type":  "n8n-nodes-base.postgres",
-                      "typeVersion":  2.5,
-                      "position":  [
-                                       672,
-                                       0
-                                   ],
-                      "credentials":  {
-                                          "postgres":  {
-                                                           "id":  "ggViIQGkepjwuOdv",
-                                                           "name":  "DB_dep_viagem"
-                                                       }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-                                         "authentication":  "genericCredentialType",
-                                         "genericAuthType":  "httpHeaderAuth",
-                                         "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
-                                         "bodyParameters":  {
-                                                                "parameters":  [
-                                                                                   {
-                                                                                       "name":  "number",
-                                                                                       "value":  "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
-                                                                                   },
-                                                                                   {
-                                                                                       "name":  "text",
-                                                                                       "value":  "={{ \"🚀 Viagem iniciada em \" + $now.toFormat(\"dd/MM/yyyy HH:mm\") + \"!\\n\\nEnvie fotos das suas notas fiscais para registrar as despesas.\\n\\nComandos disponíveis:\\n📊 RELATORIO - gerar relatório\\n🏁 ENCERRAR VIAGEM - finalizar viagem\" }}"
-                                                                                   }
-                                                                               ]
-                                                            },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "bc268694-1587-4e42-aeda-411c1ef5b834",
-                      "name":  "WF-DPV.03 - HTTP | Confirmar Inicio Viagem",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       896,
-                                       0
-                                   ],
-                      "credentials":  {
-                                          "httpHeaderAuth":  {
-                                                                 "id":  "Ka0C8J4zfOklD1lw",
-                                                                 "name":  "HEADER_API_EVOLUTION_ENVIO"
-                                                             }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "{{ \"UPDATE viagens SET data_fim = NOW(), status = \u0027encerrada\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027 AND status = \u0027ativa\u0027 RETURNING id, data_inicio, data_fim\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "c8340d2b-eda7-436f-8127-d430a0041112",
-                      "name":  "WF-DPV.03 - DB | Encerrar Viagem no Postgres",
-                      "type":  "n8n-nodes-base.postgres",
-                      "typeVersion":  2.5,
-                      "position":  [
-                                       672,
-                                       192
-                                   ],
-                      "credentials":  {
-                                          "postgres":  {
-                                                           "id":  "ggViIQGkepjwuOdv",
-                                                           "name":  "DB_dep_viagem"
-                                                       }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-                                         "authentication":  "genericCredentialType",
-                                         "genericAuthType":  "httpHeaderAuth",
-                                         "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
-                                         "bodyParameters":  {
-                                                                "parameters":  [
-                                                                                   {
-                                                                                       "name":  "number",
-                                                                                       "value":  "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
-                                                                                   },
-                                                                                   {
-                                                                                       "name":  "text",
-                                                                                       "value":  "={{ \"🏁 Viagem encerrada!\\nInício: \" + $json.data_inicio + \"\\nFim: \" + $json.data_fim + \"\\n\\nEnvie RELATORIO para receber o PDF de prestação de contas.\" }}"
-                                                                                   }
-                                                                               ]
-                                                            },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "0cfc22b3-1554-42bc-805c-7bb71e103d82",
-                      "name":  "WF-DPV.03 - HTTP | Confirmar Encerramento Viagem",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       896,
-                                       192
-                                   ],
-                      "credentials":  {
-                                          "httpHeaderAuth":  {
-                                                                 "id":  "Ka0C8J4zfOklD1lw",
-                                                                 "name":  "HEADER_API_EVOLUTION_ENVIO"
-                                                             }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "{{ \"SELECT v.id as viagem_id, v.data_inicio, v.data_fim, SUM(d.valor_total) as total, COUNT(d.id) as qtd_notas FROM viagens v LEFT JOIN despesas_viagem d ON d.phone = v.phone AND d.created_at \u003e= v.data_inicio AND (v.data_fim IS NULL OR d.created_at \u003c= v.data_fim) WHERE v.phone = \u0027\" + $json.phone + \"\u0027 AND v.status = \u0027ativa\u0027 GROUP BY v.id, v.data_inicio, v.data_fim\" }}",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "d2dce8cc-69e0-4154-b678-cc9abb0f4ccd",
-                      "name":  "WF-DPV.03 - DB | Buscar Total Despesas",
-                      "type":  "n8n-nodes-base.postgres",
-                      "typeVersion":  2.5,
-                      "position":  [
-                                       672,
-                                       384
-                                   ],
-                      "credentials":  {
-                                          "postgres":  {
-                                                           "id":  "ggViIQGkepjwuOdv",
-                                                           "name":  "DB_dep_viagem"
-                                                       }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "workflowId":  {
-                                                            "__rl":  true,
-                                                            "mode":  "id",
-                                                            "value":  "acKIy44sUfDgOR2E"
-                                                        },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "bc3abe8c-d657-4b33-9318-468dc376989e",
-                      "name":  "WF-DPV.03 - EXEC | Gerar Relatorio PDF",
-                      "type":  "n8n-nodes-base.executeWorkflow",
-                      "typeVersion":  1.1,
-                      "position":  [
-                                       896,
-                                       384
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-                                         "authentication":  "genericCredentialType",
-                                         "genericAuthType":  "httpHeaderAuth",
-                                         "sendBody":  true,
-                                         "contentType":  "json",
-                                         "specifyBody":  "keypair",
-                                         "bodyParameters":  {
-                                                                "parameters":  [
-                                                                                   {
-                                                                                       "name":  "number",
-                                                                                       "value":  "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
-                                                                                   },
-                                                                                   {
-                                                                                       "name":  "text",
-                                                                                       "value":  "={{ \"💬 Comandos disponíveis:\\n\\n🚀 INICIAR VIAGEM\\n🏁 ENCERRAR VIAGEM\\n📊 RELATORIO\\n\\nOu envie uma foto de nota fiscal para registrar despesa.\" }}"
-                                                                                   }
-                                                                               ]
-                                                            },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "bee06228-a663-48cb-848e-8d31472c74c1",
-                      "name":  "WF-DPV.03 - HTTP | Enviar Mensagem de Ajuda",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       672,
-                                       576
-                                   ],
-                      "credentials":  {
-                                          "httpHeaderAuth":  {
-                                                                 "id":  "Ka0C8J4zfOklD1lw",
-                                                                 "name":  "HEADER_API_EVOLUTION_ENVIO"
-                                                             }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "jsCode":  "const caption = $json.caption_original || $json.caption || \u0027\u0027;\nconst parts = caption.split(\u0027|\u0027).map(p =\u003e p.trim());\n\nconst tipo = (parts[1] || \u0027\u0027).toLowerCase().replace(/[^a-z]/g, \u0027\u0027) || null;\nconst formaRaw = (parts[2] || \u0027\u0027).toLowerCase().replace(/[^a-z]/g, \u0027\u0027) || null;\nconst forma = formaRaw === \u0027cartao\u0027 ? \u0027cartao\u0027 : (formaRaw === \u0027dinheiro\u0027 ? \u0027dinheiro\u0027 : formaRaw);\nconst cpf = (parts[3] || \u0027\u0027).replace(/[^0-9]/g, \u0027\u0027) || null;\nconst valorStr = (parts[4] || \u0027\u0027).replace(\u0027,\u0027, \u0027.\u0027);\nconst valor = parseFloat(valorStr) || 0;\nconst descricao = parts.slice(5).join(\u0027|\u0027).trim() || null;\n\nreturn [{\n  json: {\n    ...$json,\n    tipo_pagador: tipo,\n    forma_pagamento: forma,\n    cpf_cnpj_pagador: cpf,\n    valor,\n    descricao\n  }\n}];"
-                                     },
-                      "id":  "a9ee9225-c74f-4341-a4a4-ebf5c010a266",
-                      "name":  "WF-DPV.03 - CODE | Parse Despesa",
-                      "type":  "n8n-nodes-base.code",
-                      "typeVersion":  2,
-                      "position":  [
-                                       672,
-                                       768
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "jsCode":  "const tipo = (String($json.tipo_pagador || \u0027\u0027)).toLowerCase().trim() || null;\nconst formaInput = (String($json.forma_pagamento || \u0027\u0027)).toLowerCase().trim();\nlet forma = null;\nif (formaInput \u0026\u0026 formaInput !== \u0027null\u0027) {\n  if (formaInput.startsWith(\u0027cart\u0027)) forma = \u0027cartao\u0027;\n  else if (formaInput === \u0027dinheiro\u0027) forma = \u0027dinheiro\u0027;\n  else forma = formaInput;\n}\nconst cpf = $json.cpf_cnpj_pagador ? String($json.cpf_cnpj_pagador).replace(/[^0-9]/g, \u0027\u0027) : null;\nconst valor = parseFloat($json.valor) || 0;\n\nconst combsValidas = [[\u0027empresa\u0027,\u0027cartao\u0027],[\u0027empresa\u0027,\u0027dinheiro\u0027],[\u0027particular\u0027,\u0027cartao\u0027],[\u0027particular\u0027,\u0027dinheiro\u0027]];\nconst erros = [];\nconst faltantes = [];\n\nif (!tipo) faltantes.push(\u0027tipo_pagador\u0027);\nif (!forma) faltantes.push(\u0027forma_pagamento\u0027);\nif (!cpf) faltantes.push(\u0027cpf_cnpj_pagador\u0027);\nif (valor \u003c= 0) erros.push(\u0027Valor deve ser maior que zero\u0027);\nif (valor \u003e 999999.99) erros.push(\u0027Valor acima do limite\u0027);\n\nif (cpf \u0026\u0026 cpf.length !== 11 \u0026\u0026 cpf.length !== 14) {\n  erros.push(\u0027CPF/CNPJ invalido: deve ter 11 ou 14 digitos (recebido: \u0027 + cpf.length + \u0027)\u0027);\n}\n\nif (tipo \u0026\u0026 forma) {\n  const comboOk = combsValidas.some(c =\u003e c[0] === tipo \u0026\u0026 c[1] === forma);\n  if (!comboOk) erros.push(\u0027Combinacao invalida: \u0027 + tipo + \u0027 + \u0027 + forma + \u0027. Use: empresa/particular + cartao/dinheiro\u0027);\n}\n\nconst faltantesUnicos = [...new Set(faltantes)];\nconst valido = erros.length === 0 \u0026\u0026 faltantesUnicos.length === 0;\n\nlet motivoErro = null;\nif (!valido) {\n  const partes = [];\n  if (faltantesUnicos.length \u003e 0) partes.push(\u0027Campos faltantes: \u0027 + faltantesUnicos.join(\u0027, \u0027));\n  if (erros.length \u003e 0) partes.push(erros.join(\u0027 | \u0027));\n  motivoErro = partes.join(\u0027 | \u0027);\n}\n\nreturn [{\n  json: {\n    ...$json,\n    tipo_pagador: tipo,\n    forma_pagamento: forma,\n    cpf_cnpj_pagador: cpf,\n    validacao_ok: valido,\n    campos_faltantes: faltantesUnicos,\n    erros_validacao: erros,\n    motivo_erro: motivoErro\n  }\n}];"
-                                     },
-                      "id":  "018a8396-4021-4c3f-a58c-cf43d4e9f187",
-                      "name":  "WF-DPV.03 - CODE | Validar Despesa",
-                      "type":  "n8n-nodes-base.code",
-                      "typeVersion":  2,
-                      "position":  [
-                                       896,
-                                       768
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "conditions":  {
-                                                            "options":  {
-                                                                            "caseSensitive":  true,
-                                                                            "leftValue":  "",
-                                                                            "typeValidation":  "loose",
-                                                                            "version":  1
-                                                                        },
-                                                            "conditions":  [
-                                                                               {
-                                                                                   "leftValue":  "={{ $json.validacao_ok }}",
-                                                                                   "operator":  {
-                                                                                                    "type":  "boolean",
-                                                                                                    "operation":  "true"
-                                                                                                },
-                                                                                   "rightValue":  ""
-                                                                               }
-                                                                           ],
-                                                            "combinator":  "and"
-                                                        },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "3c3fe68b-faac-4c0d-ac92-8826b9752416",
-                      "name":  "WF-DPV.03 - IF | Despesa Valida",
-                      "type":  "n8n-nodes-base.if",
-                      "typeVersion":  2.2,
-                      "position":  [
-                                       1120,
-                                       768
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "INSERT INTO despesas_sem_nf_log (phone, viagem_id, descricao, tipo_pagador, forma_pagamento, cpf_cnpj_pagador, valor, data_compra, criado_em, validacao_status) SELECT \u0027{{ $json.phone }}\u0027, v.id, \u0027{{ $json.descricao }}\u0027, \u0027{{ $json.tipo_pagador }}\u0027, \u0027{{ $json.forma_pagamento }}\u0027, \u0027{{ $json.cpf_cnpj_pagador }}\u0027, {{ $json.valor }}, CURRENT_DATE, NOW(), \u0027pendente\u0027 FROM viagens v WHERE v.phone = \u0027{{ $json.phone }}\u0027 AND v.status = \u0027ativa\u0027 LIMIT 1 RETURNING id",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "15593f46-2714-4e1e-949e-50c45db2c790",
-                      "name":  "WF-DPV.03 - DB | Salvar Despesa Sem NF",
-                      "type":  "n8n-nodes-base.postgres",
-                      "typeVersion":  2.5,
-                      "position":  [
-                                       1344,
-                                       672
-                                   ],
-                      "credentials":  {
-                                          "postgres":  {
-                                                           "id":  "ggViIQGkepjwuOdv",
-                                                           "name":  "DB_dep_viagem"
-                                                       }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-                                         "authentication":  "genericCredentialType",
-                                         "genericAuthType":  "httpHeaderAuth",
-                                         "sendHeaders":  true,
-                                         "headerParameters":  {
-                                                                  "parameters":  [
-
-                                                                                 ]
-                                                              },
-                                         "sendBody":  true,
-                                         "bodyParameters":  {
-                                                                "parameters":  [
-                                                                                   {
-                                                                                       "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
-                                                                                   },
-                                                                                   {
-                                                                                       "name":  "text",
-                                                                                       "value":  "={{ \u0027Despesa registrada!\\nTipo: \u0027 + $json.tipo_pagador + \u0027 + \u0027 + $json.forma_pagamento + \u0027\\nCPF/CNPJ: \u0027 + $json.cpf_cnpj_pagador + \u0027\\nValor: R$ \u0027 + $json.valor + \u0027\\nDescricao: \u0027 + ($json.descricao || \u0027Sem descricao\u0027) + \u0027\\nStatus: pendente validacao\u0027 }}"
-                                                                                   }
-                                                                               ]
-                                                            },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "c620cab8-2735-4993-88ab-2efa8d2d6109",
-                      "name":  "WF-DPV.03 - HTTP | Confirmar Despesa",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1568,
-                                       672
-                                   ],
-                      "credentials":  {
-                                          "httpHeaderAuth":  {
-                                                                 "id":  "Ka0C8J4zfOklD1lw",
-                                                                 "name":  "HEADER_API_EVOLUTION_ENVIO"
-                                                             }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "method":  "POST",
-                                         "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-                                         "authentication":  "genericCredentialType",
-                                         "genericAuthType":  "httpHeaderAuth",
-                                         "sendHeaders":  true,
-                                         "headerParameters":  {
-                                                                  "parameters":  [
-
-                                                                                 ]
-                                                              },
-                                         "sendBody":  true,
-                                         "bodyParameters":  {
-                                                                "parameters":  [
-                                                                                   {
-                                                                                       "name":  "number",
-                                                                                       "value":  "={{ $json.phone }}"
-                                                                                   },
-                                                                                   {
-                                                                                       "name":  "text",
-                                                                                       "value":  "={{ \u0027Despesa invalida.\\n\\n\u0027 + ($json.motivo_erro || \u0027Dados incorretos.\u0027) + \u0027\\n\\nFormato correto:\\nDESPESA | empresa/particular | cartao/dinheiro | CPF/CNPJ | valor | descricao\\n\\nEx: DESPESA | empresa | cartao | 12345678000190 | 150 | Hotel\u0027 }}"
-                                                                                   }
-                                                                               ]
-                                                            },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "5e18d3bb-469e-4df0-b15d-8b5e24b9741e",
-                      "name":  "WF-DPV.03 - HTTP | Erro Despesa",
-                      "type":  "n8n-nodes-base.httpRequest",
-                      "typeVersion":  4.3,
-                      "position":  [
-                                       1344,
-                                       864
-                                   ],
-                      "credentials":  {
-                                          "httpHeaderAuth":  {
-                                                                 "id":  "Ka0C8J4zfOklD1lw",
-                                                                 "name":  "HEADER_API_EVOLUTION_ENVIO"
-                                                             }
-                                      }
-                  }
-              ],
-    "connections":  {
-                        "WF-DPV.03 - TRIGGER | Iniciar Controle Viagem":  {
-                                                                              "main":  [
-                                                                                           [
-                                                                                               {
-                                                                                                   "node":  "WF-DPV.03 - SET | Normalizar Comando",
-                                                                                                   "type":  "main",
-                                                                                                   "index":  0
-                                                                                               }
-                                                                                           ]
-                                                                                       ]
-                                                                          },
-                        "WF-DPV.03 - SET | Normalizar Comando":  {
-                                                                     "main":  [
-                                                                                  [
-                                                                                      {
-                                                                                          "node":  "WF-DPV.03 - SWITCH | Tipo de Comando",
-                                                                                          "type":  "main",
-                                                                                          "index":  0
-                                                                                      }
-                                                                                  ]
-                                                                              ]
-                                                                 },
-                        "WF-DPV.03 - SWITCH | Tipo de Comando":  {
-                                                                     "main":  [
-                                                                                  [
-                                                                                      {
-                                                                                          "node":  "WF-DPV.03 - DB | Iniciar Viagem no Postgres",
-                                                                                          "type":  "main",
-                                                                                          "index":  0
-                                                                                      }
-                                                                                  ],
-                                                                                  [
-                                                                                      {
-                                                                                          "node":  "WF-DPV.03 - DB | Encerrar Viagem no Postgres",
-                                                                                          "type":  "main",
-                                                                                          "index":  0
-                                                                                      }
-                                                                                  ],
-                                                                                  [
-                                                                                      {
-                                                                                          "node":  "WF-DPV.03 - DB | Buscar Total Despesas",
-                                                                                          "type":  "main",
-                                                                                          "index":  0
-                                                                                      }
-                                                                                  ],
-                                                                                  [
-                                                                                      {
-                                                                                          "node":  "WF-DPV.03 - CODE | Parse Despesa",
-                                                                                          "type":  "main",
-                                                                                          "index":  0
-                                                                                      }
-                                                                                  ],
-                                                                                  [
-                                                                                      {
-                                                                                          "node":  "WF-DPV.03 - HTTP | Enviar Mensagem de Ajuda",
-                                                                                          "type":  "main",
-                                                                                          "index":  0
-                                                                                      }
-                                                                                  ]
-                                                                              ]
-                                                                 },
-                        "WF-DPV.03 - DB | Iniciar Viagem no Postgres":  {
-                                                                            "main":  [
-                                                                                         [
-                                                                                             {
-                                                                                                 "node":  "WF-DPV.03 - HTTP | Confirmar Inicio Viagem",
-                                                                                                 "type":  "main",
-                                                                                                 "index":  0
-                                                                                             }
-                                                                                         ]
-                                                                                     ]
-                                                                        },
-                        "WF-DPV.03 - DB | Encerrar Viagem no Postgres":  {
-                                                                             "main":  [
-                                                                                          [
-                                                                                              {
-                                                                                                  "node":  "WF-DPV.03 - HTTP | Confirmar Encerramento Viagem",
-                                                                                                  "type":  "main",
-                                                                                                  "index":  0
-                                                                                              }
-                                                                                          ]
-                                                                                      ]
-                                                                         },
-                        "WF-DPV.03 - DB | Buscar Total Despesas":  {
-                                                                       "main":  [
-                                                                                    [
-                                                                                        {
-                                                                                            "node":  "WF-DPV.03 - EXEC | Gerar Relatorio PDF",
-                                                                                            "type":  "main",
-                                                                                            "index":  0
-                                                                                        }
-                                                                                    ]
-                                                                                ]
-                                                                   },
-                        "WF-DPV.03 - CODE | Parse Despesa":  {
-                                                                 "main":  [
-                                                                              [
-                                                                                  {
-                                                                                      "node":  "WF-DPV.03 - CODE | Validar Despesa",
-                                                                                      "type":  "main",
-                                                                                      "index":  0
-                                                                                  }
-                                                                              ]
-                                                                          ]
-                                                             },
-                        "WF-DPV.03 - CODE | Validar Despesa":  {
-                                                                   "main":  [
-                                                                                [
-                                                                                    {
-                                                                                        "node":  "WF-DPV.03 - IF | Despesa Valida",
-                                                                                        "type":  "main",
-                                                                                        "index":  0
-                                                                                    }
-                                                                                ]
-                                                                            ]
-                                                               },
-                        "WF-DPV.03 - IF | Despesa Valida":  {
-                                                                "main":  [
-                                                                             [
-                                                                                 {
-                                                                                     "node":  "WF-DPV.03 - DB | Salvar Despesa Sem NF",
-                                                                                     "type":  "main",
-                                                                                     "index":  0
-                                                                                 }
-                                                                             ],
-                                                                             [
-                                                                                 {
-                                                                                     "node":  "WF-DPV.03 - HTTP | Erro Despesa",
-                                                                                     "type":  "main",
-                                                                                     "index":  0
-                                                                                 }
-                                                                             ]
-                                                                         ]
-                                                            },
-                        "WF-DPV.03 - DB | Salvar Despesa Sem NF":  {
-                                                                       "main":  [
-                                                                                    [
-                                                                                        {
-                                                                                            "node":  "WF-DPV.03 - HTTP | Confirmar Despesa",
-                                                                                            "type":  "main",
-                                                                                            "index":  0
-                                                                                        }
-                                                                                    ]
-                                                                                ]
-                                                                   }
-                    },
-    "settings":  {
-                     "executionOrder":  "v1",
-                     "availableInMCP":  true,
-                     "binaryMode":  "separate",
-                     "errorWorkflow":  "6LU8TtukzsbgGCHe",
-                     "saveExecutionProgress":  false,
-                     "saveManualExecutions":  true,
-                     "saveDataErrorExecution":  "all",
-                     "saveDataSuccessExecution":  "all",
-                     "timezone":  "America/Sao_Paulo",
-                     "timeSavedMode":  "fixed",
-                     "callerPolicy":  "workflowsFromSameOwner"
-                 },
-    "staticData":  null,
-    "meta":  {
-                 "aiBuilderAssisted":  true,
-                 "builderVariant":  "mcp"
-             },
-    "nodeGroups":  [
-
-                   ],
-    "pinData":  {
-
+{
+  "id": "ruf039UAwh9KqIZo",
+  "name": "WF-DPV.03 - Controle de Viagem [dep-viagem]",
+  "active": true,
+  "isArchived": false,
+  "versionId": "ef05278e-bfe3-4b8b-8233-bbf443f88824",
+  "activeVersionId": "ef05278e-bfe3-4b8b-8233-bbf443f88824",
+  "triggerCount": 0,
+  "createdAt": "2026-06-09T22:32:34.481Z",
+  "updatedAt": "2026-07-09T23:42:29.363Z",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "errorWorkflow": "6LU8TtukzsbgGCHe",
+    "saveExecutionProgress": false,
+    "saveManualExecutions": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "timezone": "America/Sao_Paulo",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "connections": {
+    "WF-DPV.03 - TRIGGER | Iniciar Controle Viagem": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - SET | Normalizar Comando",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - SWITCH | Tipo de Comando": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - DB | Iniciar Viagem no Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Encerrar Viagem no Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Buscar Total Despesas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Parse Despesa",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Enviar Mensagem de Ajuda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Iniciar Viagem no Postgres": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Confirmar Inicio Viagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Encerrar Viagem no Postgres": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Confirmar Encerramento Viagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Buscar Total Despesas": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - EXEC | Gerar Relatorio PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - CODE | Parse Despesa": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Validar Despesa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - CODE | Validar Despesa": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - IF | Despesa Valida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - IF | Despesa Valida": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - DB | Salvar Despesa Sem NF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Erro Despesa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Salvar Despesa Sem NF": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Confirmar Despesa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - SET | Normalizar Comando": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - DB | Buscar Despesa Pendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Buscar Despesa Pendente": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Merge Despesa Pendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - CODE | Merge Despesa Pendente": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - IF | Tem Despesa Pendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - IF | Tem Despesa Pendente": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Processar Fluxo Guiado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - SWITCH | Tipo de Comando",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - CODE | Processar Fluxo Guiado": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - IF | Fluxo Guiado Finalizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - IF | Fluxo Guiado Finalizado": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - DB | Salvar Despesa Final",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Atualizar Despesa Pendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Salvar Despesa Final": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - DB | Remover Despesa Pendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Remover Despesa Pendente": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Confirmar Despesa Guiada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Atualizar Despesa Pendente": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Proxima Pergunta Guiada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "5405cdf0-74c9-41f1-834d-4e8d672de3ce",
+      "name": "WF-DPV.03 - TRIGGER | Iniciar Controle Viagem",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cmd",
+              "name": "comando",
+              "type": "string",
+              "value": "={{ $json.caption.trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '') }}"
+            },
+            {
+              "id": "caption_original",
+              "name": "caption_original",
+              "type": "string",
+              "value": "={{ $json.caption.trim() }}"
+            },
+            {
+              "id": "from_me",
+              "name": "from_me",
+              "type": "boolean",
+              "value": "={{ $json.from_me ?? false }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "9ac9bad6-4a2a-448e-8940-c037ea37be56",
+      "name": "WF-DPV.03 - SET | Normalizar Comando",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -368,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
                 },
-    "versionId":  "e58bf8cb-fd92-4a27-ace9-d57d1c51db80",
-    "activeVersionId":  "e58bf8cb-fd92-4a27-ace9-d57d1c51db80",
-    "versionCounter":  32,
-    "triggerCount":  0,
-    "sourceWorkflowId":  null,
-    "shared":  [
-                   {
-                       "updatedAt":  "2026-06-09T22:32:34.481Z",
-                       "createdAt":  "2026-06-09T22:32:34.481Z",
-                       "role":  "workflow:owner",
-                       "workflowId":  "ruf039UAwh9KqIZo",
-                       "projectId":  "9i1F0BwnIwFX9K2i",
-                       "project":  {
-                                       "updatedAt":  "2025-10-11T00:09:02.942Z",
-                                       "createdAt":  "2025-10-10T23:39:26.973Z",
-                                       "id":  "9i1F0BwnIwFX9K2i",
-                                       "name":  "ALEXANDRE E CUNHA \u003calexandremade@gmail.com\u003e",
-                                       "type":  "personal",
-                                       "icon":  null,
-                                       "description":  null,
-                                       "customTelemetryTags":  [
-
-                                                               ],
-                                       "creatorId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
-                                   }
-                   }
-               ],
-    "tags":  [
-
-             ],
-    "activeVersion":  {
-                          "updatedAt":  "2026-07-05T23:39:22.378Z",
-                          "createdAt":  "2026-07-05T23:39:22.378Z",
-                          "versionId":  "e58bf8cb-fd92-4a27-ace9-d57d1c51db80",
-                          "workflowId":  "ruf039UAwh9KqIZo",
-                          "nodes":  [
-                                        {
-                                            "parameters":  {
-
-                                                           },
-                                            "id":  "5405cdf0-74c9-41f1-834d-4e8d672de3ce",
-                                            "name":  "WF-DPV.03 - TRIGGER | Iniciar Controle Viagem",
-                                            "type":  "n8n-nodes-base.executeWorkflowTrigger",
-                                            "typeVersion":  1,
-                                            "position":  [
-                                                             0,
-                                                             288
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "assignments":  {
-                                                                                   "assignments":  [
-                                                                                                       {
-                                                                                                           "id":  "cmd",
-                                                                                                           "name":  "comando",
-                                                                                                           "type":  "string",
-                                                                                                           "value":  "={{ $json.caption.toUpperCase().trim() }}"
-                                                                                                       },
-                                                                                                       {
-                                                                                                           "id":  "caption_original",
-                                                                                                           "name":  "caption_original",
-                                                                                                           "type":  "string",
-                                                                                                           "value":  "={{ $json.caption.trim() }}"
-                                                                                                       },
-                                                                                                       {
-                                                                                                           "id":  "from_me",
-                                                                                                           "name":  "from_me",
-                                                                                                           "type":  "boolean",
-                                                                                                           "value":  "={{ $json.from_me ?? false }}"
-                                                                                                       }
-                                                                                                   ]
-                                                                               },
-                                                               "includeOtherFields":  true,
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "9ac9bad6-4a2a-448e-8940-c037ea37be56",
-                                            "name":  "WF-DPV.03 - SET | Normalizar Comando",
-                                            "type":  "n8n-nodes-base.set",
-                                            "typeVersion":  3.4,
-                                            "position":  [
-                                                             224,
-                                                             288
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "rules":  {
-                                                                             "values":  [
-                                                                                            {
-                                                                                                "conditions":  {
-                                                                                                                   "options":  {
-                                                                                                                                   "caseSensitive":  false,
-                                                                                                                                   "leftValue":  "",
-                                                                                                                                   "typeValidation":  "loose",
-                                                                                                                                   "version":  1
-                                                                                                                               },
-                                                                                                                   "conditions":  [
-                                                                                                                                      {
-                                                                                                                                          "leftValue":  "={{ $json.comando }}",
-                                                                                                                                          "operator":  {
-                                                                                                                                                           "type":  "string",
-                                                                                                                                                           "operation":  "contains"
-                                                                                                                                                       },
-                                                                                                                                          "rightValue":  "INICIAR"
-                                                                                                                                      }
-                                                                                                                                  ],
-                                                                                                                   "combinator":  "and"
-                                                                                                               }
-                                                                                            },
-                                                                                            {
-                                                                                                "conditions":  {
-                                                                                                                   "options":  {
-                                                                                                                                   "caseSensitive":  false,
-                                                                                                                                   "leftValue":  "",
-                                                                                                                                   "typeValidation":  "loose",
-                                                                                                                                   "version":  1
-                                                                                                                               },
-                                                                                                                   "conditions":  [
-                                                                                                                                      {
-                                                                                                                                          "leftValue":  "={{ $json.comando }}",
-                                                                                                                                          "operator":  {
-                                                                                                                                                           "type":  "string",
-                                                                                                                                                           "operation":  "contains"
-                                                                                                                                                       },
-                                                                                                                                          "rightValue":  "ENCERRAR"
-                                                                                                                                      }
-                                                                                                                                  ],
-                                                                                                                   "combinator":  "and"
-                                                                                                               }
-                                                                                            },
-                                                                                            {
-                                                                                                "conditions":  {
-                                                                                                                   "options":  {
-                                                                                                                                   "caseSensitive":  false,
-                                                                                                                                   "leftValue":  "",
-                                                                                                                                   "typeValidation":  "loose",
-                                                                                                                                   "version":  1
-                                                                                                                               },
-                                                                                                                   "conditions":  [
-                                                                                                                                      {
-                                                                                                                                          "leftValue":  "={{ $json.comando }}",
-                                                                                                                                          "operator":  {
-                                                                                                                                                           "type":  "string",
-                                                                                                                                                           "operation":  "contains"
-                                                                                                                                                       },
-                                                                                                                                          "rightValue":  "RELATORIO"
-                                                                                                                                      }
-                                                                                                                                  ],
-                                                                                                                   "combinator":  "and"
-                                                                                                               }
-                                                                                            },
-                                                                                            {
-                                                                                                "conditions":  {
-                                                                                                                   "options":  {
-                                                                                                                                   "caseSensitive":  false,
-                                                                                                                                   "leftValue":  "",
-                                                                                                                                   "typeValidation":  "loose",
-                                                                                                                                   "version":  1
-                                                                                                                               },
-                                                                                                                   "conditions":  [
-                                                                                                                                      {
-                                                                                                                                          "leftValue":  "={{ $json.comando }}",
-                                                                                                                                          "operator":  {
-                                                                                                                                                           "type":  "string",
-                                                                                                                                                           "operation":  "contains"
-                                                                                                                                                       },
-                                                                                                                                          "rightValue":  "DESPESA"
-                                                                                                                                      }
-                                                                                                                                  ],
-                                                                                                                   "combinator":  "and"
-                                                                                                               }
-                                                                                            }
-                                                                                        ]
-                                                                         },
-                                                               "options":  {
-                                                                               "fallbackOutput":  "extra",
-                                                                               "renameFallbackOutput":  "Ajuda"
-                                                                           }
-                                                           },
-                                            "id":  "eeae9645-4a4b-49b9-9cc5-ea96359df803",
-                                            "name":  "WF-DPV.03 - SWITCH | Tipo de Comando",
-                                            "type":  "n8n-nodes-base.switch",
-                                            "typeVersion":  3.2,
-                                            "position":  [
-                                                             448,
-                                                             256
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "{{ \"INSERT INTO viagens (phone, nome_viagem, data_inicio, status, created_at, updated_at) VALUES (\u0027\" + $json.phone + \"\u0027, \u0027\" + ($json.caption_original.replace(/INICIAR/i, \u0027\u0027).trim() || \u0027Viagem \u0027 + $now.toFormat(\u0027MMM/yy\u0027)) + \"\u0027, NOW(), \u0027ativa\u0027, NOW(), NOW()) RETURNING id, nome_viagem, data_inicio\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "73a3d6a6-e4a0-4f49-a4f2-e5be9d5265a8",
-                                            "name":  "WF-DPV.03 - DB | Iniciar Viagem no Postgres",
-                                            "type":  "n8n-nodes-base.postgres",
-                                            "typeVersion":  2.5,
-                                            "position":  [
-                                                             672,
-                                                             0
-                                                         ],
-                                            "credentials":  {
-                                                                "postgres":  {
-                                                                                 "id":  "ggViIQGkepjwuOdv",
-                                                                                 "name":  "DB_dep_viagem"
-                                                                             }
-                                                            }
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-                                                               "authentication":  "genericCredentialType",
-                                                               "genericAuthType":  "httpHeaderAuth",
-                                                               "sendBody":  true,
-                                                               "bodyParameters":  {
-                                                                                      "parameters":  [
-                                                                                                         {
-                                                                                                             "name":  "number",
-                                                                                                             "value":  "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
-                                                                                                         },
-                                                                                                         {
-                                                                                                             "name":  "text",
-                                                                                                             "value":  "={{ \"?? Viagem iniciada em \" + $now.toFormat(\"dd/MM/yyyy HH:mm\") + \"!\\n\\nEnvie fotos das suas notas fiscais para registrar as despesas.\\n\\nComandos dispon�veis:\\n?? RELATORIO - gerar relat�rio\\n?? ENCERRAR VIAGEM - finalizar viagem\" }}"
-                                                                                                         }
-                                                                                                     ]
-                                                                                  },
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "bc268694-1587-4e42-aeda-411c1ef5b834",
-                                            "name":  "WF-DPV.03 - HTTP | Confirmar Inicio Viagem",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             896,
-                                                             0
-                                                         ],
-                                            "credentials":  {
-                                                                "httpHeaderAuth":  {
-                                                                                       "id":  "Ka0C8J4zfOklD1lw",
-                                                                                       "name":  "HEADER_API_EVOLUTION_ENVIO"
-                                                                                   }
-                                                            }
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "{{ \"UPDATE viagens SET data_fim = NOW(), status = \u0027encerrada\u0027 WHERE phone = \u0027\" + $json.phone + \"\u0027 AND status = \u0027ativa\u0027 RETURNING id, data_inicio, data_fim\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "c8340d2b-eda7-436f-8127-d430a0041112",
-                                            "name":  "WF-DPV.03 - DB | Encerrar Viagem no Postgres",
-                                            "type":  "n8n-nodes-base.postgres",
-                                            "typeVersion":  2.5,
-                                            "position":  [
-                                                             672,
-                                                             192
-                                                         ],
-                                            "credentials":  {
-                                                                "postgres":  {
-                                                                                 "id":  "ggViIQGkepjwuOdv",
-                                                                                 "name":  "DB_dep_viagem"
-                                                                             }
-                                                            }
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-                                                               "authentication":  "genericCredentialType",
-                                                               "genericAuthType":  "httpHeaderAuth",
-                                                               "sendBody":  true,
-                                                               "bodyParameters":  {
-                                                                                      "parameters":  [
-                                                                                                         {
-                                                                                                             "name":  "number",
-                                                                                                             "value":  "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
-                                                                                                         },
-                                                                                                         {
-                                                                                                             "name":  "text",
-                                                                                                             "value":  "={{ \"?? Viagem encerrada!\\nIn�cio: \" + $json.data_inicio + \"\\nFim: \" + $json.data_fim + \"\\n\\nEnvie RELATORIO para receber o PDF de presta��o de contas.\" }}"
-                                                                                                         }
-                                                                                                     ]
-                                                                                  },
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "0cfc22b3-1554-42bc-805c-7bb71e103d82",
-                                            "name":  "WF-DPV.03 - HTTP | Confirmar Encerramento Viagem",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             896,
-                                                             192
-                                                         ],
-                                            "credentials":  {
-                                                                "httpHeaderAuth":  {
-                                                                                       "id":  "Ka0C8J4zfOklD1lw",
-                                                                                       "name":  "HEADER_API_EVOLUTION_ENVIO"
-                                                                                   }
-                                                            }
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "{{ \"SELECT v.id as viagem_id, v.data_inicio, v.data_fim, SUM(d.valor_total) as total, COUNT(d.id) as qtd_notas FROM viagens v LEFT JOIN despesas_viagem d ON d.phone = v.phone AND d.created_at \u003e= v.data_inicio AND (v.data_fim IS NULL OR d.created_at \u003c= v.data_fim) WHERE v.phone = \u0027\" + $json.phone + \"\u0027 AND v.status = \u0027ativa\u0027 GROUP BY v.id, v.data_inicio, v.data_fim\" }}",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "d2dce8cc-69e0-4154-b678-cc9abb0f4ccd",
-                                            "name":  "WF-DPV.03 - DB | Buscar Total Despesas",
-                                            "type":  "n8n-nodes-base.postgres",
-                                            "typeVersion":  2.5,
-                                            "position":  [
-                                                             672,
-                                                             384
-                                                         ],
-                                            "credentials":  {
-                                                                "postgres":  {
-                                                                                 "id":  "ggViIQGkepjwuOdv",
-                                                                                 "name":  "DB_dep_viagem"
-                                                                             }
-                                                            }
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "workflowId":  {
-                                                                                  "__rl":  true,
-                                                                                  "mode":  "id",
-                                                                                  "value":  "acKIy44sUfDgOR2E"
-                                                                              },
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "bc3abe8c-d657-4b33-9318-468dc376989e",
-                                            "name":  "WF-DPV.03 - EXEC | Gerar Relatorio PDF",
-                                            "type":  "n8n-nodes-base.executeWorkflow",
-                                            "typeVersion":  1.1,
-                                            "position":  [
-                                                             896,
-                                                             384
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-                                                               "authentication":  "genericCredentialType",
-                                                               "genericAuthType":  "httpHeaderAuth",
-                                                               "sendBody":  true,
-                                                               "bodyParameters":  {
-                                                                                      "parameters":  [
-                                                                                                         {
-                                                                                                             "name":  "number",
-                                                                                                             "value":  "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
-                                                                                                         },
-                                                                                                         {
-                                                                                                             "name":  "text",
-                                                                                                             "value":  "?? Comandos dispon�veis:\\n\\n?? INICIAR VIAGEM\\n?? ENCERRAR VIAGEM\\n?? RELATORIO\\n\\nOu envie uma foto de nota fiscal para registrar despesa."
-                                                                                                         }
-                                                                                                     ]
-                                                                                  },
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "bee06228-a663-48cb-848e-8d31472c74c1",
-                                            "name":  "WF-DPV.03 - HTTP | Enviar Mensagem de Ajuda",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             672,
-                                                             576
-                                                         ],
-                                            "credentials":  {
-                                                                "httpHeaderAuth":  {
-                                                                                       "id":  "Ka0C8J4zfOklD1lw",
-                                                                                       "name":  "HEADER_API_EVOLUTION_ENVIO"
-                                                                                   }
-                                                            }
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "jsCode":  "const caption = $json.caption_original || $json.caption || \u0027\u0027;\nconst parts = caption.split(\u0027|\u0027).map(p =\u003e p.trim());\n\nconst tipo = (parts[1] || \u0027\u0027).toLowerCase().replace(/[^a-z]/g, \u0027\u0027) || null;\nconst formaRaw = (parts[2] || \u0027\u0027).toLowerCase().replace(/[^a-z]/g, \u0027\u0027) || null;\nconst forma = formaRaw === \u0027cartao\u0027 ? \u0027cartao\u0027 : (formaRaw === \u0027dinheiro\u0027 ? \u0027dinheiro\u0027 : formaRaw);\nconst cpf = (parts[3] || \u0027\u0027).replace(/[^0-9]/g, \u0027\u0027) || null;\nconst valorStr = (parts[4] || \u0027\u0027).replace(\u0027,\u0027, \u0027.\u0027);\nconst valor = parseFloat(valorStr) || 0;\nconst descricao = parts.slice(5).join(\u0027|\u0027).trim() || null;\n\nreturn [{\n  json: {\n    ...$json,\n    tipo_pagador: tipo,\n    forma_pagamento: forma,\n    cpf_cnpj_pagador: cpf,\n    valor,\n    descricao\n  }\n}];"
-                                                           },
-                                            "id":  "a9ee9225-c74f-4341-a4a4-ebf5c010a266",
-                                            "name":  "WF-DPV.03 - CODE | Parse Despesa",
-                                            "type":  "n8n-nodes-base.code",
-                                            "typeVersion":  2,
-                                            "position":  [
-                                                             672,
-                                                             768
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "jsCode":  "const tipo = (String($json.tipo_pagador || \u0027\u0027)).toLowerCase().trim() || null;\nconst formaInput = (String($json.forma_pagamento || \u0027\u0027)).toLowerCase().trim();\nlet forma = null;\nif (formaInput \u0026\u0026 formaInput !== \u0027null\u0027) {\n  if (formaInput.startsWith(\u0027cart\u0027)) forma = \u0027cartao\u0027;\n  else if (formaInput === \u0027dinheiro\u0027) forma = \u0027dinheiro\u0027;\n  else forma = formaInput;\n}\nconst cpf = $json.cpf_cnpj_pagador ? String($json.cpf_cnpj_pagador).replace(/[^0-9]/g, \u0027\u0027) : null;\nconst valor = parseFloat($json.valor) || 0;\n\nconst combsValidas = [[\u0027empresa\u0027,\u0027cartao\u0027],[\u0027empresa\u0027,\u0027dinheiro\u0027],[\u0027particular\u0027,\u0027cartao\u0027],[\u0027particular\u0027,\u0027dinheiro\u0027]];\nconst erros = [];\nconst faltantes = [];\n\nif (!tipo) faltantes.push(\u0027tipo_pagador\u0027);\nif (!forma) faltantes.push(\u0027forma_pagamento\u0027);\nif (!cpf) faltantes.push(\u0027cpf_cnpj_pagador\u0027);\nif (valor \u003c= 0) erros.push(\u0027Valor deve ser maior que zero\u0027);\nif (valor \u003e 999999.99) erros.push(\u0027Valor acima do limite\u0027);\n\nif (cpf \u0026\u0026 cpf.length !== 11 \u0026\u0026 cpf.length !== 14) {\n  erros.push(\u0027CPF/CNPJ invalido: deve ter 11 ou 14 digitos (recebido: \u0027 + cpf.length + \u0027)\u0027);\n}\n\nif (tipo \u0026\u0026 forma) {\n  const comboOk = combsValidas.some(c =\u003e c[0] === tipo \u0026\u0026 c[1] === forma);\n  if (!comboOk) erros.push(\u0027Combinacao invalida: \u0027 + tipo + \u0027 + \u0027 + forma + \u0027. Use: empresa/particular + cartao/dinheiro\u0027);\n}\n\nconst faltantesUnicos = [...new Set(faltantes)];\nconst valido = erros.length === 0 \u0026\u0026 faltantesUnicos.length === 0;\n\nlet motivoErro = null;\nif (!valido) {\n  const partes = [];\n  if (faltantesUnicos.length \u003e 0) partes.push(\u0027Campos faltantes: \u0027 + faltantesUnicos.join(\u0027, \u0027));\n  if (erros.length \u003e 0) partes.push(erros.join(\u0027 | \u0027));\n  motivoErro = partes.join(\u0027 | \u0027);\n}\n\nreturn [{\n  json: {\n    ...$json,\n    tipo_pagador: tipo,\n    forma_pagamento: forma,\n    cpf_cnpj_pagador: cpf,\n    validacao_ok: valido,\n    campos_faltantes: faltantesUnicos,\n    erros_validacao: erros,\n    motivo_erro: motivoErro\n  }\n}];"
-                                                           },
-                                            "id":  "018a8396-4021-4c3f-a58c-cf43d4e9f187",
-                                            "name":  "WF-DPV.03 - CODE | Validar Despesa",
-                                            "type":  "n8n-nodes-base.code",
-                                            "typeVersion":  2,
-                                            "position":  [
-                                                             896,
-                                                             768
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "conditions":  {
-                                                                                  "options":  {
-                                                                                                  "caseSensitive":  true,
-                                                                                                  "leftValue":  "",
-                                                                                                  "typeValidation":  "loose",
-                                                                                                  "version":  1
-                                                                                              },
-                                                                                  "conditions":  [
-                                                                                                     {
-                                                                                                         "leftValue":  "={{ $json.validacao_ok }}",
-                                                                                                         "operator":  {
-                                                                                                                          "type":  "boolean",
-                                                                                                                          "operation":  "true"
-                                                                                                                      },
-                                                                                                         "rightValue":  ""
-                                                                                                     }
-                                                                                                 ],
-                                                                                  "combinator":  "and"
-                                                                              },
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "3c3fe68b-faac-4c0d-ac92-8826b9752416",
-                                            "name":  "WF-DPV.03 - IF | Despesa Valida",
-                                            "type":  "n8n-nodes-base.if",
-                                            "typeVersion":  2.2,
-                                            "position":  [
-                                                             1120,
-                                                             768
-                                                         ]
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "operation":  "executeQuery",
-                                                               "query":  "INSERT INTO despesas_sem_nf_log (phone, viagem_id, descricao, tipo_pagador, forma_pagamento, cpf_cnpj_pagador, valor, data_compra, criado_em, validacao_status) SELECT \u0027{{ $json.phone }}\u0027, v.id, \u0027{{ $json.descricao }}\u0027, \u0027{{ $json.tipo_pagador }}\u0027, \u0027{{ $json.forma_pagamento }}\u0027, \u0027{{ $json.cpf_cnpj_pagador }}\u0027, {{ $json.valor }}, CURRENT_DATE, NOW(), \u0027pendente\u0027 FROM viagens v WHERE v.phone = \u0027{{ $json.phone }}\u0027 AND v.status = \u0027ativa\u0027 LIMIT 1 RETURNING id",
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "15593f46-2714-4e1e-949e-50c45db2c790",
-                                            "name":  "WF-DPV.03 - DB | Salvar Despesa Sem NF",
-                                            "type":  "n8n-nodes-base.postgres",
-                                            "typeVersion":  2.5,
-                                            "position":  [
-                                                             1344,
-                                                             672
-                                                         ],
-                                            "credentials":  {
-                                                                "postgres":  {
-                                                                                 "id":  "ggViIQGkepjwuOdv",
-                                                                                 "name":  "DB_dep_viagem"
-                                                                             }
-                                                            }
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-                                                               "authentication":  "genericCredentialType",
-                                                               "genericAuthType":  "httpHeaderAuth",
-                                                               "sendHeaders":  true,
-                                                               "headerParameters":  {
-                                                                                        "parameters":  [
-
-                                                                                                       ]
-                                                                                    },
-                                                               "sendBody":  true,
-                                                               "bodyParameters":  {
-                                                                                      "parameters":  [
-                                                                                                         {
-                                                                                                             "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
-                                                                                                         },
-                                                                                                         {
-                                                                                                             "name":  "text",
-                                                                                                             "value":  "={{ \u0027Despesa registrada!\\nTipo: \u0027 + $json.tipo_pagador + \u0027 + \u0027 + $json.forma_pagamento + \u0027\\nCPF/CNPJ: \u0027 + $json.cpf_cnpj_pagador + \u0027\\nValor: R$ \u0027 + $json.valor + \u0027\\nDescricao: \u0027 + ($json.descricao || \u0027Sem descricao\u0027) + \u0027\\nStatus: pendente validacao\u0027 }}"
-                                                                                                         }
-                                                                                                     ]
-                                                                                  },
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "c620cab8-2735-4993-88ab-2efa8d2d6109",
-                                            "name":  "WF-DPV.03 - HTTP | Confirmar Despesa",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1568,
-                                                             672
-                                                         ],
-                                            "credentials":  {
-                                                                "httpHeaderAuth":  {
-                                                                                       "id":  "Ka0C8J4zfOklD1lw",
-                                                                                       "name":  "HEADER_API_EVOLUTION_ENVIO"
-                                                                                   }
-                                                            }
-                                        },
-                                        {
-                                            "parameters":  {
-                                                               "method":  "POST",
-                                                               "url":  "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-                                                               "authentication":  "genericCredentialType",
-                                                               "genericAuthType":  "httpHeaderAuth",
-                                                               "sendHeaders":  true,
-                                                               "headerParameters":  {
-                                                                                        "parameters":  [
-
-                                                                                                       ]
-                                                                                    },
-                                                               "sendBody":  true,
-                                                               "bodyParameters":  {
-                                                                                      "parameters":  [
-                                                                                                         {
-                                                                                                             "name":  "number",
-                                                                                                             "value":  "={{ $json.phone }}"
-                                                                                                         },
-                                                                                                         {
-                                                                                                             "name":  "text",
-                                                                                                             "value":  "={{ \u0027Despesa invalida.\\n\\n\u0027 + ($json.motivo_erro || \u0027Dados incorretos.\u0027) + \u0027\\n\\nFormato correto:\\nDESPESA | empresa/particular | cartao/dinheiro | CPF/CNPJ | valor | descricao\\n\\nEx: DESPESA | empresa | cartao | 12345678000190 | 150 | Hotel\u0027 }}"
-                                                                                                         }
-                                                                                                     ]
-                                                                                  },
-                                                               "options":  {
-
-                                                                           }
-                                                           },
-                                            "id":  "5e18d3bb-469e-4df0-b15d-8b5e24b9741e",
-                                            "name":  "WF-DPV.03 - HTTP | Erro Despesa",
-                                            "type":  "n8n-nodes-base.httpRequest",
-                                            "typeVersion":  4.3,
-                                            "position":  [
-                                                             1344,
-                                                             864
-                                                         ],
-                                            "credentials":  {
-                                                                "httpHeaderAuth":  {
-                                                                                       "id":  "Ka0C8J4zfOklD1lw",
-                                                                                       "name":  "HEADER_API_EVOLUTION_ENVIO"
-                                                                                   }
-                                                            }
-                                        }
-                                    ],
-                          "connections":  {
-                                              "WF-DPV.03 - TRIGGER | Iniciar Controle Viagem":  {
-                                                                                                    "main":  [
-                                                                                                                 [
-                                                                                                                     {
-                                                                                                                         "node":  "WF-DPV.03 - SET | Normalizar Comando",
-                                                                                                                         "type":  "main",
-                                                                                                                         "index":  0
-                                                                                                                     }
-                                                                                                                 ]
-                                                                                                             ]
-                                                                                                },
-                                              "WF-DPV.03 - SET | Normalizar Comando":  {
-                                                                                           "main":  [
-                                                                                                        [
-                                                                                                            {
-                                                                                                                "node":  "WF-DPV.03 - SWITCH | Tipo de Comando",
-                                                                                                                "type":  "main",
-                                                                                                                "index":  0
-                                                                                                            }
-                                                                                                        ]
-                                                                                                    ]
-                                                                                       },
-                                              "WF-DPV.03 - SWITCH | Tipo de Comando":  {
-                                                                                           "main":  [
-                                                                                                        [
-                                                                                                            {
-                                                                                                                "node":  "WF-DPV.03 - DB | Iniciar Viagem no Postgres",
-                                                                                                                "type":  "main",
-                                                                                                                "index":  0
-                                                                                                            }
-                                                                                                        ],
-                                                                                                        [
-                                                                                                            {
-                                                                                                                "node":  "WF-DPV.03 - DB | Encerrar Viagem no Postgres",
-                                                                                                                "type":  "main",
-                                                                                                                "index":  0
-                                                                                                            }
-                                                                                                        ],
-                                                                                                        [
-                                                                                                            {
-                                                                                                                "node":  "WF-DPV.03 - DB | Buscar Total Despesas",
-                                                                                                                "type":  "main",
-                                                                                                                "index":  0
-                                                                                                            }
-                                                                                                        ],
-                                                                                                        [
-                                                                                                            {
-                                                                                                                "node":  "WF-DPV.03 - CODE | Parse Despesa",
-                                                                                                                "type":  "main",
-                                                                                                                "index":  0
-                                                                                                            }
-                                                                                                        ],
-                                                                                                        [
-                                                                                                            {
-                                                                                                                "node":  "WF-DPV.03 - HTTP | Enviar Mensagem de Ajuda",
-                                                                                                                "type":  "main",
-                                                                                                                "index":  0
-                                                                                                            }
-                                                                                                        ]
-                                                                                                    ]
-                                                                                       },
-                                              "WF-DPV.03 - DB | Iniciar Viagem no Postgres":  {
-                                                                                                  "main":  [
-                                                                                                               [
-                                                                                                                   {
-                                                                                                                       "node":  "WF-DPV.03 - HTTP | Confirmar Inicio Viagem",
-                                                                                                                       "type":  "main",
-                                                                                                                       "index":  0
-                                                                                                                   }
-                                                                                                               ]
-                                                                                                           ]
-                                                                                              },
-                                              "WF-DPV.03 - DB | Encerrar Viagem no Postgres":  {
-                                                                                                   "main":  [
-                                                                                                                [
-                                                                                                                    {
-                                                                                                                        "node":  "WF-DPV.03 - HTTP | Confirmar Encerramento Viagem",
-                                                                                                                        "type":  "main",
-                                                                                                                        "index":  0
-                                                                                                                    }
-                                                                                                                ]
-                                                                                                            ]
-                                                                                               },
-                                              "WF-DPV.03 - DB | Buscar Total Despesas":  {
-                                                                                             "main":  [
-                                                                                                          [
-                                                                                                              {
-                                                                                                                  "node":  "WF-DPV.03 - EXEC | Gerar Relatorio PDF",
-                                                                                                                  "type":  "main",
-                                                                                                                  "index":  0
-                                                                                                              }
-                                                                                                          ]
-                                                                                                      ]
-                                                                                         },
-                                              "WF-DPV.03 - CODE | Parse Despesa":  {
-                                                                                       "main":  [
-                                                                                                    [
-                                                                                                        {
-                                                                                                            "node":  "WF-DPV.03 - CODE | Validar Despesa",
-                                                                                                            "type":  "main",
-                                                                                                            "index":  0
-                                                                                                        }
-                                                                                                    ]
-                                                                                                ]
-                                                                                   },
-                                              "WF-DPV.03 - CODE | Validar Despesa":  {
-                                                                                         "main":  [
-                                                                                                      [
-                                                                                                          {
-                                                                                                              "node":  "WF-DPV.03 - IF | Despesa Valida",
-                                                                                                              "type":  "main",
-                                                                                                              "index":  0
-                                                                                                          }
-                                                                                                      ]
-                                                                                                  ]
-                                                                                     },
-                                              "WF-DPV.03 - IF | Despesa Valida":  {
-                                                                                      "main":  [
-                                                                                                   [
-                                                                                                       {
-                                                                                                           "node":  "WF-DPV.03 - DB | Salvar Despesa Sem NF",
-                                                                                                           "type":  "main",
-                                                                                                           "index":  0
-                                                                                                       }
-                                                                                                   ],
-                                                                                                   [
-                                                                                                       {
-                                                                                                           "node":  "WF-DPV.03 - HTTP | Erro Despesa",
-                                                                                                           "type":  "main",
-                                                                                                           "index":  0
-                                                                                                       }
-                                                                                                   ]
-                                                                                               ]
-                                                                                  },
-                                              "WF-DPV.03 - DB | Salvar Despesa Sem NF":  {
-                                                                                             "main":  [
-                                                                                                          [
-                                                                                                              {
-                                                                                                                  "node":  "WF-DPV.03 - HTTP | Confirmar Despesa",
-                                                                                                                  "type":  "main",
-                                                                                                                  "index":  0
-                                                                                                              }
-                                                                                                          ]
-                                                                                                      ]
-                                                                                         }
-                                          },
-                          "nodeGroups":  [
-
-                                         ],
-                          "authors":  "ALEXANDRE E CUNHA",
-                          "name":  null,
-                          "description":  null,
-                          "autosaved":  false,
-                          "workflowPublishHistory":  [
-                                                         {
-                                                             "createdAt":  "2026-07-05T23:39:31.756Z",
-                                                             "id":  1506,
-                                                             "workflowId":  "ruf039UAwh9KqIZo",
-                                                             "versionId":  "e58bf8cb-fd92-4a27-ace9-d57d1c51db80",
-                                                             "event":  "activated",
-                                                             "userId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
-                                                         }
-                                                     ]
-                      }
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.comando }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "INICIAR"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.comando }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "ENCERR"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.comando }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "RELATORIO"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.comando }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "DESPESA"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Ajuda"
+        }
+      },
+      "id": "eeae9645-4a4b-49b9-9cc5-ea96359df803",
+      "name": "WF-DPV.03 - SWITCH | Tipo de Comando",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        352,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ \"INSERT INTO viagens (phone, nome_viagem, data_inicio, status, created_at, updated_at) VALUES ('\" + $json.phone + \"', '\" + ($json.caption_original.replace(/INICIAR/i, '').trim() || 'Viagem ' + $now.toFormat('MMM/yy')) + \"', NOW(), 'ativa', NOW(), NOW()) RETURNING id, nome_viagem, data_inicio\" }}",
+        "options": {}
+      },
+      "id": "73a3d6a6-e4a0-4f49-a4f2-e5be9d5265a8",
+      "name": "WF-DPV.03 - DB | Iniciar Viagem no Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"🚀 Viagem iniciada em \" + $now.toFormat(\"dd/MM/yyyy HH:mm\") + \"!\\n\\nEnvie fotos das suas notas fiscais para registrar as despesas.\\n\\nComandos disponíveis:\\n📊 RELATORIO - gerar relatório\\n🏁 ENCERRAR VIAGEM - finalizar viagem\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bc268694-1587-4e42-aeda-411c1ef5b834",
+      "name": "WF-DPV.03 - HTTP | Confirmar Inicio Viagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        896,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ \"UPDATE viagens SET data_fim = NOW(), status = 'encerrada' WHERE phone = '\" + $json.phone + \"' AND status = 'ativa' RETURNING id, data_inicio, data_fim\" }}",
+        "options": {}
+      },
+      "id": "c8340d2b-eda7-436f-8127-d430a0041112",
+      "name": "WF-DPV.03 - DB | Encerrar Viagem no Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"🏁 Viagem encerrada!\\nInício: \" + $json.data_inicio + \"\\nFim: \" + $json.data_fim + \"\\n\\nEnvie RELATORIO para receber o PDF de prestação de contas.\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0cfc22b3-1554-42bc-805c-7bb71e103d82",
+      "name": "WF-DPV.03 - HTTP | Confirmar Encerramento Viagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        896,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ \"SELECT v.id as viagem_id, v.phone, v.data_inicio, v.data_fim, SUM(d.valor_total) as total, COUNT(d.id) as qtd_notas FROM viagens v LEFT JOIN despesas_viagem d ON d.phone = v.phone AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) WHERE v.phone = '\" + $json.phone + \"' AND v.status IN ('ativa', 'encerrada') GROUP BY v.id, v.phone, v.data_inicio, v.data_fim ORDER BY v.data_inicio DESC LIMIT 1\" }}",
+        "options": {}
+      },
+      "id": "d2dce8cc-69e0-4154-b678-cc9abb0f4ccd",
+      "name": "WF-DPV.03 - DB | Buscar Total Despesas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "acKIy44sUfDgOR2E"
+        },
+        "options": {}
+      },
+      "id": "bc3abe8c-d657-4b33-9318-468dc376989e",
+      "name": "WF-DPV.03 - EXEC | Gerar Relatorio PDF",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $(\"WF-DPV.03 - TRIGGER | Iniciar Controle Viagem\").item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"💬 Comandos disponíveis:\\n\\n🚀 INICIAR VIAGEM\\n🏁 ENCERRAR VIAGEM\\n📊 RELATORIO\\n\\nOu envie uma foto de nota fiscal para registrar despesa.\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bee06228-a663-48cb-848e-8d31472c74c1",
+      "name": "WF-DPV.03 - HTTP | Enviar Mensagem de Ajuda",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        672,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const caption = $json.caption_original || $json.caption || '';\nconst parts = caption.split('|').map(p => p.trim());\n\nconst tipo = (parts[1] || '').toLowerCase().replace(/[^a-z]/g, '') || null;\nconst formaRaw = (parts[2] || '').toLowerCase().replace(/[^a-z]/g, '') || null;\nconst forma = formaRaw === 'cartao' ? 'cartao' : (formaRaw === 'dinheiro' ? 'dinheiro' : formaRaw);\nconst cpf = (parts[3] || '').replace(/[^0-9]/g, '') || null;\nconst valorStr = (parts[4] || '').replace(',', '.');\nconst valor = parseFloat(valorStr) || 0;\nconst descricao = parts.slice(5).join('|').trim() || null;\n\nreturn [{\n  json: {\n    ...$json,\n    tipo_pagador: tipo,\n    forma_pagamento: forma,\n    cpf_cnpj_pagador: cpf,\n    valor,\n    descricao\n  }\n}];"
+      },
+      "id": "a9ee9225-c74f-4341-a4a4-ebf5c010a266",
+      "name": "WF-DPV.03 - CODE | Parse Despesa",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const tipo = (String($json.tipo_pagador || '')).toLowerCase().trim() || null;\nconst formaInput = (String($json.forma_pagamento || '')).toLowerCase().trim();\nlet forma = null;\nif (formaInput && formaInput !== 'null') {\n  if (formaInput.startsWith('cart')) forma = 'cartao';\n  else if (formaInput === 'dinheiro') forma = 'dinheiro';\n  else forma = formaInput;\n}\nconst cpf = $json.cpf_cnpj_pagador ? String($json.cpf_cnpj_pagador).replace(/[^0-9]/g, '') : null;\nconst valor = parseFloat($json.valor) || 0;\n\nconst combsValidas = [['empresa','cartao'],['empresa','dinheiro'],['particular','cartao'],['particular','dinheiro']];\nconst erros = [];\nconst faltantes = [];\n\nif (!tipo) faltantes.push('tipo_pagador');\nif (!forma) faltantes.push('forma_pagamento');\nif (!cpf) faltantes.push('cpf_cnpj_pagador');\nif (valor <= 0) erros.push('Valor deve ser maior que zero');\nif (valor > 999999.99) erros.push('Valor acima do limite');\n\nif (cpf && cpf.length !== 11 && cpf.length !== 14) {\n  erros.push('CPF/CNPJ invalido: deve ter 11 ou 14 digitos (recebido: ' + cpf.length + ')');\n}\n\nif (tipo && forma) {\n  const comboOk = combsValidas.some(c => c[0] === tipo && c[1] === forma);\n  if (!comboOk) erros.push('Combinacao invalida: ' + tipo + ' + ' + forma + '. Use: empresa/particular + cartao/dinheiro');\n}\n\nconst faltantesUnicos = [...new Set(faltantes)];\nconst valido = erros.length === 0 && faltantesUnicos.length === 0;\n\nlet motivoErro = null;\nif (!valido) {\n  const partes = [];\n  if (faltantesUnicos.length > 0) partes.push('Campos faltantes: ' + faltantesUnicos.join(', '));\n  if (erros.length > 0) partes.push(erros.join(' | '));\n  motivoErro = partes.join(' | ');\n}\n\nreturn [{\n  json: {\n    ...$json,\n    tipo_pagador: tipo,\n    forma_pagamento: forma,\n    cpf_cnpj_pagador: cpf,\n    validacao_ok: valido,\n    campos_faltantes: faltantesUnicos,\n    erros_validacao: erros,\n    motivo_erro: motivoErro\n  }\n}];"
+      },
+      "id": "018a8396-4021-4c3f-a58c-cf43d4e9f187",
+      "name": "WF-DPV.03 - CODE | Validar Despesa",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.validacao_ok }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3c3fe68b-faac-4c0d-ac92-8826b9752416",
+      "name": "WF-DPV.03 - IF | Despesa Valida",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO despesas_sem_nf_log (phone, viagem_id, descricao, tipo_pagador, forma_pagamento, cpf_cnpj_pagador, valor, data_compra, criado_em, validacao_status) SELECT '{{ $json.phone }}', v.id, '{{ $json.descricao }}', '{{ $json.tipo_pagador }}', '{{ $json.forma_pagamento }}', '{{ $json.cpf_cnpj_pagador }}', {{ $json.valor }}, CURRENT_DATE, NOW(), 'pendente' FROM viagens v WHERE v.phone = '{{ $json.phone }}' AND v.status = 'ativa' LIMIT 1 RETURNING id",
+        "options": {}
+      },
+      "id": "15593f46-2714-4e1e-949e-50c45db2c790",
+      "name": "WF-DPV.03 - DB | Salvar Despesa Sem NF",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1392,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": []
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ 'Despesa registrada!\\nTipo: ' + $json.tipo_pagador + ' + ' + $json.forma_pagamento + '\\nCPF/CNPJ: ' + $json.cpf_cnpj_pagador + '\\nValor: R$ ' + $json.valor + '\\nDescricao: ' + ($json.descricao || 'Sem descricao') + '\\nStatus: pendente validacao' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c620cab8-2735-4993-88ab-2efa8d2d6109",
+      "name": "WF-DPV.03 - HTTP | Confirmar Despesa",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1616,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": []
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ 'Despesa invalida.\\n\\n' + ($json.motivo_erro || 'Dados incorretos.') + '\\n\\nFormato correto:\\nDESPESA | empresa/particular | cartao/dinheiro | CPF/CNPJ | valor | descricao\\n\\nEx: DESPESA | empresa | cartao | 12345678000190 | 150 | Hotel' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5e18d3bb-469e-4df0-b15d-8b5e24b9741e",
+      "name": "WF-DPV.03 - HTTP | Erro Despesa",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1392,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT phone, message_id, step, dados_extraidos, tipo_pagador, forma_pagamento, observacao FROM despesas_pendentes WHERE phone = '{{ $json.phone }}' LIMIT 1",
+        "options": {}
+      },
+      "id": "f3ba1ee5-8552-41ff-beef-0a124db9b72e",
+      "name": "WF-DPV.03 - DB | Buscar Despesa Pendente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -112,
+        288
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst pendente = (items.length > 0 && items[0].json && items[0].json.phone) ? items[0].json : null;\nconst original = $('WF-DPV.03 - SET | Normalizar Comando').item.json;\nreturn [{ json: { ...original, pendente } }];"
+      },
+      "id": "691c8f4c-bdae-4463-9e72-f41815e0b333",
+      "name": "WF-DPV.03 - CODE | Merge Despesa Pendente",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$json.pendente }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "bb656f66-eae3-4b39-988d-c69e777a6850",
+      "name": "WF-DPV.03 - IF | Tem Despesa Pendente",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\nconst pendente = input.pendente;\nconst respostaRaw = (input.caption_original || '').trim();\nconst resposta = respostaRaw.toUpperCase();\n\nlet dadosExtraidos = pendente.dados_extraidos;\nif (typeof dadosExtraidos === 'string') {\n  try { dadosExtraidos = JSON.parse(dadosExtraidos); } catch(e) { dadosExtraidos = {}; }\n}\n\nconst phone = input.phone;\nconst messageId = pendente.message_id;\nconst step = pendente.step;\n\nfunction matchChoice(texto, choices) {\n  const t = texto.trim();\n  for (const c of choices) {\n    if (t === c.num) return c.value;\n  }\n  for (const c of choices) {\n    if (c.keys.some(k => texto.includes(k))) return c.value;\n  }\n  return null;\n}\n\nfunction update(novoStep, updates, mensagem) {\n  return {\n    action: 'update',\n    phone,\n    novo_step: novoStep,\n    tipo_pagador: updates.tipo_pagador !== undefined ? updates.tipo_pagador : pendente.tipo_pagador,\n    forma_pagamento: updates.forma_pagamento !== undefined ? updates.forma_pagamento : pendente.forma_pagamento,\n    observacao: updates.observacao !== undefined ? updates.observacao : pendente.observacao,\n    mensagem\n  };\n}\n\nfunction finalize(extra, motivo) {\n  const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n  const valorEmpresa = extra.valor_empresa !== undefined ? extra.valor_empresa : null;\n  const valorFuncionario = extra.valor_funcionario !== undefined ? extra.valor_funcionario : null;\n  const tipoDespesa = extra.tipo_despesa || 'empresa';\n\n  let resumo = 'Despesa registrada!\\n' +\n    'Estabelecimento: ' + (dadosExtraidos.estabelecimento || '-') + '\\n' +\n    'Valor: R$ ' + valorTotal.toFixed(2) + '\\n' +\n    'Pagador: ' + pendente.tipo_pagador + ' + ' + pendente.forma_pagamento;\n  if (valorEmpresa !== null && valorFuncionario !== null) {\n    resumo += '\\nDivisao -> Empresa: R$ ' + valorEmpresa.toFixed(2) + ' | Voce: R$ ' + valorFuncionario.toFixed(2);\n  }\n  if (tipoDespesa === 'cliente') {\n    resumo += '\\nA cobrar do cliente';\n  }\n  if (motivo) resumo += '\\n' + motivo;\n\n  return {\n    action: 'finalize',\n    phone,\n    message_id: messageId,\n    tipo_pagador: pendente.tipo_pagador,\n    forma_pagamento: pendente.forma_pagamento,\n    tipo_despesa: tipoDespesa,\n    observacao: extra.observacao !== undefined ? extra.observacao : pendente.observacao,\n    estabelecimento: dadosExtraidos.estabelecimento || null,\n    cnpj: dadosExtraidos.cnpj || null,\n    valor_total: valorTotal,\n    data_emissao: dadosExtraidos.data_emissao || null,\n    categoria: dadosExtraidos.categoria || 'outros',\n    itens_json: JSON.stringify(dadosExtraidos).replace(/'/g, \"''\"),\n    valor_empresa: valorEmpresa,\n    valor_funcionario: valorFuncionario,\n    mensagem: resumo\n  };\n}\n\nlet result;\n\nif (step === 'aguardando_pagador') {\n  const escolha = matchChoice(resposta, [\n    { num: '1', keys: ['EMPRESA'], value: 'empresa' },\n    { num: '2', keys: ['EU'], value: 'particular' },\n    { num: '3', keys: ['CLIENTE'], value: 'cliente' }\n  ]);\n  if (escolha) {\n    result = update('aguardando_forma', { tipo_pagador: escolha }, 'Como foi pago?\\n1-Cartao\\n2-Dinheiro');\n  } else {\n    result = update(step, {}, 'Nao entendi. Quem pagou?\\n1-Empresa\\n2-Eu\\n3-Cliente');\n  }\n} else if (step === 'aguardando_forma') {\n  const escolha = matchChoice(resposta, [\n    { num: '1', keys: ['CARTAO', 'CARTÃO'], value: 'cartao' },\n    { num: '2', keys: ['DINHEIRO'], value: 'dinheiro' }\n  ]);\n  if (!escolha) {\n    result = update(step, {}, 'Nao entendi. Como foi pago?\\n1-Cartao\\n2-Dinheiro');\n  } else if (pendente.tipo_pagador === 'cliente') {\n    pendente.forma_pagamento = escolha;\n    result = finalize({ tipo_despesa: 'cliente' }, null);\n  } else {\n    result = update('aguardando_observacao', { forma_pagamento: escolha }, 'Observacao?\\n1-Dividir\\n2-Desconto Bebida\\n3-Nao');\n  }\n} else if (step === 'aguardando_observacao') {\n  const escolha = matchChoice(resposta, [\n    { num: '1', keys: ['DIVIDIR'], value: 'dividir' },\n    { num: '2', keys: ['DESCONTO BEBIDA', 'DESCONTO'], value: 'desconto' },\n    { num: '3', keys: ['NAO', 'NÃO'], value: 'nao' }\n  ]);\n  if (escolha === 'desconto') {\n    const itens = Array.isArray(dadosExtraidos.itens) ? dadosExtraidos.itens : [];\n    const palavrasAlcool = [\n      'CERVEJA', 'VINHO', 'WHISKY', 'WHISKEY', 'CACHACA', 'CACHAÇA', 'DOSE', 'DRINK', 'BEER', 'ALCOOL', 'ÁLCOOL',\n      'BRAHMA', 'HEINEKEN', 'SKOL', 'DEVASSA', 'BUDWEISER', 'STELLA', 'CORONA', 'AMSTEL', 'ITAIPAVA', 'ANTARCTICA', 'BOHEMIA'\n    ];\n    const alcoolicos = itens.filter(it => {\n      const desc = String(it.descricao || '').toUpperCase();\n      return palavrasAlcool.some(p => desc.includes(p));\n    });\n    const somaAlcool = alcoolicos.reduce((acc, it) => acc + (parseFloat(it.valor_total) || 0), 0);\n    const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n    dadosExtraidos.alcoolicos_detectados = { itens: alcoolicos, valor: somaAlcool };\n    const motivo = alcoolicos.length\n      ? ('Itens identificados: ' + alcoolicos.map(i => i.descricao).join(', ') + ' (R$ ' + somaAlcool.toFixed(2) + ')')\n      : 'Nenhum item alcoolico identificado, valor total mantido para a empresa.';\n    result = finalize({ valor_funcionario: somaAlcool, valor_empresa: valorTotal - somaAlcool, observacao: 'DESCONTO BEBIDA', tipo_despesa: 'empresa' }, motivo);\n  } else if (escolha === 'dividir') {\n    result = update('aguardando_divisao', { observacao: 'DIVIDIR' }, 'Informe a divisao. Ex: EMPRESA 80% EU 20%');\n  } else if (escolha === 'nao') {\n    result = finalize({ observacao: 'NAO', tipo_despesa: 'empresa' }, null);\n  } else {\n    result = update(step, {}, 'Nao entendi. Observacao?\\n1-Dividir\\n2-Desconto Bebida\\n3-Nao');\n  }\n} else if (step === 'aguardando_divisao') {\n  const matches = [...resposta.matchAll(/(EMPRESA|EU)\\s*(\\d{1,3})/g)];\n  let pctEmpresa = null, pctEu = null;\n  for (const m of matches) {\n    const val = parseInt(m[2], 10);\n    if (m[1] === 'EMPRESA') pctEmpresa = val;\n    if (m[1] === 'EU') pctEu = val;\n  }\n  if (pctEmpresa === null || pctEu === null) {\n    result = update(step, {}, 'Nao entendi a divisao. Use o formato: EMPRESA 80% EU 20%');\n  } else {\n    const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n    const valorEmpresa = Math.round(valorTotal * pctEmpresa / 100 * 100) / 100;\n    const valorFuncionario = Math.round(valorTotal * pctEu / 100 * 100) / 100;\n    result = finalize(\n      { valor_empresa: valorEmpresa, valor_funcionario: valorFuncionario, observacao: 'DIVIDIR ' + pctEmpresa + '/' + pctEu, tipo_despesa: 'empresa' },\n      null\n    );\n  }\n} else {\n  result = update('aguardando_pagador', {}, 'Ocorreu um erro no fluxo. Quem pagou?\\n1-Empresa\\n2-Eu\\n3-Cliente');\n}\n\nreturn [{ json: result }];\n"
+      },
+      "id": "a9584da5-ca3c-406c-9fda-3452bb8f4c68",
+      "name": "WF-DPV.03 - CODE | Processar Fluxo Guiado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.action }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "finalize"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "108740c0-5b05-4d36-a9a3-44ea732a4c1a",
+      "name": "WF-DPV.03 - IF | Fluxo Guiado Finalizado",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO despesas_viagem (phone, estabelecimento, cnpj, valor_total, data_emissao, categoria, itens_json, message_id, tipo_pagador, forma_pagamento, cpf_cnpj_pagador, sem_nf, validado_manualmente, valor_empresa, valor_funcionario, tipo_despesa, created_at)\nVALUES (\n  '{{ $json.phone }}',\n  '{{ $json.estabelecimento }}',\n  {{ $json.cnpj ? \"'\" + $json.cnpj + \"'\" : 'NULL' }},\n  {{ $json.valor_total }},\n  {{ $json.data_emissao ? \"'\" + $json.data_emissao + \"'\" : 'NULL' }},\n  '{{ $json.categoria }}',\n  '{{ $json.itens_json }}',\n  '{{ $json.message_id }}',\n  '{{ $json.tipo_pagador }}',\n  '{{ $json.forma_pagamento }}',\n  NULL,\n  false,\n  false,\n  {{ ($json.valor_empresa !== null && $json.valor_empresa !== undefined) ? $json.valor_empresa : 'NULL' }},\n  {{ ($json.valor_funcionario !== null && $json.valor_funcionario !== undefined) ? $json.valor_funcionario : 'NULL' }},\n  '{{ $json.tipo_despesa || \"empresa\" }}',\n  NOW()\n) RETURNING id",
+        "options": {}
+      },
+      "id": "ef936ba2-73ff-4dfc-adc2-f63c71386944",
+      "name": "WF-DPV.03 - DB | Salvar Despesa Final",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1184,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM despesas_pendentes WHERE phone = '{{ $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.phone }}'",
+        "options": {}
+      },
+      "id": "0dcbf99b-d3cd-4d0d-9d97-cea9fa6f1084",
+      "name": "WF-DPV.03 - DB | Remover Despesa Pendente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1376,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.mensagem }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b017bcad-8257-4442-abc1-cf75c96f3851",
+      "name": "WF-DPV.03 - HTTP | Confirmar Despesa Guiada",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1568,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE despesas_pendentes SET\n  step = '{{ $json.novo_step }}',\n  tipo_pagador = {{ $json.tipo_pagador ? \"'\" + $json.tipo_pagador + \"'\" : 'NULL' }},\n  forma_pagamento = {{ $json.forma_pagamento ? \"'\" + $json.forma_pagamento + \"'\" : 'NULL' }},\n  observacao = {{ $json.observacao ? \"'\" + $json.observacao + \"'\" : 'NULL' }},\n  atualizado_em = NOW()\nWHERE phone = '{{ $json.phone }}'",
+        "options": {}
+      },
+      "id": "638be166-90ca-4180-ac11-f8d7b8f84a15",
+      "name": "WF-DPV.03 - DB | Atualizar Despesa Pendente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1184,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.mensagem }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1d031cb1-4289-4ef0-9406-60beef642f28",
+      "name": "WF-DPV.03 - HTTP | Proxima Pergunta Guiada",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1376,
+        576
+      ]
+    }
+  ],
+  "nodeGroups": [],
+  "tags": [],
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "parentFolderId": null,
+  "description": "Handler de comandos de texto via WhatsApp: INICIAR VIAGEM, ENCERRAR VIAGEM e RELATORIO. Gerencia datas início/fim e aciona geração de PDF."
 }
