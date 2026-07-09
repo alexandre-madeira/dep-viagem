@@ -3,11 +3,11 @@
   "name": "WF-DPV.03 - Controle de Viagem [dep-viagem]",
   "active": true,
   "isArchived": false,
-  "versionId": "ef05278e-bfe3-4b8b-8233-bbf443f88824",
-  "activeVersionId": "ef05278e-bfe3-4b8b-8233-bbf443f88824",
+  "versionId": "2a39a1e8-2e00-4ff6-a06a-f64d7435abec",
+  "activeVersionId": "2a39a1e8-2e00-4ff6-a06a-f64d7435abec",
   "triggerCount": 0,
   "createdAt": "2026-06-09T22:32:34.481Z",
-  "updatedAt": "2026-07-09T23:42:29.363Z",
+  "updatedAt": "2026-07-09T23:58:49.109Z",
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": true,
@@ -303,6 +303,12 @@
               "name": "from_me",
               "type": "boolean",
               "value": "={{ $json.from_me ?? false }}"
+            },
+            {
+              "id": "nome_viagem_norm",
+              "name": "nome_viagem_normalizado",
+              "type": "string",
+              "value": "={{ (() => { const raw = ($json.caption || '').replace(/INICIAR/i, '').trim(); let n = raw ? raw.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase() : ''; n = n.replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, ''); if (!n) n = 'viagem'; if (!/_\\d{2}$/.test(n)) n = n + '_' + $now.toFormat('yy'); return n; })() }}"
             }
           ]
         },
@@ -425,7 +431,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "{{ \"INSERT INTO viagens (phone, nome_viagem, data_inicio, status, created_at, updated_at) VALUES ('\" + $json.phone + \"', '\" + ($json.caption_original.replace(/INICIAR/i, '').trim() || 'Viagem ' + $now.toFormat('MMM/yy')) + \"', NOW(), 'ativa', NOW(), NOW()) RETURNING id, nome_viagem, data_inicio\" }}",
+        "query": "={{ \"INSERT INTO viagens (phone, nome_viagem, data_inicio, status, created_at, updated_at) VALUES ('\" + $json.phone + \"', '\" + $json.nome_viagem_normalizado + \"', NOW(), 'ativa', NOW(), NOW()) RETURNING id, nome_viagem, data_inicio\" }}",
         "options": {}
       },
       "id": "73a3d6a6-e4a0-4f49-a4f2-e5be9d5265a8",
@@ -452,7 +458,7 @@
             },
             {
               "name": "text",
-              "value": "={{ \"🚀 Viagem iniciada em \" + $now.toFormat(\"dd/MM/yyyy HH:mm\") + \"!\\n\\nEnvie fotos das suas notas fiscais para registrar as despesas.\\n\\nComandos disponíveis:\\n📊 RELATORIO - gerar relatório\\n🏁 ENCERRAR VIAGEM - finalizar viagem\" }}"
+              "value": "={{ \"Viagem '\" + $(\"WF-DPV.03 - SET | Normalizar Comando\").item.json.nome_viagem_normalizado + \"' iniciada em \" + $now.toFormat(\"dd/MM/yyyy HH:mm\") + \"!\\n\\nEnvie fotos das suas notas fiscais para registrar as despesas.\\n\\nComandos disponiveis:\\nRELATORIO - gerar relatorio\\nENCERRAR VIAGEM - finalizar viagem\\n\\nDica: use INICIAR cidade_ano (ex: INICIAR teresina_26) para nomear a proxima viagem.\" }}"
             }
           ]
         },
