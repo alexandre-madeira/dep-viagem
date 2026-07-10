@@ -3,11 +3,11 @@
   "name": "WF-DPV.03 - Controle de Viagem [dep-viagem]",
   "active": true,
   "isArchived": false,
-  "versionId": "2a39a1e8-2e00-4ff6-a06a-f64d7435abec",
-  "activeVersionId": "2a39a1e8-2e00-4ff6-a06a-f64d7435abec",
+  "versionId": "c0e51040-c908-46fb-9eb3-1baefbcc65fd",
+  "activeVersionId": "c0e51040-c908-46fb-9eb3-1baefbcc65fd",
   "triggerCount": 0,
   "createdAt": "2026-06-09T22:32:34.481Z",
-  "updatedAt": "2026-07-09T23:58:49.109Z",
+  "updatedAt": "2026-07-10T00:01:34.364Z",
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": true,
@@ -59,6 +59,13 @@
         [
           {
             "node": "WF-DPV.03 - CODE | Parse Despesa",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Reabrir Viagem no Postgres",
             "type": "main",
             "index": 0
           }
@@ -268,6 +275,35 @@
           }
         ]
       ]
+    },
+    "WF-DPV.03 - DB | Reabrir Viagem no Postgres": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - IF | Viagem Reaberta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - IF | Viagem Reaberta": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Confirmar Reabertura Viagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Erro Reabrir Viagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "nodes": [
@@ -407,6 +443,27 @@
                       "operation": "contains"
                     },
                     "rightValue": "DESPESA"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.comando }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "rightValue": "REABRIR"
                   }
                 ],
                 "combinator": "and"
@@ -566,7 +623,7 @@
             },
             {
               "name": "text",
-              "value": "={{ \"💬 Comandos disponíveis:\\n\\n🚀 INICIAR VIAGEM\\n🏁 ENCERRAR VIAGEM\\n📊 RELATORIO\\n\\nOu envie uma foto de nota fiscal para registrar despesa.\" }}"
+              "value": "={{ \"Comandos disponiveis:\\n\\nINICIAR VIAGEM\\nENCERRAR VIAGEM\\nREABRIR VIAGEM (reabre a mais recente)\\nRELATORIO\\n\\nOu envie uma foto de nota fiscal para registrar despesa.\" }}"
             }
           ]
         },
@@ -932,6 +989,114 @@
         1376,
         576
       ]
+    },
+    {
+      "id": "0dc4b058-5065-42c1-aa1c-ab7969ba8cb1",
+      "name": "WF-DPV.03 - DB | Reabrir Viagem no Postgres",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        480
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ \"UPDATE viagens SET status = 'ativa', data_fim = NULL, updated_at = NOW() WHERE id = (SELECT id FROM viagens WHERE phone = '\" + $json.phone + \"' ORDER BY id DESC LIMIT 1) AND status = 'encerrada' RETURNING id, nome_viagem\" }}",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "5b5284e1-9940-48d1-99c1-0a1dd224e43d",
+      "name": "WF-DPV.03 - IF | Viagem Reaberta",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        480
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.id }}",
+              "operator": {
+                "type": "number",
+                "operation": "exists"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "3172f91b-8e89-4e33-8e5e-b4e14c36ca24",
+      "name": "WF-DPV.03 - HTTP | Confirmar Reabertura Viagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        672,
+        400
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"Viagem '\" + $json.nome_viagem + \"' reaberta! Pode continuar enviando notas fiscais.\" }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "642ed940-ad80-4ebd-b99f-68bbc9c49f7c",
+      "name": "WF-DPV.03 - HTTP | Erro Reabrir Viagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        672,
+        560
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "Nenhuma viagem encerrada encontrada para reabrir. Apenas a viagem mais recente pode ser reaberta."
+            }
+          ]
+        },
+        "options": {}
+      }
     }
   ],
   "nodeGroups": [],
