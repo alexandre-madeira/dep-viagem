@@ -50,3 +50,27 @@ PARTE 1 - 8 issues criadas em alexandre-madeira/dep-viagem:
 
 PARTE 2 - `WF-DPV.04 - HTTP | Notificar Gestor`: telefone do gestor configurado como
 `554896289237` (mesmo numero de teste, confirmado pelo usuario). Publicado.
+
+---
+
+## CONCLUIDO (09/07/2026) - implementacao das 8 issues
+
+Todas as issues #2-#9 implementadas, testadas via test_workflow e fechadas no GitHub:
+
+- #2 CORRIGIR ULTIMA: reabre fluxo guiado para a despesa mais recente, substitui o
+  registro antigo ao finalizar (WF-DPV.03). Commit 4815566.
+- #3 respostas numericas: fluxo guiado aceita 1/2/3 alem do texto (WF-DPV.03). Commit 1e19ce6.
+- #4 marcas de bebida: lista expandida com marcas comerciais (WF-DPV.03). Commit 1e19ce6.
+- #5 tipo cliente: 3a opcao no pagador, coluna tipo_despesa (migration v10), pula
+  divisao e finaliza direto (WF-DPV.03). Commit 1e19ce6.
+- #6 REABRIR VIAGEM: reabre apenas a viagem mais recente se encerrada (WF-DPV.03).
+  Commit 4b596d4.
+- #7 nome_viagem cidade_ano: normalizado automaticamente (sem acento, underscore,
+  sufixo _ano) (WF-DPV.03). Commit 5a959ea.
+- #8 datas reais da NF: periodo do relatorio/painel calculado por MIN/MAX(data_emissao)
+  em vez de viagens.data_inicio/data_fim (WF-DPV.04, WF-DPV.06). Commit 071b018.
+- #9 layout do relatorio: cabecalho com nome do funcionario, tabela com split
+  Empresa/Funcionario/Cliente, secao separada de despesas a cobrar do cliente
+  (WF-DPV.04). Commit 0bdfee2.
+
+Todos os workflows re-exportados para `workflows/` apos cada mudanca.
