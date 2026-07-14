@@ -124,7 +124,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT d.*, v.data_inicio, v.data_fim, COALESCE(f.nome, d.phone) as funcionario_nome FROM despesas_viagem d JOIN viagens v ON v.phone = d.phone LEFT JOIN funcionarios f ON f.phone = d.phone WHERE d.phone = '{{ $json.phone }}' AND v.id = {{ $json.viagem_id ?? \"(SELECT id FROM viagens WHERE phone = '\" + $json.phone + \"' ORDER BY created_at DESC LIMIT 1)\" }} ORDER BY d.data_emissao ASC",
+        "query": "={{ \"SELECT d.*, v.data_inicio, v.data_fim, COALESCE(f.nome, d.phone) as funcionario_nome FROM despesas_viagem d JOIN viagens v ON v.phone = d.phone AND v.id = \" + ($json.viagem_id ?? \"(SELECT id FROM viagens WHERE phone = '\" + $json.phone + \"' ORDER BY created_at DESC LIMIT 1)\") + \" LEFT JOIN funcionarios f ON f.phone = d.phone WHERE d.phone = '\" + $json.phone + \"' AND d.created_at >= v.data_inicio AND (v.data_fim IS NULL OR d.created_at <= v.data_fim) ORDER BY d.data_emissao ASC, d.ordem_nf ASC\" }}",
         "options": {}
       },
       "id": "b169e64d-eb30-4102-8bd8-71031ed9e983",
