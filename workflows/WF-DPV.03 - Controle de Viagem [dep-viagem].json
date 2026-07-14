@@ -506,9 +506,17 @@
                       "operation": "contains"
                     },
                     "rightValue": "ENCERR"
+                  },
+                  {
+                    "leftValue": "={{ $json.comando }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "2"
                   }
                 ],
-                "combinator": "and"
+                "combinator": "or"
               }
             },
             {
@@ -598,6 +606,14 @@
                       "operation": "contains"
                     },
                     "rightValue": "CORREG"
+                  },
+                  {
+                    "leftValue": "={{ $json.comando }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "1"
                   }
                 ],
                 "combinator": "or"
