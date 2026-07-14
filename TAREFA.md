@@ -1,54 +1,41 @@
-﻿MELHORIAS DE UX - DPV (09/07/2026)
+﻿Criar docs/ARQUITETURA_DPV.md e commitar no GitHub.
 
-M1 - Saudacao inicial personalizada (WF-DPV.03):
-Quando usuario manda "ola", "oi", "bom dia", "boa tarde", "boa noite" ou similar,
-responder com: "Ola, [NOME]! Como posso ajudar?"
-Seguido do menu numerado (ver M7).
+Buscar dados do banco n8n_contratos usando credencial DB_n8n_contratos (ID: 3z35ZPyLInGNam1Y):
 
-M2 - Nome da viagem formato cidade_obra, ano automatico (WF-DPV.03):
-- Remover instrucao de digitar o ano - sistema adiciona automaticamente
-- Dica no menu: "Use INICIAR cidade_obra (ex: INICIAR teresina_pele)"
-- Bug atual: "INICIAR Teresina - jun26" vira "teresina_jun26_26" (ano duplicado)
-- Correcao: extrair apenas o nome apos INICIAR, normalizar (lowercase, espacos->_,
-  remover caracteres especiais exceto _), adicionar _26 no final
-- Resultado esperado: "INICIAR Teresina-pele" -> "teresina_pele_26"
+SELECT fase, componente, requisito, workflow_id, status
+FROM arquitetura
+WHERE project_id = 'DPV' AND status = 'ATIVO'
+ORDER BY fase, componente, id;
 
-M3 - CORRIGIR ULTIMA aceitar variacoes (WF-DPV.03):
-Aceitar: "Corregir", "Corrige", "CORRIGIR ULTIMA", "CORRIGIR ULTMA",
-"corrigir ultima", "CORRIGIR ÚLTIMA" e outras variacoes com acento/erro.
+SELECT fix_id, descricao, workflow_id, prioridade, status
+FROM backlog
+WHERE project_id = 'DPV'
+ORDER BY prioridade, fix_id;
 
-M4 - Divisao por valor em Reais, nao percentual (WF-DPV.03):
-- Perguntar separadamente: "Empresa RTrue / Voce RTrue / Cliente RTrue"
-- Aceitar formato: "142,27" ou "142.27" (virgula ou ponto)
-- Validar que soma nao ultrapassa valor total da despesa
-- Remover suporte a percentual (% causa confusao)
+SELECT workflow_id, sigla, alias, papel
+FROM workflow_registro
+WHERE project_id = 'DPV'
+ORDER BY sigla;
 
-M5 - Quando pagador e Cliente, mostrar apenas "Cliente: R$ X,XX" (WF-DPV.03):
-- Remover mencao de "acertar com o cliente" da mensagem de confirmacao
-- Mostrar apenas: "Cliente: R$ X,XX"
+Montar o arquivo markdown com estrutura:
 
-M6 - Rodape apos confirmacao de despesa (WF-DPV.03):
-Adicionar ao final de toda mensagem de confirmacao de despesa:
+# ARQUITETURA DEP-VIAGEM (DPV) v1.0
+## 1. OBJETIVOS DO SISTEMA (F1)
+## 2. WORKFLOWS (F2)
+## 3. REQUISITOS POR NO (F3)
+## 4. BACKLOG ABERTO
+## 5. CREDENCIAIS E INFRA
+## 6. BANCO DE DADOS
 
-"Para continuar envie nova foto ou:
-1) CORRIGIR ULTIMA
-2) ENCERRAR VIAGEM"
+Incluir na secao 5:
+- Credencial Evolution API: HEADER_API_EVOLUTION_ENVIO (ID: Ka0C8J4zfOklD1lw) instancia VIDROCOM_AG
+- Credencial banco: DB_dep_viagem (ID: ggViIQGkepjwuOdv)
+- Credencial Anthropic: Anthropic DPV (ID: fA9wqoHasCFbjdwX)
+- Gotenberg: http://gotenberg:3000
+- n8n: https://n8n.solucaomadeira.com
+- Evolution API: https://evolution.solucaomadeira.com
 
-M7 - Menu de ajuda numerado com acentos corrigidos (WF-DPV.03):
-Substituir menu atual por:
+Incluir na secao 6 a estrutura completa do banco dep_viagem conforme docs/BANCO_DEP_VIAGEM.md ja existente no repo.
 
-"Comandos disponiveis:
-1) Iniciar viagem (INICIAR cidade_obra)
-2) Encerrar viagem
-3) Reabrir viagem (reabre a mais recente)
-4) Corrigir ultima despesa
-5) Gerar relatorio PDF
-
-Ou envie uma foto de nota fiscal para registrar despesa."
-
-OBS: os comandos continuam sendo acionados por texto (nao por numero),
-apenas o VISUAL do menu e numerado para referencia do usuario.
-
-Implementar todas as melhorias no WF-DPV.03 (ID: ruf039UAwh9KqIZo).
-Commitar: feat: melhorias UX mensagens e menu DPV
+Commitar: docs: ARQUITETURA_DPV.md v1.0 gerada a partir do banco n8n_contratos
 git push
