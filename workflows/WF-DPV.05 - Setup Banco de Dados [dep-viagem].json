@@ -1,230 +1,308 @@
-﻿{
-    "updatedAt":  "2026-06-22T02:40:04.857Z",
-    "createdAt":  "2026-06-09T22:34:16.328Z",
-    "id":  "eIm1nVXe1qnCKhYz",
-    "name":  "WF-DPV.05 - Setup Banco de Dados [dep-viagem]",
-    "description":  "Cria as tabelas viagens e despesas_viagem no Postgres com índices otimizados. Execute uma única vez para inicializar o banco do projeto dep-viagem.",
-    "active":  false,
-    "isArchived":  false,
-    "nodes":  [
-                  {
-                      "parameters":  {
-
-                                     },
-                      "id":  "db4bd398-ee5f-4aa9-8e15-004e2c8b0937",
-                      "name":  "WF-DPV.05 - TRIGGER | Setup Banco de Dados",
-                      "type":  "n8n-nodes-base.manualTrigger",
-                      "typeVersion":  1,
-                      "position":  [
-                                       48,
-                                       0
-                                   ]
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "-- Tabela viagens (já existe, adicionar campo nome_viagem)\nALTER TABLE viagens ADD COLUMN IF NOT EXISTS nome_viagem VARCHAR(100);\nCREATE INDEX IF NOT EXISTS idx_viagens_phone_nome ON viagens(phone, nome_viagem);",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "9f23784d-a288-43cc-9fc9-495cb9fc47be",
-                      "name":  "WF-DPV.05 - DB | Criar Tabela Viagens",
-                      "type":  "n8n-nodes-base.postgres",
-                      "typeVersion":  2.5,
-                      "position":  [
-                                       224,
-                                       0
-                                   ],
-                      "credentials":  {
-                                          "postgres":  {
-                                                           "id":  "ggViIQGkepjwuOdv",
-                                                           "name":  "DB_dep_viagem"
-                                                       }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "-- Migration v5: tabela de erros para ciclo de autocorreção\nCREATE TABLE IF NOT EXISTS erros_dpv (\n  id              SERIAL PRIMARY KEY,\n  workflow_id     VARCHAR(50) NOT NULL,\n  workflow_nome   VARCHAR(100),\n  no_nome         VARCHAR(150),\n  no_tipo         VARCHAR(100),\n  erro_msg        TEXT,\n  codigo_atual    TEXT,\n  payload_entrada JSONB,\n  execution_id    VARCHAR(50),\n  execution_url   VARCHAR(255),\n  status          VARCHAR(20) NOT NULL DEFAULT \u0027pendente\u0027,\n  fase_analise    VARCHAR(20),\n  correcao_aplicada TEXT,\n  resolvido_em    TIMESTAMP,\n  created_at      TIMESTAMP DEFAULT NOW()\n);\n-- status: pendente | em_analise | resolvido | ignorado\n-- fase_analise: arquitetura | engenharia | execucao\n\nCREATE INDEX IF NOT EXISTS idx_erros_status ON erros_dpv(status);\nCREATE INDEX IF NOT EXISTS idx_erros_workflow ON erros_dpv(workflow_id);\nCREATE INDEX IF NOT EXISTS idx_erros_created ON erros_dpv(created_at DESC);",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "1c473d44-c4f7-4e8f-9808-53e1fed1e8ba",
-                      "name":  "WF-DPV.05 - DB | Criar Tabela Despesas",
-                      "type":  "n8n-nodes-base.postgres",
-                      "typeVersion":  2.5,
-                      "position":  [
-                                       448,
-                                       0
-                                   ],
-                      "credentials":  {
-                                          "postgres":  {
-                                                           "id":  "ggViIQGkepjwuOdv",
-                                                           "name":  "DB_dep_viagem"
-                                                       }
-                                      }
-                  },
-                  {
-                      "parameters":  {
-                                         "assignments":  {
-                                                             "assignments":  [
-                                                                                 {
-                                                                                     "id":  "status",
-                                                                                     "name":  "status",
-                                                                                     "value":  "Banco de dados configurado com sucesso!",
-                                                                                     "type":  "string"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "tabelas",
-                                                                                     "name":  "tabelas",
-                                                                                     "value":  "viagens, despesas_viagem",
-                                                                                     "type":  "string"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "projeto",
-                                                                                     "name":  "projeto",
-                                                                                     "value":  "dep-viagem [DPV]",
-                                                                                     "type":  "string"
-                                                                                 },
-                                                                                 {
-                                                                                     "id":  "created_at",
-                                                                                     "name":  "created_at",
-                                                                                     "value":  "={{ $now.toISO() }}",
-                                                                                     "type":  "string"
-                                                                                 }
-                                                                             ]
-                                                         },
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "id":  "cb82ae4f-db92-4285-82dc-61bdd01307fd",
-                      "name":  "WF-DPV.05 - SET | Confirmar Setup Concluido",
-                      "type":  "n8n-nodes-base.set",
-                      "typeVersion":  3.4,
-                      "position":  [
-                                       896,
-                                       0
-                                   ]
-                  },
-                  {
-                      "id":  "271668c4-1a0b-40a8-b8fb-582a326f599d",
-                      "name":  "WF-DPV.05 - DB | Migration v6 Validacao Pagamento",
-                      "type":  "n8n-nodes-base.postgres",
-                      "typeVersion":  2.5,
-                      "position":  [
-                                       672,
-                                       0
-                                   ],
-                      "parameters":  {
-                                         "operation":  "executeQuery",
-                                         "query":  "-- Migration v6: validação de pagamento (P17) — 21/06/2026\n\n-- despesas_viagem: 6 novas colunas\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS tipo_pagador         VARCHAR(20);\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS forma_pagamento      VARCHAR(20);\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS cpf_cnpj_pagador    VARCHAR(20);\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS sem_nf               BOOLEAN DEFAULT false;\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS validado_manualmente  BOOLEAN;\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS observacoes_validacao TEXT;\n\nCREATE INDEX IF NOT EXISTS idx_despesas_tipo_forma ON despesas_viagem(tipo_pagador, forma_pagamento);\nCREATE INDEX IF NOT EXISTS idx_despesas_cpf        ON despesas_viagem(cpf_cnpj_pagador);\n\n-- despesas_sem_nf_log: nova tabela\nCREATE TABLE IF NOT EXISTS despesas_sem_nf_log (\n  id                SERIAL PRIMARY KEY,\n  phone             VARCHAR(20),\n  viagem_id         INTEGER,\n  descricao         VARCHAR(200),\n  tipo_pagador      VARCHAR(20),\n  forma_pagamento   VARCHAR(20),\n  cpf_cnpj_pagador  VARCHAR(20),\n  valor             NUMERIC(10,2),\n  data_compra       DATE,\n  criado_em         TIMESTAMP DEFAULT NOW(),\n  validacao_status  VARCHAR(20) DEFAULT \u0027pendente\u0027\n);\n\nCREATE INDEX IF NOT EXISTS idx_despesas_log_status ON despesas_sem_nf_log(validacao_status);\nCREATE INDEX IF NOT EXISTS idx_despesas_log_phone  ON despesas_sem_nf_log(phone);\n\n-- funcionarios: 3 novas colunas\nALTER TABLE funcionarios ADD COLUMN IF NOT EXISTS cpf_cnpj                VARCHAR(20);\nALTER TABLE funcionarios ADD COLUMN IF NOT EXISTS tipo_pagador_padrao     VARCHAR(20);\nALTER TABLE funcionarios ADD COLUMN IF NOT EXISTS forma_pagamento_padrao  VARCHAR(20);",
-                                         "options":  {
-
-                                                     }
-                                     },
-                      "credentials":  {
-                                          "postgres":  {
-                                                           "id":  "ggViIQGkepjwuOdv",
-                                                           "name":  "DB_dep_viagem"
-                                                       }
-                                      }
-                  }
-              ],
-    "connections":  {
-                        "WF-DPV.05 - TRIGGER | Setup Banco de Dados":  {
-                                                                           "main":  [
-                                                                                        [
-                                                                                            {
-                                                                                                "node":  "WF-DPV.05 - DB | Criar Tabela Viagens",
-                                                                                                "type":  "main",
-                                                                                                "index":  0
-                                                                                            }
-                                                                                        ]
-                                                                                    ]
-                                                                       },
-                        "WF-DPV.05 - DB | Criar Tabela Viagens":  {
-                                                                      "main":  [
-                                                                                   [
-                                                                                       {
-                                                                                           "node":  "WF-DPV.05 - DB | Criar Tabela Despesas",
-                                                                                           "type":  "main",
-                                                                                           "index":  0
-                                                                                       }
-                                                                                   ]
-                                                                               ]
-                                                                  },
-                        "WF-DPV.05 - DB | Criar Tabela Despesas":  {
-                                                                       "main":  [
-                                                                                    [
-                                                                                        {
-                                                                                            "node":  "WF-DPV.05 - DB | Migration v6 Validacao Pagamento",
-                                                                                            "type":  "main",
-                                                                                            "index":  0
-                                                                                        }
-                                                                                    ]
-                                                                                ]
-                                                                   },
-                        "WF-DPV.05 - DB | Migration v6 Validacao Pagamento":  {
-                                                                                  "main":  [
-                                                                                               [
-                                                                                                   {
-                                                                                                       "node":  "WF-DPV.05 - SET | Confirmar Setup Concluido",
-                                                                                                       "type":  "main",
-                                                                                                       "index":  0
-                                                                                                   }
-                                                                                               ]
-                                                                                           ]
-                                                                              }
-                    },
-    "settings":  {
-                     "executionOrder":  "v1",
-                     "availableInMCP":  true,
-                     "binaryMode":  "separate",
-                     "errorWorkflow":  "6LU8TtukzsbgGCHe"
-                 },
-    "staticData":  null,
-    "meta":  {
-                 "aiBuilderAssisted":  true,
-                 "builderVariant":  "mcp"
-             },
-    "nodeGroups":  [
-
-                   ],
-    "pinData":  {
-
-                },
-    "versionId":  "9be004b9-7878-471e-9342-a9960ccf63b4",
-    "activeVersionId":  null,
-    "versionCounter":  13,
-    "triggerCount":  0,
-    "sourceWorkflowId":  null,
-    "shared":  [
-                   {
-                       "updatedAt":  "2026-06-09T22:34:16.328Z",
-                       "createdAt":  "2026-06-09T22:34:16.328Z",
-                       "role":  "workflow:owner",
-                       "workflowId":  "eIm1nVXe1qnCKhYz",
-                       "projectId":  "9i1F0BwnIwFX9K2i",
-                       "project":  {
-                                       "updatedAt":  "2025-10-11T00:09:02.942Z",
-                                       "createdAt":  "2025-10-10T23:39:26.973Z",
-                                       "id":  "9i1F0BwnIwFX9K2i",
-                                       "name":  "ALEXANDRE E CUNHA \u003calexandremade@gmail.com\u003e",
-                                       "type":  "personal",
-                                       "icon":  null,
-                                       "description":  null,
-                                       "customTelemetryTags":  [
-
-                                                               ],
-                                       "creatorId":  "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
-                                   }
-                   }
-               ],
-    "tags":  [
-
-             ],
-    "activeVersion":  null
+{
+  "updatedAt": "2026-06-22T02:40:04.857Z",
+  "createdAt": "2026-06-09T22:34:16.328Z",
+  "id": "eIm1nVXe1qnCKhYz",
+  "name": "WF-DPV.05 - Setup Banco de Dados [dep-viagem]",
+  "description": "Cria as tabelas viagens e despesas_viagem no Postgres com índices otimizados. Execute uma única vez para inicializar o banco do projeto dep-viagem.",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "db4bd398-ee5f-4aa9-8e15-004e2c8b0937",
+      "name": "WF-DPV.05 - TRIGGER | Setup Banco de Dados",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        48,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Tabela viagens (já existe, adicionar campo nome_viagem)\nALTER TABLE viagens ADD COLUMN IF NOT EXISTS nome_viagem VARCHAR(100);\nCREATE INDEX IF NOT EXISTS idx_viagens_phone_nome ON viagens(phone, nome_viagem);",
+        "options": {}
+      },
+      "id": "9f23784d-a288-43cc-9fc9-495cb9fc47be",
+      "name": "WF-DPV.05 - DB | Criar Tabela Viagens",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "ggViIQGkepjwuOdv",
+          "name": "DB_dep_viagem"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Migration v5: tabela de erros para ciclo de autocorreção\nCREATE TABLE IF NOT EXISTS erros_dpv (\n  id              SERIAL PRIMARY KEY,\n  workflow_id     VARCHAR(50) NOT NULL,\n  workflow_nome   VARCHAR(100),\n  no_nome         VARCHAR(150),\n  no_tipo         VARCHAR(100),\n  erro_msg        TEXT,\n  codigo_atual    TEXT,\n  payload_entrada JSONB,\n  execution_id    VARCHAR(50),\n  execution_url   VARCHAR(255),\n  status          VARCHAR(20) NOT NULL DEFAULT 'pendente',\n  fase_analise    VARCHAR(20),\n  correcao_aplicada TEXT,\n  resolvido_em    TIMESTAMP,\n  created_at      TIMESTAMP DEFAULT NOW()\n);\n-- status: pendente | em_analise | resolvido | ignorado\n-- fase_analise: arquitetura | engenharia | execucao\n\nCREATE INDEX IF NOT EXISTS idx_erros_status ON erros_dpv(status);\nCREATE INDEX IF NOT EXISTS idx_erros_workflow ON erros_dpv(workflow_id);\nCREATE INDEX IF NOT EXISTS idx_erros_created ON erros_dpv(created_at DESC);",
+        "options": {}
+      },
+      "id": "1c473d44-c4f7-4e8f-9808-53e1fed1e8ba",
+      "name": "WF-DPV.05 - DB | Criar Tabela Despesas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        448,
+        0
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "ggViIQGkepjwuOdv",
+          "name": "DB_dep_viagem"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "status",
+              "name": "status",
+              "value": "Banco de dados configurado com sucesso!",
+              "type": "string"
+            },
+            {
+              "id": "tabelas",
+              "name": "tabelas",
+              "value": "viagens, despesas_viagem",
+              "type": "string"
+            },
+            {
+              "id": "projeto",
+              "name": "projeto",
+              "value": "dep-viagem [DPV]",
+              "type": "string"
+            },
+            {
+              "id": "created_at",
+              "name": "created_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cb82ae4f-db92-4285-82dc-61bdd01307fd",
+      "name": "WF-DPV.05 - SET | Confirmar Setup Concluido",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        0
+      ]
+    },
+    {
+      "id": "271668c4-1a0b-40a8-b8fb-582a326f599d",
+      "name": "WF-DPV.05 - DB | Migration v6 Validacao Pagamento",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Migration v6: validação de pagamento (P17) — 21/06/2026\n\n-- despesas_viagem: 6 novas colunas\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS tipo_pagador         VARCHAR(20);\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS forma_pagamento      VARCHAR(20);\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS cpf_cnpj_pagador    VARCHAR(20);\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS sem_nf               BOOLEAN DEFAULT false;\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS validado_manualmente  BOOLEAN;\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS observacoes_validacao TEXT;\n\nCREATE INDEX IF NOT EXISTS idx_despesas_tipo_forma ON despesas_viagem(tipo_pagador, forma_pagamento);\nCREATE INDEX IF NOT EXISTS idx_despesas_cpf        ON despesas_viagem(cpf_cnpj_pagador);\n\n-- despesas_sem_nf_log: nova tabela\nCREATE TABLE IF NOT EXISTS despesas_sem_nf_log (\n  id                SERIAL PRIMARY KEY,\n  phone             VARCHAR(20),\n  viagem_id         INTEGER,\n  descricao         VARCHAR(200),\n  tipo_pagador      VARCHAR(20),\n  forma_pagamento   VARCHAR(20),\n  cpf_cnpj_pagador  VARCHAR(20),\n  valor             NUMERIC(10,2),\n  data_compra       DATE,\n  criado_em         TIMESTAMP DEFAULT NOW(),\n  validacao_status  VARCHAR(20) DEFAULT 'pendente'\n);\n\nCREATE INDEX IF NOT EXISTS idx_despesas_log_status ON despesas_sem_nf_log(validacao_status);\nCREATE INDEX IF NOT EXISTS idx_despesas_log_phone  ON despesas_sem_nf_log(phone);\n\n-- funcionarios: 3 novas colunas\nALTER TABLE funcionarios ADD COLUMN IF NOT EXISTS cpf_cnpj                VARCHAR(20);\nALTER TABLE funcionarios ADD COLUMN IF NOT EXISTS tipo_pagador_padrao     VARCHAR(20);\nALTER TABLE funcionarios ADD COLUMN IF NOT EXISTS forma_pagamento_padrao  VARCHAR(20);",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "ggViIQGkepjwuOdv",
+          "name": "DB_dep_viagem"
+        }
+      }
+    },
+    {
+      "id": "10760390-3fe9-4c9f-b91d-5340e1000794",
+      "name": "WF-DPV.05 - DB | Migration v10 Tipo Despesa Cliente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        160
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Migration v10: tipo_despesa (cobranca ao cliente) - issue #5 - 09/07/2026\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS tipo_despesa VARCHAR(20) NOT NULL DEFAULT 'empresa';",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "ggViIQGkepjwuOdv",
+          "name": "DB_dep_viagem"
+        }
+      }
+    },
+    {
+      "id": "cee81f64-d1e3-4776-a7d4-b44b9f98ced1",
+      "name": "WF-DPV.05 - DB | Migration v11 Ordem NF Divisao 3 Vias",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        320
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Migration v11: numero sequencial de NF por viagem + divisao 3 vias (empresa/funcionario/cliente) - 14/07/2026\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS ordem_nf INTEGER;\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS valor_cliente NUMERIC;\nALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS observacao VARCHAR(30);",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "ggViIQGkepjwuOdv",
+          "name": "DB_dep_viagem"
+        }
+      }
+    },
+    {
+      "id": "d750f285-4705-4c50-96f4-9d7b0a51af93",
+      "name": "WF-DPV.05 - DB | Migration v12 Observacao Text",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        480
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Migration v12: alargar despesas_viagem.observacao de VARCHAR(30) para TEXT - 15/07/2026\n-- Corrige overflow no formato DIVIDIR3 que travava o fluxo guiado sem resposta\nALTER TABLE despesas_viagem ALTER COLUMN observacao TYPE TEXT;",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "ggViIQGkepjwuOdv",
+          "name": "DB_dep_viagem"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "WF-DPV.05 - TRIGGER | Setup Banco de Dados": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - DB | Criar Tabela Viagens",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.05 - DB | Criar Tabela Viagens": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - DB | Criar Tabela Despesas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.05 - DB | Criar Tabela Despesas": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - DB | Migration v6 Validacao Pagamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.05 - DB | Migration v6 Validacao Pagamento": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - DB | Migration v10 Tipo Despesa Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.05 - DB | Migration v10 Tipo Despesa Cliente": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - DB | Migration v11 Ordem NF Divisao 3 Vias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.05 - DB | Migration v11 Ordem NF Divisao 3 Vias": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - DB | Migration v12 Observacao Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.05 - DB | Migration v12 Observacao Text": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - SET | Confirmar Setup Concluido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "errorWorkflow": "6LU8TtukzsbgGCHe"
+  },
+  "staticData": null,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "9be004b9-7878-471e-9342-a9960ccf63b4",
+  "activeVersionId": null,
+  "versionCounter": 13,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-06-09T22:34:16.328Z",
+      "createdAt": "2026-06-09T22:34:16.328Z",
+      "role": "workflow:owner",
+      "workflowId": "eIm1nVXe1qnCKhYz",
+      "projectId": "9i1F0BwnIwFX9K2i",
+      "project": {
+        "updatedAt": "2025-10-11T00:09:02.942Z",
+        "createdAt": "2025-10-10T23:39:26.973Z",
+        "id": "9i1F0BwnIwFX9K2i",
+        "name": "ALEXANDRE E CUNHA <alexandremade@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "420720b6-4be9-410f-89f6-bfc8c3c86ad4"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
 }
