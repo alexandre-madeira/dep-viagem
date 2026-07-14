@@ -1,35 +1,21 @@
-﻿MELHORIAS DPV - 14/07/2026
+﻿BUG + MELHORIA - Step aguardando_divisao no WF-DPV.03 (ID: ruf039UAwh9KqIZo)
 
-MELHORIA 1 - Numero sequencial da NF por viagem:
-Adicionar coluna ordem_nf em despesas_viagem.
-Migration: ALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS ordem_nf INTEGER;
-Ao salvar despesa em DB | Salvar Despesa Final, calcular:
-SELECT COUNT(*) + 1 FROM despesas_viagem WHERE phone = X AND viagem_id = Y
-e salvar em ordem_nf.
-Exibir no resumo da despesa: "NF #3 - Estabelecimento: X"
-Exibir no relatorio PDF na primeira coluna da tabela.
+PROBLEMA 1: parser nao reconhece variacoes:
+- "A) 216" (parentese apos letra)
+- "EMPRESA 123,80 FUNCIONÁRIO 0" (acento em FUNCIONÁRIO)
+- Quando falta VOCE/EU nao explica o que falta
 
-PROBLEMA: despesas_viagem nao tem coluna viagem_id direta.
-Usar: SELECT COUNT(*) + 1 FROM despesas_viagem d
-JOIN viagens v ON v.phone = d.phone
-WHERE d.phone = X AND v.id = (SELECT id FROM viagens WHERE phone = X ORDER BY id DESC LIMIT 1)
-AND d.created_at >= v.data_inicio
+PROBLEMA 2: sem resposta apos timeout de mensagens em loop
 
-MELHORIA 2 - Divisao com letras a/b/c no step aguardando_divisao:
-Aceitar formato: a 100 b 0 c 30
-Onde: a=empresa, b=funcionario(eu), c=cliente
-Regex: /([abc])\s*R?\True\s*([\d.,]+)/gi
-Mapear: a->valor_empresa, b->valor_funcionario, c->valor_cliente
-Salvar valor_cliente em campo a criar: valor_cliente NUMERIC em despesas_viagem
-Migration: ALTER TABLE despesas_viagem ADD COLUMN IF NOT EXISTS valor_cliente NUMERIC;
-Exibir no resumo: "Empresa: R$ X | Voce: R$ Y | Cliente: R$ Z"
-Manter suporte ao formato antigo EMPRESA X VOCE Y.
+SOLUCAO: substituir step aguardando_divisao por 3 steps sequenciais:
+- aguardando_divisao_empresa: "Quanto a EMPRESA paga? (ex: 123.80 ou 0)"
+- aguardando_divisao_voce: "Quanto VOCE paga? (ex: 50.00 ou 0)"
+- aguardando_divisao_cliente: "Quanto o CLIENTE paga? (ex: 0)"
 
-Registrar no backlog n8n_contratos:
-INSERT INTO backlog (project_id, fix_id, descricao, workflow_id, prioridade, status)
-VALUES
-('DPV', 'FEAT-10', 'Numero sequencial da NF por viagem (ordem_nf)', 'ruf039UAwh9KqIZo', 'MEDIO', 'ABERTO'),
-('DPV', 'FEAT-11', 'Divisao conta com letras a/b/c (empresa/funcionario/cliente)', 'ruf039UAwh9KqIZo', 'MEDIO', 'ABERTO')
-ON CONFLICT DO NOTHING;
+Em cada step aceitar apenas um numero (com ponto ou virgula).
+Salvar parcialmente em despesas_pendentes a cada resposta.
+No ultimo step calcular e finalizar.
+Validar que soma nao ultrapassa o total.
 
-Implementar as duas melhorias, commitar e dar push.
+Commitar: fix: divisao conta em steps sequenciais evita parser ambiguo
+git push
