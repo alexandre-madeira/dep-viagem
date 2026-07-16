@@ -6,7 +6,7 @@
 usando a credencial `DB_dep_viagem` (ID: `ggViIQGkepjwuOdv`):**
 
 ```sql
-SELECT id, origem, workflow_id, descricao, ultimo_no, payload_json, created_at
+SELECT id, workflow_id, workflow_nome, no_nome, no_tipo, erro_msg, execution_url, created_at
 FROM erros_dpv
 WHERE status = 'pendente'
 ORDER BY created_at DESC
@@ -20,7 +20,7 @@ Não leia o projeto inteiro. O contexto já está no banco.
 
 **Após ler, marque como lido:**
 ```sql
-UPDATE erros_dpv SET status = 'lido', lido_em = NOW() WHERE status = 'pendente';
+UPDATE erros_dpv SET status = 'lido' WHERE status = 'pendente';
 ```
 
 ---

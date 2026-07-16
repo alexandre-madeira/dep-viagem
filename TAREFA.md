@@ -11,6 +11,16 @@ atribuida. Publicado (activeVersionId bc379358-f9ac-4179-8d60-28485b637ea7).
 Workflows n8n_contratos (WF-ERR-CTX/WF-NOTIFY) nao tem export local em workflows/,
 fix aplicado apenas via MCP, sem arquivo a versionar alem deste registro.
 
+Bug adicional encontrado e corrigido: node "WF-ERR-CTX.06B - Postgres | Gravar erros_dpv"
+inseria na tabela ERRADA (erros_workflows, nao erros_dpv) apesar do nome do node. Colunas
+ja batiam com o schema real (v5_erros_dpv.sql), so o nome da tabela na query estava errado.
+Corrigido via n8n MCP (INSERT INTO erros_dpv), publicado (activeVersionId 983d9ba6-6176-4b98-9258-7b85e25a69cb).
+
+Bug adicional #2: o proprio protocolo de inicio de sessao no CLAUDE.md usava nomes de
+coluna que nao existem na tabela real (origem, descricao, ultimo_no, payload_json, lido_em).
+Corrigido CLAUDE.md para usar as colunas reais (workflow_nome, erro_msg, no_nome,
+payload_entrada nao selecionado, sem lido_em pois a coluna nao existe -- UPDATE so seta status='lido').
+
 PRIORIDADE 2 - Teste end-to-end completo:
 1. INICIAR viagem
 2. Enviar foto NF
