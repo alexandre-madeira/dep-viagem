@@ -1,31 +1,28 @@
-﻿PRIORIDADE 1 - [CONCLUIDO 15/07/2026] Corrigir WF-ERR-CTX (ID: 6LU8TtukzsbgGCHe)
-Node HTTP | Enviar WhatsApp retorna 404 - instancia Evolution errada ou hardcoded.
-Corrigir para usar instancia VIDROCOM_AG e credencial HEADER_API_EVOLUTION_ENVIO (ID: Ka0C8J4zfOklD1lw).
-Sem isso erros_dpv nunca e populado e o protocolo de inicio de sessao e cego.
+﻿FEAT-12 - Salvar imagem da NF no banco e incluir no PDF
 
-Causa raiz: node fica em WF-NOTIFY - Envio e Log (ID: QCek7t0vpz6yfTpR), chamado como
-subworkflow pelo WF-ERR-CTX. Node "WF-NOTIFY.04 - HTTP | Enviar WhatsApp" tinha URL
-hardcoded .../sendText/sofia sem credencial explicita. Corrigido via n8n MCP: URL trocada
-para .../sendText/VIDROCOM_AG e credencial HEADER_API_EVOLUTION_ENVIO (Ka0C8J4zfOklD1lw)
-atribuida. Publicado (activeVersionId bc379358-f9ac-4179-8d60-28485b637ea7).
-Workflows n8n_contratos (WF-ERR-CTX/WF-NOTIFY) nao tem export local em workflows/,
-fix aplicado apenas via MCP, sem arquivo a versionar alem deste registro.
+CONTEXTO:
+Colunas ja existem em despesas_viagem (migration ja aplicada pelo usuario):
+- imagem_nf_base64 TEXT
+- imagem_nf_mimetype VARCHAR(20)
 
-Bug adicional encontrado e corrigido: node "WF-ERR-CTX.06B - Postgres | Gravar erros_dpv"
-inseria na tabela ERRADA (erros_workflows, nao erros_dpv) apesar do nome do node. Colunas
-ja batiam com o schema real (v5_erros_dpv.sql), so o nome da tabela na query estava errado.
-Corrigido via n8n MCP (INSERT INTO erros_dpv), publicado (activeVersionId 983d9ba6-6176-4b98-9258-7b85e25a69cb).
+TAREFA 1 - WF-DPV.02 (ID: 31hBkBVq6rduQKXM):
+Apos HTTP | Baixar Imagem da NF que retorna base64 e mimetype,
+salvar esses dados em despesas_pendentes (campo dados_extraidos JSONB)
+para persistir durante o fluxo guiado.
+Quando DB | Salvar Despesa Final for executado no WF-DPV.03,
+incluir imagem_nf_base64 e imagem_nf_mimetype no INSERT.
 
-Bug adicional #2: o proprio protocolo de inicio de sessao no CLAUDE.md usava nomes de
-coluna que nao existem na tabela real (origem, descricao, ultimo_no, payload_json, lido_em).
-Corrigido CLAUDE.md para usar as colunas reais (workflow_nome, erro_msg, no_nome,
-payload_entrada nao selecionado, sem lido_em pois a coluna nao existe -- UPDATE so seta status='lido').
+TAREFA 2 - WF-DPV.03 (ID: ruf039UAwh9KqIZo):
+No DB | Salvar Despesa Final adicionar os campos:
+imagem_nf_base64 = dados_extraidos.imagem_base64
+imagem_nf_mimetype = dados_extraidos.imagem_mimetype
 
-PRIORIDADE 2 - Teste end-to-end completo:
-1. INICIAR viagem
-2. Enviar foto NF
-3. Responder 1 (empresa), 1 (cartao), 1 (dividir)
-4. Responder valores: empresa X, voce Y, cliente 0
-5. RELATORIO - verificar PDF com coluna NF e valores corretos
+TAREFA 3 - WF-DPV.04 (ID: acKIy44sUfDgOR2E):
+Apos a tabela de despesas no HTML do relatorio,
+adicionar secao "Comprovantes" com as imagens em ordem de ordem_nf.
+Cada imagem: tag <img> com src="data:[mimetype];base64,[base64]"
+Largura maxima: 400px. Legenda: "NF #[ordem_nf] - [estabelecimento] - [data_emissao]"
+Apenas incluir imagens onde imagem_nf_base64 IS NOT NULL.
 
-Commitar fixes e push.
+Commitar: feat: FEAT-12 salvar imagem NF no banco e incluir no PDF
+git push
