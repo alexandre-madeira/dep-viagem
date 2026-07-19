@@ -3,11 +3,11 @@
   "name": "WF-DPV.03 - Controle de Viagem [dep-viagem]",
   "active": true,
   "isArchived": false,
-  "versionId": "f2715b73-20a8-423c-bd41-c18fbf09b126",
-  "activeVersionId": "f2715b73-20a8-423c-bd41-c18fbf09b126",
+  "versionId": "ad323713-c1c1-42f1-8295-a2705ccbd128",
+  "activeVersionId": "ad323713-c1c1-42f1-8295-a2705ccbd128",
   "triggerCount": 0,
   "createdAt": "2026-06-09T22:32:34.481Z",
-  "updatedAt": "2026-07-10T02:09:32.045Z",
+  "updatedAt": "2026-07-19T02:04:45.835Z",
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": true,
@@ -65,7 +65,7 @@
         ],
         [
           {
-            "node": "WF-DPV.03 - DB | Reabrir Viagem no Postgres",
+            "node": "WF-DPV.03 - DB | Verificar Viagem Aberta",
             "type": "main",
             "index": 0
           }
@@ -221,7 +221,7 @@
         ],
         [
           {
-            "node": "WF-DPV.03 - SWITCH | Tipo de Comando",
+            "node": "WF-DPV.03 - DB | Buscar Estado Reabertura",
             "type": "main",
             "index": 0
           }
@@ -273,17 +273,6 @@
         [
           {
             "node": "WF-DPV.03 - HTTP | Proxima Pergunta Guiada",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "WF-DPV.03 - DB | Reabrir Viagem no Postgres": {
-      "main": [
-        [
-          {
-            "node": "WF-DPV.03 - IF | Viagem Reaberta",
             "type": "main",
             "index": 0
           }
@@ -359,17 +348,6 @@
         ]
       ]
     },
-    "WF-DPV.03 - DB | Salvar Despesa Final": {
-      "main": [
-        [
-          {
-            "node": "WF-DPV.03 - CODE | Montar Mensagem Final",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "WF-DPV.03 - IF | Eh Correcao": {
       "main": [
         [
@@ -410,11 +388,314 @@
         ]
       ]
     },
+    "WF-DPV.03 - DB | Salvar Despesa Final": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Montar Mensagem Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "WF-DPV.03 - CODE | Montar Mensagem Final": {
       "main": [
         [
           {
             "node": "WF-DPV.03 - IF | Eh Correcao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Buscar Estado Reabertura": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Merge Estado Reabertura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - CODE | Merge Estado Reabertura": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - IF | Tem Estado Reabertura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - IF | Tem Estado Reabertura": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Processar Resposta Reabertura",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - SWITCH | Tipo de Comando",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - CODE | Processar Resposta Reabertura": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - SWITCH | Rotear Resposta Reabertura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - SWITCH | Rotear Resposta Reabertura": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - DB | Apagar Estado Continuar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Normalizar Entrada Listagem",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Reabrir Viagem Especifica",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Apagar Estado Cancelar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Renovar TTL Escolher Acao",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Renovar TTL Lista",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Apagar Estado Continuar": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Confirmar Continuar Viagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Renovar TTL Escolher Acao": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Repetir Pergunta Reabertura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Apagar Estado Cancelar": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Confirmar Cancelamento Reabertura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Renovar TTL Lista": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Enviar Lista Encerradas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Reabrir Viagem Especifica": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - IF | Viagem Reaberta",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "WF-DPV.03 - DB | Apagar Estado Selecionar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Verificar Viagem Aberta": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - IF | Tem Viagem Aberta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - IF | Tem Viagem Aberta": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Preparar Pergunta Continuar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - DB | Contar Encerradas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - CODE | Preparar Pergunta Continuar": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - DB | Salvar Estado Escolher Acao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Salvar Estado Escolher Acao": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Perguntar Continuar ou Reabrir",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Contar Encerradas": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - IF | Tem Encerradas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - IF | Tem Encerradas": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Preparar Offset Inicial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Informar Sem Encerradas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - CODE | Preparar Offset Inicial": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Normalizar Entrada Listagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - CODE | Normalizar Entrada Listagem": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - DB | Listar Encerradas Pagina",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Listar Encerradas Pagina": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - CODE | Montar Lista Encerradas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - CODE | Montar Lista Encerradas": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - DB | Salvar Estado Lista",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.03 - DB | Salvar Estado Lista": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.03 - HTTP | Enviar Lista Encerradas",
             "type": "main",
             "index": 0
           }
@@ -430,8 +711,8 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
       "position": [
-        -576,
-        288
+        -864,
+        -64
       ]
     },
     {
@@ -472,8 +753,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -368,
-        288
+        -656,
+        -64
       ]
     },
     {
@@ -695,14 +976,14 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        352,
-        32
+        -176,
+        -688
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "={{ \"INSERT INTO viagens (phone, nome_viagem, data_inicio, status, created_at, updated_at) VALUES ('\" + $json.phone + \"', '\" + $json.nome_viagem_normalizado + \"', NOW(), 'ativa', NOW(), NOW()) RETURNING id, nome_viagem, data_inicio\" }}",
+        "query": "{{ \"INSERT INTO viagens (phone, nome_viagem, data_inicio, status, created_at, updated_at) VALUES ('\" + $json.phone + \"', '\" + $json.nome_viagem_normalizado + \"', NOW(), 'ativa', NOW(), NOW()) RETURNING id, nome_viagem, data_inicio\" }}",
         "options": {}
       },
       "id": "73a3d6a6-e4a0-4f49-a4f2-e5be9d5265a8",
@@ -710,8 +991,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        672,
-        -336
+        608,
+        -896
       ]
     },
     {
@@ -740,8 +1021,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        896,
-        -336
+        832,
+        -896
       ]
     },
     {
@@ -755,8 +1036,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        672,
-        -144
+        608,
+        -704
       ]
     },
     {
@@ -785,8 +1066,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        896,
-        -144
+        832,
+        -704
       ]
     },
     {
@@ -800,8 +1081,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        672,
-        48
+        608,
+        -512
       ]
     },
     {
@@ -818,8 +1099,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.1,
       "position": [
-        896,
-        48
+        832,
+        -512
       ]
     },
     {
@@ -848,8 +1129,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        672,
-        256
+        -400,
+        -272
       ]
     },
     {
@@ -861,8 +1142,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        672,
-        816
+        768,
+        -256
       ]
     },
     {
@@ -874,8 +1155,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        896,
-        816
+        1024,
+        -256
       ]
     },
     {
@@ -906,8 +1187,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        1152,
-        816
+        1264,
+        -256
       ]
     },
     {
@@ -921,8 +1202,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        1392,
-        800
+        1504,
+        -272
       ]
     },
     {
@@ -955,8 +1236,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        1616,
-        800
+        1728,
+        -272
       ]
     },
     {
@@ -989,8 +1270,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        1392,
-        1008
+        1504,
+        -64
       ]
     },
     {
@@ -1004,8 +1285,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        -112,
-        288
+        -400,
+        -64
       ],
       "alwaysOutputData": true
     },
@@ -1018,8 +1299,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        160,
-        288
+        -176,
+        -64
       ]
     },
     {
@@ -1050,21 +1331,21 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        608,
-        480
+        560,
+        400
       ]
     },
     {
       "parameters": {
-        "jsCode": "const input = $json;\nconst pendente = input.pendente;\nconst respostaRaw = (input.caption_original || '').trim();\nconst resposta = respostaRaw.toUpperCase();\n\nlet dadosExtraidos = pendente.dados_extraidos;\nif (typeof dadosExtraidos === 'string') {\n  try { dadosExtraidos = JSON.parse(dadosExtraidos); } catch(e) { dadosExtraidos = {}; }\n}\n\nconst phone = input.phone;\nconst messageId = pendente.message_id;\nconst step = pendente.step;\n\nconst RODAPE = '\\n\\nPara continuar envie nova foto ou:\\n1) CORRIGIR ULTIMA\\n2) ENCERRAR VIAGEM';\n\nfunction parseValorBR(str) {\n  let s = str.trim();\n  if (s.includes(',')) {\n    s = s.replace(/\\./g, '').replace(',', '.');\n  }\n  return parseFloat(s);\n}\n\nfunction parseNumeroUnico(texto) {\n  const limpo = texto.replace(/[^0-9.,]/g, '');\n  if (!limpo) return NaN;\n  return parseValorBR(limpo);\n}\n\nfunction matchChoice(texto, choices) {\n  const t = texto.trim();\n  for (const c of choices) {\n    if (t === c.num) return c.value;\n  }\n  for (const c of choices) {\n    if (c.keys.some(k => texto.includes(k))) return c.value;\n  }\n  return null;\n}\n\nfunction update(novoStep, updates, mensagem) {\n  return {\n    action: 'update',\n    phone,\n    novo_step: novoStep,\n    tipo_pagador: updates.tipo_pagador !== undefined ? updates.tipo_pagador : pendente.tipo_pagador,\n    forma_pagamento: updates.forma_pagamento !== undefined ? updates.forma_pagamento : pendente.forma_pagamento,\n    observacao: updates.observacao !== undefined ? updates.observacao : pendente.observacao,\n    dados_extraidos_str: JSON.stringify(updates.dados_extraidos !== undefined ? updates.dados_extraidos : dadosExtraidos).replace(/'/g, \"''\"),\n    mensagem\n  };\n}\n\nfunction finalize(extra, motivo) {\n  const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n  const valorEmpresa = extra.valor_empresa !== undefined ? extra.valor_empresa : null;\n  const valorFuncionario = extra.valor_funcionario !== undefined ? extra.valor_funcionario : null;\n  const valorCliente = extra.valor_cliente !== undefined ? extra.valor_cliente : null;\n  const tipoDespesa = extra.tipo_despesa || 'empresa';\n  const corrigirDespesaId = dadosExtraidos._corrigir_id || null;\n\n  let resumo = (corrigirDespesaId ? 'Despesa corrigida!\\n' : 'Despesa registrada!\\n') +\n    '__ORDEM_NF__Estabelecimento: ' + (dadosExtraidos.estabelecimento || '-') + '\\n' +\n    'Valor: R$ ' + valorTotal.toFixed(2);\n\n  if (tipoDespesa === 'cliente') {\n    resumo += '\\nCliente: R$ ' + valorTotal.toFixed(2);\n  } else {\n    resumo += '\\nPagador: ' + pendente.tipo_pagador + ' + ' + pendente.forma_pagamento;\n    if (valorEmpresa !== null && valorFuncionario !== null && valorCliente !== null) {\n      resumo += '\\nEmpresa: R$ ' + valorEmpresa.toFixed(2) + ' | Voce: R$ ' + valorFuncionario.toFixed(2) + ' | Cliente: R$ ' + valorCliente.toFixed(2);\n    } else if (valorEmpresa !== null && valorFuncionario !== null) {\n      resumo += '\\nDivisao -> Empresa: R$ ' + valorEmpresa.toFixed(2) + ' | Voce: R$ ' + valorFuncionario.toFixed(2);\n    }\n  }\n  if (motivo) resumo += '\\n' + motivo;\n  resumo += RODAPE;\n\n  return {\n    action: 'finalize',\n    phone,\n    message_id: messageId,\n    tipo_pagador: pendente.tipo_pagador,\n    forma_pagamento: pendente.forma_pagamento,\n    tipo_despesa: tipoDespesa,\n    corrigir_despesa_id: corrigirDespesaId,\n    observacao: extra.observacao !== undefined ? extra.observacao : pendente.observacao,\n    estabelecimento: dadosExtraidos.estabelecimento || null,\n    cnpj: dadosExtraidos.cnpj || null,\n    valor_total: valorTotal,\n    data_emissao: dadosExtraidos.data_emissao || null,\n    categoria: dadosExtraidos.categoria || 'outros',\n    itens_json: JSON.stringify(dadosExtraidos).replace(/'/g, \"''\"),\n    valor_empresa: valorEmpresa,\n    valor_funcionario: valorFuncionario,\n    valor_cliente: valorCliente,\n    mensagem: resumo\n  };\n}\n\nlet result;\n\nif (step === 'aguardando_pagador') {\n  const escolha = matchChoice(resposta, [\n    { num: '1', keys: ['EMPRESA'], value: 'empresa' },\n    { num: '2', keys: ['EU'], value: 'particular' },\n    { num: '3', keys: ['CLIENTE'], value: 'cliente' }\n  ]);\n  if (escolha) {\n    result = update('aguardando_forma', { tipo_pagador: escolha }, 'Como foi pago?\\n1-Cartao\\n2-Dinheiro');\n  } else {\n    result = update(step, {}, 'Nao entendi. Quem pagou?\\n1-Empresa\\n2-Eu\\n3-Cliente');\n  }\n} else if (step === 'aguardando_forma') {\n  const escolha = matchChoice(resposta, [\n    { num: '1', keys: ['CARTAO', 'CARTÃO'], value: 'cartao' },\n    { num: '2', keys: ['DINHEIRO'], value: 'dinheiro' }\n  ]);\n  if (!escolha) {\n    result = update(step, {}, 'Nao entendi. Como foi pago?\\n1-Cartao\\n2-Dinheiro');\n  } else if (pendente.tipo_pagador === 'cliente') {\n    pendente.forma_pagamento = escolha;\n    result = finalize({ tipo_despesa: 'cliente' }, null);\n  } else {\n    result = update('aguardando_observacao', { forma_pagamento: escolha }, 'Observacao?\\n1-Dividir\\n2-Desconto Bebida\\n3-Nao');\n  }\n} else if (step === 'aguardando_observacao') {\n  const escolha = matchChoice(resposta, [\n    { num: '1', keys: ['DIVIDIR'], value: 'dividir' },\n    { num: '2', keys: ['DESCONTO BEBIDA', 'DESCONTO'], value: 'desconto' },\n    { num: '3', keys: ['NAO', 'NÃO'], value: 'nao' }\n  ]);\n  if (escolha === 'desconto') {\n    const itens = Array.isArray(dadosExtraidos.itens) ? dadosExtraidos.itens : [];\n    const palavrasAlcool = [\n      'CERVEJA', 'VINHO', 'WHISKY', 'WHISKEY', 'CACHACA', 'CACHAÇA', 'DOSE', 'DRINK', 'BEER', 'ALCOOL', 'ÁLCOOL',\n      'BRAHMA', 'HEINEKEN', 'SKOL', 'DEVASSA', 'BUDWEISER', 'STELLA', 'CORONA', 'AMSTEL', 'ITAIPAVA', 'ANTARCTICA', 'BOHEMIA'\n    ];\n    const alcoolicos = itens.filter(it => {\n      const desc = String(it.descricao || '').toUpperCase();\n      return palavrasAlcool.some(p => desc.includes(p));\n    });\n    const somaAlcool = alcoolicos.reduce((acc, it) => acc + (parseFloat(it.valor_total) || 0), 0);\n    const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n    dadosExtraidos.alcoolicos_detectados = { itens: alcoolicos, valor: somaAlcool };\n    const motivo = alcoolicos.length\n      ? ('Itens identificados: ' + alcoolicos.map(i => i.descricao).join(', ') + ' (R$ ' + somaAlcool.toFixed(2) + ')')\n      : 'Nenhum item alcoolico identificado, valor total mantido para a empresa.';\n    result = finalize({ valor_funcionario: somaAlcool, valor_empresa: valorTotal - somaAlcool, observacao: 'DESCONTO BEBIDA', tipo_despesa: 'empresa' }, motivo);\n  } else if (escolha === 'dividir') {\n    result = update('aguardando_divisao_empresa', { observacao: 'DIVIDIR' }, 'Quanto a EMPRESA paga? Responda so com o numero (ex: 123.80 ou 0)');\n  } else if (escolha === 'nao') {\n    result = finalize({ observacao: 'NAO', tipo_despesa: 'empresa' }, null);\n  } else {\n    result = update(step, {}, 'Nao entendi. Observacao?\\n1-Dividir\\n2-Desconto Bebida\\n3-Nao');\n  }\n} else if (step === 'aguardando_divisao_empresa') {\n  const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n  const valor = parseNumeroUnico(resposta);\n  if (isNaN(valor) || valor < 0) {\n    result = update(step, {}, 'Nao entendi. Quanto a EMPRESA paga? Responda so com o numero (ex: 123.80 ou 0)');\n  } else if (valor > valorTotal + 0.01) {\n    result = update(step, {}, 'Valor maior que o total da despesa (R$ ' + valorTotal.toFixed(2) + '). Quanto a EMPRESA paga?');\n  } else {\n    dadosExtraidos._div_empresa = valor;\n    result = update('aguardando_divisao_voce', { dados_extraidos: dadosExtraidos }, 'Quanto VOCE paga? Responda so com o numero (ex: 50.00 ou 0)');\n  }\n} else if (step === 'aguardando_divisao_voce') {\n  const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n  const divEmpresa = parseFloat(dadosExtraidos._div_empresa) || 0;\n  const valor = parseNumeroUnico(resposta);\n  if (isNaN(valor) || valor < 0) {\n    result = update(step, {}, 'Nao entendi. Quanto VOCE paga? Responda so com o numero (ex: 50.00 ou 0)');\n  } else if (divEmpresa + valor > valorTotal + 0.01) {\n    const restante = Math.max(valorTotal - divEmpresa, 0);\n    result = update(step, {}, 'A soma ja ultrapassa o total da despesa (R$ ' + valorTotal.toFixed(2) + '). Falta no maximo R$ ' + restante.toFixed(2) + '. Quanto VOCE paga?');\n  } else {\n    dadosExtraidos._div_voce = valor;\n    result = update('aguardando_divisao_cliente', { dados_extraidos: dadosExtraidos }, 'Quanto o CLIENTE paga? Responda so com o numero (ex: 0)');\n  }\n} else if (step === 'aguardando_divisao_cliente') {\n  const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n  const divEmpresa = parseFloat(dadosExtraidos._div_empresa) || 0;\n  const divVoce = parseFloat(dadosExtraidos._div_voce) || 0;\n  const valor = parseNumeroUnico(resposta);\n  if (isNaN(valor) || valor < 0) {\n    result = update(step, {}, 'Nao entendi. Quanto o CLIENTE paga? Responda so com o numero (ex: 0)');\n  } else if (divEmpresa + divVoce + valor > valorTotal + 0.01) {\n    const restante = Math.max(valorTotal - divEmpresa - divVoce, 0);\n    result = update(step, {}, 'A soma ultrapassa o total da despesa (R$ ' + valorTotal.toFixed(2) + '). Falta no maximo R$ ' + restante.toFixed(2) + '. Quanto o CLIENTE paga?');\n  } else {\n    delete dadosExtraidos._div_empresa;\n    delete dadosExtraidos._div_voce;\n    result = finalize(\n      {\n        valor_empresa: divEmpresa,\n        valor_funcionario: divVoce,\n        valor_cliente: valor,\n        observacao: 'DIVIDIR3 a:R$' + divEmpresa.toFixed(2) + '/b:R$' + divVoce.toFixed(2) + '/c:R$' + valor.toFixed(2),\n        tipo_despesa: 'empresa'\n      },\n      null\n    );\n  }\n} else {\n  result = update('aguardando_pagador', {}, 'Ocorreu um erro no fluxo. Quem pagou?\\n1-Empresa\\n2-Eu\\n3-Cliente');\n}\n\nreturn [{ json: result }];"
+        "jsCode": "const input = $json;\nconst pendente = input.pendente;\nconst respostaRaw = (input.caption_original || '').trim();\nconst resposta = respostaRaw.toUpperCase();\n\nlet dadosExtraidos = pendente.dados_extraidos;\nif (typeof dadosExtraidos === 'string') {\n  try { dadosExtraidos = JSON.parse(dadosExtraidos); } catch(e) { dadosExtraidos = {}; }\n}\n\nconst phone = input.phone;\nconst messageId = pendente.message_id;\nconst step = pendente.step;\n\nconst RODAPE = '\\n\\nPara continuar envie nova foto ou:\\n1) CORRIGIR ULTIMA\\n2) ENCERRAR VIAGEM';\n\nfunction parseValorBR(str) {\n  let s = str.trim();\n  if (s.includes(',')) {\n    s = s.replace(/\\./g, '').replace(',', '.');\n  }\n  return parseFloat(s);\n}\n\nfunction parseNumeroUnico(texto) {\n  const limpo = texto.replace(/[^0-9.,]/g, '');\n  if (!limpo) return NaN;\n  return parseValorBR(limpo);\n}\n\nfunction matchChoice(texto, choices) {\n  const t = texto.trim();\n  for (const c of choices) {\n    if (t === c.num) return c.value;\n  }\n  for (const c of choices) {\n    if (c.keys.some(k => texto.includes(k))) return c.value;\n  }\n  return null;\n}\n\nfunction update(novoStep, updates, mensagem) {\n  return {\n    action: 'update',\n    phone,\n    novo_step: novoStep,\n    tipo_pagador: updates.tipo_pagador !== undefined ? updates.tipo_pagador : pendente.tipo_pagador,\n    forma_pagamento: updates.forma_pagamento !== undefined ? updates.forma_pagamento : pendente.forma_pagamento,\n    observacao: updates.observacao !== undefined ? updates.observacao : pendente.observacao,\n    dados_extraidos_str: JSON.stringify(updates.dados_extraidos !== undefined ? updates.dados_extraidos : dadosExtraidos).replace(/'/g, \"''\"),\n    mensagem\n  };\n}\n\nfunction finalize(extra, motivo) {\n  const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n  const valorEmpresa = extra.valor_empresa !== undefined ? extra.valor_empresa : null;\n  const valorFuncionario = extra.valor_funcionario !== undefined ? extra.valor_funcionario : null;\n  const valorCliente = extra.valor_cliente !== undefined ? extra.valor_cliente : null;\n  const tipoDespesa = extra.tipo_despesa || 'empresa';\n  const corrigirDespesaId = dadosExtraidos._corrigir_id || null;\n\n  let resumo = (corrigirDespesaId ? 'Despesa corrigida!\\n' : 'Despesa registrada!\\n') +\n    '__ORDEM_NF__Estabelecimento: ' + (dadosExtraidos.estabelecimento || '-') + '\\n' +\n    'Valor: R$ ' + valorTotal.toFixed(2);\n\n  if (tipoDespesa === 'cliente') {\n    resumo += '\\nCliente: R$ ' + valorTotal.toFixed(2);\n  } else {\n    resumo += '\\nPagador: ' + pendente.tipo_pagador + ' + ' + pendente.forma_pagamento;\n    if (valorEmpresa !== null && valorFuncionario !== null && valorCliente !== null) {\n      resumo += '\\nEmpresa: R$ ' + valorEmpresa.toFixed(2) + ' | Voce: R$ ' + valorFuncionario.toFixed(2) + ' | Cliente: R$ ' + valorCliente.toFixed(2);\n    } else if (valorEmpresa !== null && valorFuncionario !== null) {\n      resumo += '\\nDivisao -> Empresa: R$ ' + valorEmpresa.toFixed(2) + ' | Voce: R$ ' + valorFuncionario.toFixed(2);\n    }\n  }\n  if (motivo) resumo += '\\n' + motivo;\n  resumo += RODAPE;\n\n  return {\n    action: 'finalize',\n    phone,\n    message_id: messageId,\n    tipo_pagador: pendente.tipo_pagador,\n    forma_pagamento: pendente.forma_pagamento,\n    tipo_despesa: tipoDespesa,\n    corrigir_despesa_id: corrigirDespesaId,\n    observacao: extra.observacao !== undefined ? extra.observacao : pendente.observacao,\n    estabelecimento: dadosExtraidos.estabelecimento || null,\n    cnpj: dadosExtraidos.cnpj || null,\n    valor_total: valorTotal,\n    data_emissao: dadosExtraidos.data_emissao || null,\n    categoria: dadosExtraidos.categoria || 'outros',\n    itens_json: JSON.stringify(dadosExtraidos).replace(/'/g, \"''\"),\n    valor_empresa: valorEmpresa,\n    valor_funcionario: valorFuncionario,\n    valor_cliente: valorCliente,\n    imagem_base64: dadosExtraidos.imagem_base64 || null,\n    imagem_mimetype: dadosExtraidos.imagem_mimetype || null,\n    mensagem: resumo\n  };\n}\n\nlet result;\n\nif (step === 'aguardando_pagador') {\n  const escolha = matchChoice(resposta, [\n    { num: '1', keys: ['EMPRESA'], value: 'empresa' },\n    { num: '2', keys: ['EU'], value: 'particular' },\n    { num: '3', keys: ['CLIENTE'], value: 'cliente' }\n  ]);\n  if (escolha) {\n    result = update('aguardando_forma', { tipo_pagador: escolha }, 'Como foi pago?\\n1-Cartao\\n2-Dinheiro');\n  } else {\n    result = update(step, {}, 'Nao entendi. Quem pagou?\\n1-Empresa\\n2-Eu\\n3-Cliente');\n  }\n} else if (step === 'aguardando_forma') {\n  const escolha = matchChoice(resposta, [\n    { num: '1', keys: ['CARTAO', 'CARTÃƒO'], value: 'cartao' },\n    { num: '2', keys: ['DINHEIRO'], value: 'dinheiro' }\n  ]);\n  if (!escolha) {\n    result = update(step, {}, 'Nao entendi. Como foi pago?\\n1-Cartao\\n2-Dinheiro');\n  } else if (pendente.tipo_pagador === 'cliente') {\n    pendente.forma_pagamento = escolha;\n    result = finalize({ tipo_despesa: 'cliente' }, null);\n  } else {\n    result = update('aguardando_observacao', { forma_pagamento: escolha }, 'Observacao?\\n1-Dividir\\n2-Desconto Bebida\\n3-Nao');\n  }\n} else if (step === 'aguardando_observacao') {\n  const escolha = matchChoice(resposta, [\n    { num: '1', keys: ['DIVIDIR'], value: 'dividir' },\n    { num: '2', keys: ['DESCONTO BEBIDA', 'DESCONTO'], value: 'desconto' },\n    { num: '3', keys: ['NAO', 'NÃƒO'], value: 'nao' }\n  ]);\n  if (escolha === 'desconto') {\n    const itens = Array.isArray(dadosExtraidos.itens) ? dadosExtraidos.itens : [];\n    const palavrasAlcool = [\n      'CERVEJA', 'VINHO', 'WHISKY', 'WHISKEY', 'CACHACA', 'CACHAÃ‡A', 'DOSE', 'DRINK', 'BEER', 'ALCOOL', 'ÃLCOOL',\n      'BRAHMA', 'HEINEKEN', 'SKOL', 'DEVASSA', 'BUDWEISER', 'STELLA', 'CORONA', 'AMSTEL', 'ITAIPAVA', 'ANTARCTICA', 'BOHEMIA'\n    ];\n    const alcoolicos = itens.filter(it => {\n      const desc = String(it.descricao || '').toUpperCase();\n      return palavrasAlcool.some(p => desc.includes(p));\n    });\n    const somaAlcool = alcoolicos.reduce((acc, it) => acc + (parseFloat(it.valor_total) || 0), 0);\n    const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n    dadosExtraidos.alcoolicos_detectados = { itens: alcoolicos, valor: somaAlcool };\n    const motivo = alcoolicos.length\n      ? ('Itens identificados: ' + alcoolicos.map(i => i.descricao).join(', ') + ' (R$ ' + somaAlcool.toFixed(2) + ')')\n      : 'Nenhum item alcoolico identificado, valor total mantido para a empresa.';\n    result = finalize({ valor_funcionario: somaAlcool, valor_empresa: valorTotal - somaAlcool, observacao: 'DESCONTO BEBIDA', tipo_despesa: 'empresa' }, motivo);\n  } else if (escolha === 'dividir') {\n    result = update('aguardando_divisao_empresa', { observacao: 'DIVIDIR' }, 'Quanto a EMPRESA paga? Responda so com o numero (ex: 123.80 ou 0)');\n  } else if (escolha === 'nao') {\n    result = finalize({ observacao: 'NAO', tipo_despesa: 'empresa' }, null);\n  } else {\n    result = update(step, {}, 'Nao entendi. Observacao?\\n1-Dividir\\n2-Desconto Bebida\\n3-Nao');\n  }\n} else if (step === 'aguardando_divisao_empresa') {\n  const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n  const valor = parseNumeroUnico(resposta);\n  if (isNaN(valor) || valor < 0) {\n    result = update(step, {}, 'Nao entendi. Quanto a EMPRESA paga? Responda so com o numero (ex: 123.80 ou 0)');\n  } else if (valor > valorTotal + 0.01) {\n    result = update(step, {}, 'Valor maior que o total da despesa (R$ ' + valorTotal.toFixed(2) + '). Quanto a EMPRESA paga?');\n  } else {\n    dadosExtraidos._div_empresa = valor;\n    result = update('aguardando_divisao_voce', { dados_extraidos: dadosExtraidos }, 'Quanto VOCE paga? Responda so com o numero (ex: 50.00 ou 0)');\n  }\n} else if (step === 'aguardando_divisao_voce') {\n  const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n  const divEmpresa = parseFloat(dadosExtraidos._div_empresa) || 0;\n  const valor = parseNumeroUnico(resposta);\n  if (isNaN(valor) || valor < 0) {\n    result = update(step, {}, 'Nao entendi. Quanto VOCE paga? Responda so com o numero (ex: 50.00 ou 0)');\n  } else if (divEmpresa + valor > valorTotal + 0.01) {\n    const restante = Math.max(valorTotal - divEmpresa, 0);\n    result = update(step, {}, 'A soma ja ultrapassa o total da despesa (R$ ' + valorTotal.toFixed(2) + '). Falta no maximo R$ ' + restante.toFixed(2) + '. Quanto VOCE paga?');\n  } else {\n    dadosExtraidos._div_voce = valor;\n    result = update('aguardando_divisao_cliente', { dados_extraidos: dadosExtraidos }, 'Quanto o CLIENTE paga? Responda so com o numero (ex: 0)');\n  }\n} else if (step === 'aguardando_divisao_cliente') {\n  const valorTotal = parseFloat(dadosExtraidos.valor_total) || 0;\n  const divEmpresa = parseFloat(dadosExtraidos._div_empresa) || 0;\n  const divVoce = parseFloat(dadosExtraidos._div_voce) || 0;\n  const valor = parseNumeroUnico(resposta);\n  if (isNaN(valor) || valor < 0) {\n    result = update(step, {}, 'Nao entendi. Quanto o CLIENTE paga? Responda so com o numero (ex: 0)');\n  } else if (divEmpresa + divVoce + valor > valorTotal + 0.01) {\n    const restante = Math.max(valorTotal - divEmpresa - divVoce, 0);\n    result = update(step, {}, 'A soma ultrapassa o total da despesa (R$ ' + valorTotal.toFixed(2) + '). Falta no maximo R$ ' + restante.toFixed(2) + '. Quanto o CLIENTE paga?');\n  } else {\n    delete dadosExtraidos._div_empresa;\n    delete dadosExtraidos._div_voce;\n    result = finalize(\n      {\n        valor_empresa: divEmpresa,\n        valor_funcionario: divVoce,\n        valor_cliente: valor,\n        observacao: 'DIVIDIR3 a:R$' + divEmpresa.toFixed(2) + '/b:R$' + divVoce.toFixed(2) + '/c:R$' + valor.toFixed(2),\n        tipo_despesa: 'empresa'\n      },\n      null\n    );\n  }\n} else {\n  result = update('aguardando_pagador', {}, 'Ocorreu um erro no fluxo. Quem pagou?\\n1-Empresa\\n2-Eu\\n3-Cliente');\n}\n\nreturn [{ json: result }];"
       },
       "id": "a9584da5-ca3c-406c-9fda-3452bb8f4c68",
       "name": "WF-DPV.03 - CODE | Processar Fluxo Guiado",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        800,
-        480
+        816,
+        384
       ]
     },
     {
@@ -1095,14 +1376,14 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        992,
-        480
+        1024,
+        384
       ]
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO despesas_viagem (phone, estabelecimento, cnpj, valor_total, data_emissao, categoria, itens_json, message_id, tipo_pagador, forma_pagamento, cpf_cnpj_pagador, sem_nf, validado_manualmente, valor_empresa, valor_funcionario, valor_cliente, observacao, tipo_despesa, ordem_nf, created_at)\nVALUES (\n  '{{ $json.phone }}',\n  '{{ $json.estabelecimento }}',\n  {{ $json.cnpj ? \"'\" + $json.cnpj + \"'\" : 'NULL' }},\n  {{ $json.valor_total }},\n  {{ $json.data_emissao ? \"'\" + $json.data_emissao + \"'\" : 'NULL' }},\n  '{{ $json.categoria }}',\n  '{{ $json.itens_json }}',\n  '{{ $json.message_id }}',\n  '{{ $json.tipo_pagador }}',\n  '{{ $json.forma_pagamento }}',\n  NULL,\n  false,\n  false,\n  {{ ($json.valor_empresa !== null && $json.valor_empresa !== undefined) ? $json.valor_empresa : 'NULL' }},\n  {{ ($json.valor_funcionario !== null && $json.valor_funcionario !== undefined) ? $json.valor_funcionario : 'NULL' }},\n  {{ ($json.valor_cliente !== null && $json.valor_cliente !== undefined) ? $json.valor_cliente : 'NULL' }},\n  {{ $json.observacao ? \"'\" + $json.observacao + \"'\" : 'NULL' }},\n  '{{ $json.tipo_despesa || \"empresa\" }}',\n  (SELECT COUNT(*) + 1 FROM despesas_viagem d2\n   JOIN viagens v ON v.phone = d2.phone AND v.status = 'ativa'\n   WHERE d2.phone = '{{ $json.phone }}'\n     AND d2.created_at >= v.data_inicio\n     AND d2.id != {{ $json.corrigir_despesa_id ?? -1 }}),\n  NOW()\n) RETURNING id, ordem_nf",
+        "query": "INSERT INTO despesas_viagem (phone, estabelecimento, cnpj, valor_total, data_emissao, categoria, itens_json, message_id, tipo_pagador, forma_pagamento, cpf_cnpj_pagador, sem_nf, validado_manualmente, valor_empresa, valor_funcionario, valor_cliente, observacao, tipo_despesa, imagem_nf_base64, imagem_nf_mimetype, ordem_nf, created_at)\nVALUES (\n  '{{ $json.phone }}',\n  '{{ $json.estabelecimento }}',\n  {{ $json.cnpj ? \"'\" + $json.cnpj + \"'\" : 'NULL' }},\n  {{ $json.valor_total }},\n  {{ $json.data_emissao ? \"'\" + $json.data_emissao + \"'\" : 'NULL' }},\n  '{{ $json.categoria }}',\n  '{{ $json.itens_json }}',\n  '{{ $json.message_id }}',\n  '{{ $json.tipo_pagador }}',\n  '{{ $json.forma_pagamento }}',\n  NULL,\n  false,\n  false,\n  {{ ($json.valor_empresa !== null && $json.valor_empresa !== undefined) ? $json.valor_empresa : 'NULL' }},\n  {{ ($json.valor_funcionario !== null && $json.valor_funcionario !== undefined) ? $json.valor_funcionario : 'NULL' }},\n  {{ ($json.valor_cliente !== null && $json.valor_cliente !== undefined) ? $json.valor_cliente : 'NULL' }},\n  {{ $json.observacao ? \"'\" + $json.observacao + \"'\" : 'NULL' }},\n  '{{ $json.tipo_despesa || \"empresa\" }}',\n  {{ $json.imagem_base64 ? \"'\" + $json.imagem_base64 + \"'\" : 'NULL' }},\n  {{ $json.imagem_mimetype ? \"'\" + $json.imagem_mimetype + \"'\" : 'NULL' }},\n  (SELECT COUNT(*) + 1 FROM despesas_viagem d2\n   JOIN viagens v ON v.phone = d2.phone AND v.status = 'ativa'\n   WHERE d2.phone = '{{ $json.phone }}'\n     AND d2.created_at >= v.data_inicio\n     AND d2.id != {{ $json.corrigir_despesa_id ?? -1 }}),\n  NOW()\n) RETURNING id, ordem_nf",
         "options": {}
       },
       "id": "ef936ba2-73ff-4dfc-adc2-f63c71386944",
@@ -1110,8 +1391,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        1184,
-        384
+        1248,
+        240
       ]
     },
     {
@@ -1125,8 +1406,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        1376,
-        384
+        1936,
+        304
       ]
     },
     {
@@ -1155,8 +1436,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        1568,
-        384
+        2208,
+        304
       ]
     },
     {
@@ -1170,8 +1451,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        1184,
-        576
+        1536,
+        544
       ]
     },
     {
@@ -1200,34 +1481,884 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        1376,
-        576
+        2176,
+        544
       ]
     },
     {
-      "id": "0dc4b058-5065-42c1-aa1c-ab7969ba8cb1",
-      "name": "WF-DPV.03 - DB | Reabrir Viagem no Postgres",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.5,
-      "position": [
-        224,
-        480
-      ],
       "parameters": {
-        "operation": "executeQuery",
-        "query": "={{ \"UPDATE viagens SET status = 'ativa', data_fim = NULL, updated_at = NOW() WHERE id = (SELECT id FROM viagens WHERE phone = '\" + $json.phone + \"' ORDER BY id DESC LIMIT 1) AND status = 'encerrada' RETURNING id, nome_viagem\" }}",
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.id }}",
+              "operator": {
+                "type": "number",
+                "operation": "exists"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
         "options": {}
       },
-      "alwaysOutputData": true
-    },
-    {
       "id": "5b5284e1-9940-48d1-99c1-0a1dd224e43d",
       "name": "WF-DPV.03 - IF | Viagem Reaberta",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
+        720,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"Viagem '\" + $json.nome_viagem + \"' reaberta! Pode continuar enviando notas fiscais.\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3172f91b-8e89-4e33-8e5e-b4e14c36ca24",
+      "name": "WF-DPV.03 - HTTP | Confirmar Reabertura Viagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        976,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "Nao foi possivel reabrir essa viagem (ela pode ja nao estar mais encerrada). Tente novamente enviando 3."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "642ed940-ad80-4ebd-b99f-68bbc9c49f7c",
+      "name": "WF-DPV.03 - HTTP | Erro Reabrir Viagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        976,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ \"SELECT id, message_id, estabelecimento, valor_total, itens_json FROM despesas_viagem WHERE phone = '\" + $json.phone + \"' ORDER BY created_at DESC LIMIT 1\" }}",
+        "options": {}
+      },
+      "id": "8e54b581-84c6-469e-97a8-3cf4f17622d1",
+      "name": "WF-DPV.03 - DB | Buscar Ultima Despesa",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        640
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst despesa = (items.length > 0 && items[0].json && items[0].json.id) ? items[0].json : null;\nconst original = $('WF-DPV.03 - SET | Normalizar Comando').item.json;\n\nif (!despesa) {\n  return [{ json: { encontrada: false, phone: original.phone } }];\n}\n\nlet dados;\ntry { dados = JSON.parse(despesa.itens_json); } catch (e) { dados = {}; }\ndados._corrigir_id = despesa.id;\n\nreturn [{\n  json: {\n    encontrada: true,\n    phone: original.phone,\n    message_id: despesa.message_id,\n    estabelecimento: despesa.estabelecimento,\n    valor_total: despesa.valor_total,\n    dados_extraidos_str: JSON.stringify(dados).replace(/'/g, \"''\")\n  }\n}];"
+      },
+      "id": "af2c4f0e-8445-4f0b-aa8e-af9b41b51812",
+      "name": "WF-DPV.03 - CODE | Preparar Correcao",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
         448,
-        480
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.encontrada }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fa71eb83-f8be-4191-b3b4-7f8851dcfe90",
+      "name": "WF-DPV.03 - IF | Existe Despesa Para Corrigir",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO despesas_pendentes (phone, message_id, step, dados_extraidos)\nVALUES ('{{ $json.phone }}', '{{ $json.message_id }}', 'aguardando_pagador', '{{ $json.dados_extraidos_str }}'::jsonb)\nON CONFLICT (phone) DO UPDATE SET\n  message_id = EXCLUDED.message_id,\n  step = 'aguardando_pagador',\n  dados_extraidos = EXCLUDED.dados_extraidos,\n  tipo_pagador = NULL,\n  forma_pagamento = NULL,\n  observacao = NULL,\n  atualizado_em = NOW()\nRETURNING phone",
+        "options": {}
+      },
+      "id": "a5593122-6ca7-4153-809b-5a80df8c9f5d",
+      "name": "WF-DPV.03 - DB | Iniciar Correcao Despesa Pendente",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        896,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - CODE | Preparar Correcao').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"Vamos corrigir a ultima despesa: \" + $('WF-DPV.03 - CODE | Preparar Correcao').item.json.estabelecimento + \" - R$ \" + $('WF-DPV.03 - CODE | Preparar Correcao').item.json.valor_total + \"\\n\\nQuem pagou?\\n1-Empresa\\n2-Eu\\n3-Cliente\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cb55a5b6-d739-4a0e-91b0-c7c78a2f73cf",
+      "name": "WF-DPV.03 - HTTP | Pedir Correcao Quem Pagou",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1280,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - CODE | Preparar Correcao').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "Nenhuma despesa encontrada para corrigir."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b7710c3b-4edb-4943-aa68-192f9336f6e8",
+      "name": "WF-DPV.03 - HTTP | Erro Nada Para Corrigir",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        896,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.corrigir_despesa_id }}",
+              "operator": {
+                "type": "number",
+                "operation": "exists"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "993cf86d-613e-4db8-94d3-ca4af9fe10a5",
+      "name": "WF-DPV.03 - IF | Eh Correcao",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1600,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ \"DELETE FROM despesas_viagem WHERE id = \" + $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.corrigir_despesa_id }}",
+        "options": {}
+      },
+      "id": "c758398e-feae-4ace-9e0c-c8a2942c6a42",
+      "name": "WF-DPV.03 - DB | Remover Despesa Corrigida Antiga",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1920,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ \"SELECT nome FROM funcionarios WHERE phone = '\" + $json.phone + \"' LIMIT 1\" }}",
+        "options": {}
+      },
+      "id": "b0a1c73f-da7a-44d1-af5e-dba84310ee19",
+      "name": "WF-DPV.03 - DB | Buscar Nome Funcionario",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        192,
+        976
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ \"Ola, \" + ($json.nome || \"tudo bem\") + \"! Como posso ajudar?\\n\\nComandos disponiveis:\\n\\n1) Iniciar viagem (INICIAR cidade_obra)\\n2) Encerrar viagem\\n3) Reabrir viagem (reabre a mais recente)\\n4) Corrigir ultima despesa\\n5) Gerar relatorio PDF\\n\\nOu envie uma foto de nota fiscal para registrar despesa.\" }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f74125c6-3ff6-4fff-89ea-f9da3ad8559a",
+      "name": "WF-DPV.03 - HTTP | Enviar Saudacao",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        464,
+        976
+      ]
+    },
+    {
+      "id": "dd457843-26dc-4a38-b6a6-c1625be8d8bb",
+      "name": "WF-DPV.03 - CODE | Montar Mensagem Final",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        384
+      ],
+      "parameters": {
+        "jsCode": "const mensagemBase = $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.mensagem;\nconst mensagemFinal = mensagemBase.replace('__ORDEM_NF__', 'NF #' + $json.ordem_nf + ' - ');\nreturn [{ json: { ...$json, mensagem_final: mensagemFinal } }];"
+      }
+    },
+    {
+      "id": "2ec97215-d70f-4e0f-81b3-2ecf71f078ae",
+      "name": "WF-DPV.03 - DB | Buscar Estado Reabertura",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1920,
+        1050
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT phone, fase, offset_atual, ids_exibidos, texto_lista FROM viagens_reabertura_estado WHERE phone = '{{ $json.phone }}' AND atualizado_em > NOW() - INTERVAL '10 minutes' LIMIT 1",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "4a1dcdd5-1ebf-49e0-a7af-c6d9da0cbcea",
+      "name": "WF-DPV.03 - CODE | Merge Estado Reabertura",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        1050
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const items = $input.all();\nconst estado = (items.length > 0 && items[0].json && items[0].json.phone) ? items[0].json : null;\nconst original = $('WF-DPV.03 - SET | Normalizar Comando').item.json;\nreturn [{ json: { ...original, estado_reabertura: estado } }];"
+      }
+    },
+    {
+      "id": "6ad716d7-3d33-4142-af66-072d2c3c1607",
+      "name": "WF-DPV.03 - IF | Tem Estado Reabertura",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2368,
+        1050
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$json.estado_reabertura }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1df4dc1b-6b6a-442e-b3ab-be47e8d21891",
+      "name": "WF-DPV.03 - CODE | Processar Resposta Reabertura",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2368,
+        1250
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const d = $json;\nconst estado = d.estado_reabertura;\nconst comando = d.comando;\nconst phone = d.phone;\n\nlet resultado;\n\nif (estado.fase === 'escolher_acao') {\n  const temContinuar = comando.includes('CONTINUAR');\n  const temReabrir = comando.includes('REABRIR');\n  if (temContinuar && !temReabrir) {\n    resultado = { acao: 'continuar', phone };\n  } else if (temReabrir && !temContinuar) {\n    resultado = { acao: 'ir_listar', phone, offset_atual: 0 };\n  } else {\n    resultado = { acao: 'repetir_pergunta', phone,\n      mensagem: \"Nao entendi. Responda CONTINUAR para seguir na viagem aberta, ou REABRIR para escolher uma viagem encerrada.\" };\n  }\n} else if (estado.fase === 'listar_encerradas') {\n  const offsetAtual = estado.offset_atual || 0;\n  const idsExibidos = estado.ids_exibidos || [];\n  if (comando === '0') {\n    resultado = { acao: 'cancelar', phone };\n  } else if (comando === '6') {\n    resultado = { acao: 'ir_listar', phone, offset_atual: offsetAtual + 5 };\n  } else if (/^[1-5]$/.test(comando)) {\n    const idx = parseInt(comando, 10) - 1;\n    const idSelecionado = idsExibidos[idx];\n    if (idSelecionado) {\n      resultado = { acao: 'selecionar', phone, id_selecionado: idSelecionado };\n    } else {\n      resultado = { acao: 'repetir_lista', phone };\n    }\n  } else {\n    resultado = { acao: 'repetir_lista', phone };\n  }\n} else {\n  resultado = { acao: 'cancelar', phone };\n}\n\nreturn [{ json: resultado }];"
+      }
+    },
+    {
+      "id": "bc53e5aa-0b7c-406d-8360-cac90611faf3",
+      "name": "WF-DPV.03 - SWITCH | Rotear Resposta Reabertura",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2592,
+        1250
+      ],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "continuar"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "ir_listar"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "selecionar"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "cancelar"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "repetir_pergunta"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.acao }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "repetir_lista"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ],
+          "options": {}
+        }
+      }
+    },
+    {
+      "id": "a7f312ef-af79-4379-aa9d-5088c12ba5ed",
+      "name": "WF-DPV.03 - DB | Apagar Estado Continuar",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2816,
+        1100
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=DELETE FROM viagens_reabertura_estado WHERE phone = '{{ $json.phone }}' RETURNING phone",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "10dc61af-ba2d-468f-a5c3-698c04f4bb16",
+      "name": "WF-DPV.03 - HTTP | Confirmar Continuar Viagem",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3040,
+        1100
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "Ok! Continue enviando notas fiscais para a viagem aberta."
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "74c69130-9a5c-49ac-8311-67f4633ccd77",
+      "name": "WF-DPV.03 - DB | Renovar TTL Escolher Acao",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2816,
+        1200
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE viagens_reabertura_estado SET atualizado_em = NOW() WHERE phone = '{{ $json.phone }}' RETURNING phone",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "4f79fc45-2c20-4c5a-aa17-4d6ee6f70f50",
+      "name": "WF-DPV.03 - HTTP | Repetir Pergunta Reabertura",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3040,
+        1200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('WF-DPV.03 - CODE | Processar Resposta Reabertura').item.json.mensagem }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "10aca946-ca6c-45cc-b053-e7546a7ea2fc",
+      "name": "WF-DPV.03 - DB | Apagar Estado Cancelar",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2816,
+        1300
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=DELETE FROM viagens_reabertura_estado WHERE phone = '{{ $json.phone }}' RETURNING phone",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "e030ef36-d2ee-45af-a398-836858567e75",
+      "name": "WF-DPV.03 - HTTP | Confirmar Cancelamento Reabertura",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3040,
+        1300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "Cancelado."
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "07f3b1fb-7c38-4168-ad2f-f4a81c493cda",
+      "name": "WF-DPV.03 - DB | Renovar TTL Lista",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2816,
+        1450
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE viagens_reabertura_estado SET atualizado_em = NOW() WHERE phone = '{{ $json.phone }}' RETURNING phone, texto_lista",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "9cb4a3cf-2141-438c-8c11-d5334ca500e5",
+      "name": "WF-DPV.03 - DB | Reabrir Viagem Especifica",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2816,
+        1250
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE viagens SET status='ativa', data_fim=NULL, updated_at=NOW() WHERE id = {{ $json.id_selecionado }} AND status='encerrada' RETURNING id, nome_viagem",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "071ae90d-b204-4bf7-a858-99fb63cf00ee",
+      "name": "WF-DPV.03 - DB | Apagar Estado Selecionar",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        3040,
+        1250
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=DELETE FROM viagens_reabertura_estado WHERE phone = '{{ $(\"WF-DPV.03 - CODE | Processar Resposta Reabertura\").item.json.phone }}'",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "56c82c1d-ed13-4411-9da2-a1db1fb7836b",
+      "name": "WF-DPV.03 - CODE | Preparar Offset Inicial",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2816,
+        800
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{ json: { phone: $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone, offset_atual: 0 } }];"
+      }
+    },
+    {
+      "id": "4707ad4a-f6e2-406b-a6df-1c25b5ad7413",
+      "name": "WF-DPV.03 - CODE | Normalizar Entrada Listagem",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3040,
+        900
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{ json: { phone: $json.phone, offset_atual: $json.offset_atual || 0 } }];"
+      }
+    },
+    {
+      "id": "5f26bd66-a89e-4530-b53f-e9d459b5cd81",
+      "name": "WF-DPV.03 - DB | Listar Encerradas Pagina",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        3264,
+        900
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT id, nome_viagem, data_inicio, data_fim FROM viagens WHERE phone = '{{ $json.phone }}' AND status = 'encerrada' ORDER BY data_fim DESC LIMIT 5 OFFSET {{ $json.offset_atual || 0 }}",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "f15e62a2-fd1b-4c44-a236-3dc0bf73ca66",
+      "name": "WF-DPV.03 - CODE | Montar Lista Encerradas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3488,
+        900
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst ctx = $('WF-DPV.03 - CODE | Normalizar Entrada Listagem').item.json;\nconst phone = ctx.phone;\nconst offsetAtual = ctx.offset_atual || 0;\n\nfunction fmtData(d) {\n  if (!d) return '?';\n  const dt = new Date(d);\n  return String(dt.getDate()).padStart(2,'0') + '/' + String(dt.getMonth()+1).padStart(2,'0');\n}\n\nconst linhas = rows.map((v, idx) =>\n  (idx+1) + ') ' + v.nome_viagem + ' - ' + fmtData(v.data_inicio) + ' a ' + fmtData(v.data_fim) + ' (encerrada)'\n);\n\nlet texto = linhas.length > 0\n  ? 'Viagens encerradas:\\n\\n' + linhas.join('\\n')\n  : 'Nao ha mais viagens encerradas antigas.';\n\nconst opcoes = [];\nif (rows.length === 5) opcoes.push('6) Ver mais antigas');\nopcoes.push('0) Cancelar');\ntexto += '\\n\\n' + opcoes.join('\\n');\n\nconst idsExibidos = rows.map(v => v.id);\n\nreturn [{ json: { phone, offset_atual: offsetAtual, ids_exibidos: idsExibidos, texto_lista: texto } }];"
+      }
+    },
+    {
+      "id": "eb4c8763-14e0-4698-9819-d132bdb9765a",
+      "name": "WF-DPV.03 - DB | Salvar Estado Lista",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        3712,
+        900
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO viagens_reabertura_estado (phone, fase, offset_atual, ids_exibidos, texto_lista, atualizado_em)\nVALUES ($1, 'listar_encerradas', $2, $3::jsonb, $4, now())\nON CONFLICT (phone) DO UPDATE SET\n  fase = EXCLUDED.fase,\n  offset_atual = EXCLUDED.offset_atual,\n  ids_exibidos = EXCLUDED.ids_exibidos,\n  texto_lista = EXCLUDED.texto_lista,\n  atualizado_em = now()\nRETURNING phone, texto_lista;",
+        "options": {
+          "queryReplacement": "={{ [$json.phone, $json.offset_atual, JSON.stringify($json.ids_exibidos), $json.texto_lista] }}"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "1dff8157-61b2-4822-9435-65fccc74606a",
+      "name": "WF-DPV.03 - HTTP | Enviar Lista Encerradas",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3936,
+        900
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.texto_lista }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "1c8a71e3-cece-4770-aac2-f5349047fe81",
+      "name": "WF-DPV.03 - DB | Verificar Viagem Aberta",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1920,
+        750
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT id, nome_viagem, data_inicio FROM viagens WHERE phone = '{{ $json.phone }}' AND status = 'ativa' ORDER BY id DESC LIMIT 1",
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "73ee5908-c86a-4e2d-ac3f-48f9240d12ac",
+      "name": "WF-DPV.03 - IF | Tem Viagem Aberta",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2144,
+        750
       ],
       "parameters": {
         "conditions": {
@@ -1253,102 +2384,92 @@
       }
     },
     {
-      "id": "3172f91b-8e89-4e33-8e5e-b4e14c36ca24",
-      "name": "WF-DPV.03 - HTTP | Confirmar Reabertura Viagem",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
+      "id": "e5a31df4-149a-42bb-848a-4dec9dad7313",
+      "name": "WF-DPV.03 - CODE | Preparar Pergunta Continuar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        672,
-        400
+        2368,
+        650
       ],
       "parameters": {
-        "method": "POST",
-        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "number",
-              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
-            },
-            {
-              "name": "text",
-              "value": "={{ \"Viagem '\" + $json.nome_viagem + \"' reaberta! Pode continuar enviando notas fiscais.\" }}"
-            }
-          ]
-        },
-        "options": {}
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const v = $input.first().json;\nconst phone = $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone;\n\nfunction fmtData(d) {\n  if (!d) return '?';\n  const dt = new Date(d);\n  return String(dt.getDate()).padStart(2,'0') + '/' + String(dt.getMonth()+1).padStart(2,'0') + '/' + dt.getFullYear();\n}\n\nconst texto = \"Voce ja tem a viagem '\" + v.nome_viagem + \"' aberta desde \" + fmtData(v.data_inicio) + \". Quer continuar nela ou reabrir uma encerrada? Responda CONTINUAR ou REABRIR.\";\n\nreturn [{ json: { phone, texto } }];"
       }
     },
     {
-      "id": "642ed940-ad80-4ebd-b99f-68bbc9c49f7c",
-      "name": "WF-DPV.03 - HTTP | Erro Reabrir Viagem",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        672,
-        560
-      ],
-      "parameters": {
-        "method": "POST",
-        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "number",
-              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
-            },
-            {
-              "name": "text",
-              "value": "Nenhuma viagem encerrada encontrada para reabrir. Apenas a viagem mais recente pode ser reaberta."
-            }
-          ]
-        },
-        "options": {}
-      }
-    },
-    {
-      "id": "8e54b581-84c6-469e-97a8-3cf4f17622d1",
-      "name": "WF-DPV.03 - DB | Buscar Ultima Despesa",
+      "id": "f20433a6-4bb8-461b-b121-164a83c41065",
+      "name": "WF-DPV.03 - DB | Salvar Estado Escolher Acao",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        224,
-        640
+        2592,
+        650
       ],
       "parameters": {
         "operation": "executeQuery",
-        "query": "={{ \"SELECT id, message_id, estabelecimento, valor_total, itens_json FROM despesas_viagem WHERE phone = '\" + $json.phone + \"' ORDER BY created_at DESC LIMIT 1\" }}",
+        "query": "INSERT INTO viagens_reabertura_estado (phone, fase, offset_atual, ids_exibidos, texto_lista, atualizado_em)\nVALUES ($1, 'escolher_acao', 0, NULL, NULL, now())\nON CONFLICT (phone) DO UPDATE SET\n  fase = 'escolher_acao', offset_atual = 0, ids_exibidos = NULL, texto_lista = NULL, atualizado_em = now()\nRETURNING phone;",
+        "options": {
+          "queryReplacement": "={{ [$json.phone] }}"
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "727e9504-9e7d-4a09-979b-155729f52d6e",
+      "name": "WF-DPV.03 - HTTP | Perguntar Continuar ou Reabrir",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2816,
+        650
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('WF-DPV.03 - SET | Normalizar Comando').item.json.phone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('WF-DPV.03 - CODE | Preparar Pergunta Continuar').item.json.texto }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "2493390d-e460-40d2-b890-3939910965e2",
+      "name": "WF-DPV.03 - DB | Contar Encerradas",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2368,
+        850
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT count(*) FILTER (WHERE status = 'encerrada') AS encerradas, count(*) AS total FROM viagens WHERE phone = '{{ $(\"WF-DPV.03 - SET | Normalizar Comando\").item.json.phone }}'",
         "options": {}
       },
       "alwaysOutputData": true
     },
     {
-      "id": "af2c4f0e-8445-4f0b-aa8e-af9b41b51812",
-      "name": "WF-DPV.03 - CODE | Preparar Correcao",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        448,
-        640
-      ],
-      "parameters": {
-        "jsCode": "const items = $input.all();\nconst despesa = (items.length > 0 && items[0].json && items[0].json.id) ? items[0].json : null;\nconst original = $('WF-DPV.03 - SET | Normalizar Comando').item.json;\n\nif (!despesa) {\n  return [{ json: { encontrada: false, phone: original.phone } }];\n}\n\nlet dados;\ntry { dados = JSON.parse(despesa.itens_json); } catch (e) { dados = {}; }\ndados._corrigir_id = despesa.id;\n\nreturn [{\n  json: {\n    encontrada: true,\n    phone: original.phone,\n    message_id: despesa.message_id,\n    estabelecimento: despesa.estabelecimento,\n    valor_total: despesa.valor_total,\n    dados_extraidos_str: JSON.stringify(dados).replace(/'/g, \"''\")\n  }\n}];"
-      }
-    },
-    {
-      "id": "fa71eb83-f8be-4191-b3b4-7f8851dcfe90",
-      "name": "WF-DPV.03 - IF | Existe Despesa Para Corrigir",
+      "id": "39f83135-06ab-440e-b171-7c3e56ae4246",
+      "name": "WF-DPV.03 - IF | Tem Encerradas",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
+      "typeVersion": 2.3,
       "position": [
-        672,
-        640
+        2592,
+        850
       ],
       "parameters": {
         "conditions": {
@@ -1360,119 +2481,12 @@
           },
           "conditions": [
             {
-              "leftValue": "={{ $json.encontrada }}",
-              "operator": {
-                "type": "boolean",
-                "operation": "true"
-              },
-              "rightValue": ""
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      }
-    },
-    {
-      "id": "a5593122-6ca7-4153-809b-5a80df8c9f5d",
-      "name": "WF-DPV.03 - DB | Iniciar Correcao Despesa Pendente",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.5,
-      "position": [
-        896,
-        560
-      ],
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "INSERT INTO despesas_pendentes (phone, message_id, step, dados_extraidos)\nVALUES ('{{ $json.phone }}', '{{ $json.message_id }}', 'aguardando_pagador', '{{ $json.dados_extraidos_str }}'::jsonb)\nON CONFLICT (phone) DO UPDATE SET\n  message_id = EXCLUDED.message_id,\n  step = 'aguardando_pagador',\n  dados_extraidos = EXCLUDED.dados_extraidos,\n  tipo_pagador = NULL,\n  forma_pagamento = NULL,\n  observacao = NULL,\n  atualizado_em = NOW()\nRETURNING phone",
-        "options": {}
-      }
-    },
-    {
-      "id": "cb55a5b6-d739-4a0e-91b0-c7c78a2f73cf",
-      "name": "WF-DPV.03 - HTTP | Pedir Correcao Quem Pagou",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        1120,
-        560
-      ],
-      "parameters": {
-        "method": "POST",
-        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "number",
-              "value": "={{ $('WF-DPV.03 - CODE | Preparar Correcao').item.json.phone }}"
-            },
-            {
-              "name": "text",
-              "value": "={{ \"Vamos corrigir a ultima despesa: \" + $('WF-DPV.03 - CODE | Preparar Correcao').item.json.estabelecimento + \" - R$ \" + $('WF-DPV.03 - CODE | Preparar Correcao').item.json.valor_total + \"\\n\\nQuem pagou?\\n1-Empresa\\n2-Eu\\n3-Cliente\" }}"
-            }
-          ]
-        },
-        "options": {}
-      }
-    },
-    {
-      "id": "b7710c3b-4edb-4943-aa68-192f9336f6e8",
-      "name": "WF-DPV.03 - HTTP | Erro Nada Para Corrigir",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.3,
-      "position": [
-        896,
-        720
-      ],
-      "parameters": {
-        "method": "POST",
-        "url": "https://evolution.solucaomadeira.com/message/sendText/VIDROCOM_AG",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "number",
-              "value": "={{ $('WF-DPV.03 - CODE | Preparar Correcao').item.json.phone }}"
-            },
-            {
-              "name": "text",
-              "value": "Nenhuma despesa encontrada para corrigir."
-            }
-          ]
-        },
-        "options": {}
-      }
-    },
-    {
-      "id": "993cf86d-613e-4db8-94d3-ca4af9fe10a5",
-      "name": "WF-DPV.03 - IF | Eh Correcao",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        1600,
-        380
-      ],
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 1
-          },
-          "conditions": [
-            {
-              "leftValue": "={{ $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.corrigir_despesa_id }}",
+              "leftValue": "={{ $json.encerradas }}",
               "operator": {
                 "type": "number",
-                "operation": "exists"
+                "operation": "gt"
               },
-              "rightValue": ""
+              "rightValue": 0
             }
           ],
           "combinator": "and"
@@ -1481,44 +2495,13 @@
       }
     },
     {
-      "id": "c758398e-feae-4ace-9e0c-c8a2942c6a42",
-      "name": "WF-DPV.03 - DB | Remover Despesa Corrigida Antiga",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.5,
-      "position": [
-        1824,
-        300
-      ],
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "={{ \"DELETE FROM despesas_viagem WHERE id = \" + $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.corrigir_despesa_id }}",
-        "options": {}
-      }
-    },
-    {
-      "id": "b0a1c73f-da7a-44d1-af5e-dba84310ee19",
-      "name": "WF-DPV.03 - DB | Buscar Nome Funcionario",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.5,
-      "position": [
-        224,
-        800
-      ],
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "={{ \"SELECT nome FROM funcionarios WHERE phone = '\" + $json.phone + \"' LIMIT 1\" }}",
-        "options": {}
-      },
-      "alwaysOutputData": true
-    },
-    {
-      "id": "f74125c6-3ff6-4fff-89ea-f9da3ad8559a",
-      "name": "WF-DPV.03 - HTTP | Enviar Saudacao",
+      "id": "b394bd6f-db1e-4a60-8192-e4dd56366613",
+      "name": "WF-DPV.03 - HTTP | Informar Sem Encerradas",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        448,
-        800
+        2816,
+        900
       ],
       "parameters": {
         "method": "POST",
@@ -1534,24 +2517,11 @@
             },
             {
               "name": "text",
-              "value": "={{ \"Ola, \" + ($json.nome || \"tudo bem\") + \"! Como posso ajudar?\\n\\nComandos disponiveis:\\n\\n1) Iniciar viagem (INICIAR cidade_obra)\\n2) Encerrar viagem\\n3) Reabrir viagem (reabre a mais recente)\\n4) Corrigir ultima despesa\\n5) Gerar relatorio PDF\\n\\nOu envie uma foto de nota fiscal para registrar despesa.\" }}"
+              "value": "={{ \"Nenhuma viagem encerrada pra reabrir. Total de viagens cadastradas: \" + $json.total + \".\" }}"
             }
           ]
         },
         "options": {}
-      }
-    },
-    {
-      "id": "montar-mensagem-final-v11",
-      "name": "WF-DPV.03 - CODE | Montar Mensagem Final",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1392,
-        384
-      ],
-      "parameters": {
-        "jsCode": "const mensagemBase = $('WF-DPV.03 - CODE | Processar Fluxo Guiado').item.json.mensagem;\nconst mensagemFinal = mensagemBase.replace('__ORDEM_NF__', 'NF #' + $json.ordem_nf + ' - ');\nreturn [{ json: { ...$json, mensagem_final: mensagemFinal } }];"
       }
     }
   ],

@@ -184,6 +184,27 @@
           "name": "DB_dep_viagem"
         }
       }
+    },
+    {
+      "id": "88b4b3ed-5dbc-4a51-bef8-4321a1c2764f",
+      "name": "WF-DPV.05 - DB | Migration v13 Estado Reabertura",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        672,
+        640
+      ],
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- Migration v13: estado de conversa pro fluxo de reabertura de viagem (paginacao + escolha) - 19/07/2026\nCREATE TABLE IF NOT EXISTS viagens_reabertura_estado (\n  phone         VARCHAR(20) PRIMARY KEY,\n  fase          VARCHAR(20) NOT NULL,\n  offset_atual  INTEGER NOT NULL DEFAULT 0,\n  ids_exibidos  JSONB,\n  texto_lista   TEXT,\n  atualizado_em TIMESTAMP DEFAULT NOW()\n);",
+        "options": {}
+      },
+      "credentials": {
+        "postgres": {
+          "id": "ggViIQGkepjwuOdv",
+          "name": "DB_dep_viagem"
+        }
+      }
     }
   ],
   "connections": {
@@ -254,6 +275,17 @@
       ]
     },
     "WF-DPV.05 - DB | Migration v12 Observacao Text": {
+      "main": [
+        [
+          {
+            "node": "WF-DPV.05 - DB | Migration v13 Estado Reabertura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WF-DPV.05 - DB | Migration v13 Estado Reabertura": {
       "main": [
         [
           {
