@@ -16,6 +16,14 @@ Formato da autorizacao aceita: mensagem em portugues do usuario confirmando a op
 
 ---
 
+## IDIOMA DE COMUNICACAO
+
+TODAS as perguntas, confirmacoes, resumos e comunicacoes do agente com o usuario
+devem ser em portugues brasileiro. Sem excecoes, independente do idioma do codigo
+ou dos logs.
+
+---
+
 ## PROTOCOLO OBRIGATÓRIO DE INÍCIO DE SESSÃO
 
 **Antes de ler qualquer arquivo do projeto, execute esta query no banco `dep_viagem`
