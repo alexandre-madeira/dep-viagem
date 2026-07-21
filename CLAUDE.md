@@ -1,5 +1,21 @@
 # CLAUDE.md — dep-viagem (DPV)
 
+## LIMITE DE TOKENS POR OPERACAO
+
+EXPRESSAMENTE PROIBIDO executar qualquer operacao que consuma mais de 10.000 tokens
+sem autorizacao explicita e por escrito do usuario em portugues.
+
+Isso inclui:
+- Exportar workflows grandes via MCP
+- Ler arquivos JSON extensos em loop
+- Operacoes em massa sem aprovacao previa
+- Agentes autonomos com muitas chamadas encadeadas
+
+Antes de qualquer operacao potencialmente grande, estimar o custo e pedir autorizacao.
+Formato da autorizacao aceita: mensagem em portugues do usuario confirmando a operacao.
+
+---
+
 ## PROTOCOLO OBRIGATÓRIO DE INÍCIO DE SESSÃO
 
 **Antes de ler qualquer arquivo do projeto, execute esta query no banco `dep_viagem`
