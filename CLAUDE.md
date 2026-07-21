@@ -26,6 +26,13 @@ ou dos logs.
 
 ## PROTOCOLO OBRIGATORIO DE INICIO DE SESSAO
 
+**Nota:** esta consulta é somente leitura (SELECT) e serve apenas para diagnóstico
+dos erros reais do projeto, que ficam registrados em `erros_workflows` no banco
+`n8n_contratos`. Isso não conflita com a regra "Nunca use `DB_n8n_contratos` em
+workflows DPV" abaixo, que se refere a não usar essa credencial DENTRO dos
+workflows n8n do DPV (ex: nodes de gravação/leitura de dados de negócio) — não
+proíbe consultar o banco de infraestrutura para diagnóstico via este protocolo.
+
 **Execute esta query no banco `n8n_contratos` usando a credencial `DB_n8n_contratos`
 (ID: `3z35ZPyLInGNam1Y`):**
 
