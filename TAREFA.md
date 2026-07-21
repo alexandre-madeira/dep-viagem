@@ -1,28 +1,32 @@
-﻿FEAT-12 - Salvar imagem da NF no banco e incluir no PDF
+﻿DIAGNOSTICO Evolution API - imagem nao dispara webhook
 
-CONTEXTO:
-Colunas ja existem em despesas_viagem (migration ja aplicada pelo usuario):
-- imagem_nf_base64 TEXT
-- imagem_nf_mimetype VARCHAR(20)
+PROBLEMA CONFIRMADO: n8n processa imagens corretamente (teste sintetico OK).
+A Evolution API nao esta entregando eventos de imageMessage ao webhook DPV.
+Nao temos acesso aos logs do container Docker.
 
-TAREFA 1 - WF-DPV.02 (ID: 31hBkBVq6rduQKXM):
-Apos HTTP | Baixar Imagem da NF que retorna base64 e mimetype,
-salvar esses dados em despesas_pendentes (campo dados_extraidos JSONB)
-para persistir durante o fluxo guiado.
-Quando DB | Salvar Despesa Final for executado no WF-DPV.03,
-incluir imagem_nf_base64 e imagem_nf_mimetype no INSERT.
+TENTAR via API REST da Evolution API:
 
-TAREFA 2 - WF-DPV.03 (ID: ruf039UAwh9KqIZo):
-No DB | Salvar Despesa Final adicionar os campos:
-imagem_nf_base64 = dados_extraidos.imagem_base64
-imagem_nf_mimetype = dados_extraidos.imagem_mimetype
+1. GET https://evolution.solucaomadeira.com/instance/fetchInstances
+   Credencial: HEADER_API_EVOLUTION_ENVIO (ID: Ka0C8J4zfOklD1lw)
+   Ver detalhes da instancia DPV - versao, configuracoes
 
-TAREFA 3 - WF-DPV.04 (ID: acKIy44sUfDgOR2E):
-Apos a tabela de despesas no HTML do relatorio,
-adicionar secao "Comprovantes" com as imagens em ordem de ordem_nf.
-Cada imagem: tag <img> com src="data:[mimetype];base64,[base64]"
-Largura maxima: 400px. Legenda: "NF #[ordem_nf] - [estabelecimento] - [data_emissao]"
-Apenas incluir imagens onde imagem_nf_base64 IS NOT NULL.
+2. GET https://evolution.solucaomadeira.com/chat/findMessages/DPV
+   Body: {"where": {"key": {"fromMe": false}}, "limit": 5}
+   Ver se as mensagens de imagem estao sendo recebidas pela instancia
 
-Commitar: feat: FEAT-12 salvar imagem NF no banco e incluir no PDF
-git push
+3. POST https://evolution.solucaomadeira.com/webhook/set/DPV
+   Tentar reconfigurar o webhook completamente com:
+   {
+     "url": "https://n8n.solucaomadeira.com/webhook/dpv-whatsapp-receiver",
+     "enabled": true,
+     "webhookByEvents": false,
+     "webhookBase64": false,
+     "events": ["MESSAGES_UPSERT", "CONNECTION_UPDATE"]
+   }
+   Mudar webhookByEvents para false pode ser a chave -
+   quando true, a Evolution API pode estar filtrando tipos de mensagem por evento
+   e imageMessage pode estar caindo em bucket diferente de MESSAGES_UPSERT.
+
+4. Apos reconfigurar, pedir ao usuario para enviar imagem de teste.
+
+Reportar resultado de cada passo.
