@@ -337,6 +337,7 @@
                   },
                   {
                       "parameters":  {
+                                         "source":  "database",
                                          "workflowId":  {
                                                             "__rl":  true,
                                                             "value":  "6SwQvQ5IVL8oVtUk",
@@ -344,6 +345,21 @@
                                                             "cachedResultUrl":  "/workflow/6SwQvQ5IVL8oVtUk",
                                                             "cachedResultName":  "WF-DPV.07 - Cadastro de Usuários [dep-viagem]"
                                                         },
+                                         "workflowInputs":  {
+                                                                "mappingMode":  "defineBelow",
+                                                                "value":  {
+                                                                              "phone":  "={{ $json.phone }}",
+                                                                              "caption":  "={{ $json.caption }}",
+                                                                              "pushName":  "={{ $json.pushName }}",
+                                                                              "messageId":  "={{ $json.messageId }}",
+                                                                              "instanceName":  "={{ $json.instanceName }}",
+                                                                              "messageType":  "={{ $json.messageType }}",
+                                                                              "imageUrl":  "={{ $json.imageUrl }}",
+                                                                              "imageBase64":  "={{ $json.imageBase64 }}",
+                                                                              "from_me":  "={{ $json.from_me }}",
+                                                                              "event":  "={{ $json.event }}"
+                                                                          }
+                                                            },
                                          "options":  {
 
                                                      }
@@ -351,7 +367,7 @@
                       "id":  "3ec7027a-fced-4798-89c2-60af4362cdc0",
                       "name":  "WF-DPV.01 - EXEC | Cadastrar Usuario",
                       "type":  "n8n-nodes-base.executeWorkflow",
-                      "typeVersion":  1.1,
+                      "typeVersion":  1.2,
                       "position":  [
                                        1184,
                                        656
@@ -1008,6 +1024,7 @@
                                                       },
                                                       {
                                                           "parameters":  {
+                                                                             "source":  "database",
                                                                              "workflowId":  {
                                                                                                 "__rl":  true,
                                                                                                 "value":  "6SwQvQ5IVL8oVtUk",
@@ -1015,6 +1032,21 @@
                                                                                                 "cachedResultUrl":  "/workflow/6SwQvQ5IVL8oVtUk",
                                                                                                 "cachedResultName":  "WF-DPV.07 - Cadastro de Usuários [dep-viagem]"
                                                                                             },
+                                                                             "workflowInputs":  {
+                                                                                                    "mappingMode":  "defineBelow",
+                                                                                                    "value":  {
+                                                                                                                  "phone":  "={{ $json.phone }}",
+                                                                                                                  "caption":  "={{ $json.caption }}",
+                                                                                                                  "pushName":  "={{ $json.pushName }}",
+                                                                                                                  "messageId":  "={{ $json.messageId }}",
+                                                                                                                  "instanceName":  "={{ $json.instanceName }}",
+                                                                                                                  "messageType":  "={{ $json.messageType }}",
+                                                                                                                  "imageUrl":  "={{ $json.imageUrl }}",
+                                                                                                                  "imageBase64":  "={{ $json.imageBase64 }}",
+                                                                                                                  "from_me":  "={{ $json.from_me }}",
+                                                                                                                  "event":  "={{ $json.event }}"
+                                                                                                              }
+                                                                                                },
                                                                              "options":  {
 
                                                                                          }
@@ -1022,7 +1054,7 @@
                                                           "id":  "3ec7027a-fced-4798-89c2-60af4362cdc0",
                                                           "name":  "WF-DPV.01 - EXEC | Cadastrar Usuario",
                                                           "type":  "n8n-nodes-base.executeWorkflow",
-                                                          "typeVersion":  1.1,
+                                                          "typeVersion":  1.2,
                                                           "position":  [
                                                                            1184,
                                                                            656
