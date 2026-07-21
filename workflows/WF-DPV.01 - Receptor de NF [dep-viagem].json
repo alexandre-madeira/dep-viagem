@@ -76,7 +76,7 @@
                                                                                      "id":  "from_me",
                                                                                      "name":  "from_me",
                                                                                      "type":  "boolean",
-                                                                                     "value":  "={{ $json.body.data.key.fromMe ?? false }}"
+                                                                                     "value":  "={{ $json.body.data.key.fromMe === true }}"
                                                                                  },
                                                                                  {
                                                                                      "id":  "event",
@@ -746,7 +746,7 @@
                                                                                                                          "id":  "from_me",
                                                                                                                          "name":  "from_me",
                                                                                                                          "type":  "boolean",
-                                                                                                                         "value":  "={{ $json.body.data.key.fromMe ?? false }}"
+                                                                                                                         "value":  "={{ $json.body.data.key.fromMe === true }}"
                                                                                                                      },
                                                                                                                      {
                                                                                                                          "id":  "event",
